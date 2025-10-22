@@ -1,0 +1,421 @@
+        /* ------------------- Accordion Tabs ---------------------------------- */
+        .tab {
+            overflow: hidden;
+            border: 1px solid white;
+            background-color: #f1f1f1;
+        }
+
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 15px;
+        }
+
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        .tabcontent {
+            display: none;
+            border: 1px solid white;
+            border-top: none;
+        }
+
+        #tap1 {
+            border-radius: 12px 0px 0px 0px;
+        }
+
+        /* ------------------- Rounded Tables ---------------------------------- */
+        .tablecoil {
+            width: 100%;
+            border-spacing: 0;
+            border-collapse: separate;
+            border: 1px solid lightgrey;
+            text-align: center;
+            border-radius: 12px 12px 12px 12px;
+        }
+
+        .tablecoil tr:last-child,
+        .tablecoil tr:last-child>td:last-child {
+            border-bottom-right-radius: 10px;
+        }
+
+        .tablecoil tr:last-child,
+        .tablecoil tr:last-child>td:first-child {
+            border-bottom-left-radius: 10px;
+        }
+
+        .tablecoil tr:first-child,
+        .tablecoil tr:first-child>th:first-child {
+            border-top-left-radius: 10px
+        }
+
+        .tablecoil tr:first-child,
+        .tablecoil tr:first-child>th:last-child {
+            border-top-right-radius: 10px
+        }
+
+        /* th,
+        td {
+            text-align: center;
+            border: none;
+            width: 14.28%;
+            cursor: pointer;
+            padding: 10px;
+            position: relative;
+        } */
+
+        #test td,
+        #test th {
+            border: 1px solid lightgrey;
+            border-bottom: none;
+            border-right: none;
+            text-align: center;
+        }
+
+        .tablecoil td:hover {
+            background-color: rgb(119, 206, 230, 0.2);
+            font-weight: 800;
+        }
+
+        #test td:hover {
+            background-color: rgb(119, 206, 230, 0.3);
+            font-weight: 800;
+        }
+
+        tr:hover td.active {
+            background-color: rgb(194, 232, 243, 0.3);
+        }
+
+        #static {
+            border-top: 1px solid lightgrey;
+            text-align: left;
+        }
+
+        .highlighted {
+            background-color: #CCCCFF;
+        }
+
+        .highlighted-gray {
+            background-color: lightgray;
+        }
+
+
+
+        /* --------------------Table Cell Truncations--------------------- */
+        [class^="sp-"] {
+            display: none;
+        }
+
+        .active {
+            display: table-cell;
+            background-color: #ffffff;
+            color: #212121;
+        }
+
+        .sp-selector {
+            display: flex;
+            width: 100%;
+            flex-wrap: wrap;
+            border-radius: 10px;
+            justify-content: start;
+        }
+
+        .sp-option {
+            border: none;
+            display: inline-block;
+            padding: 3px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            flex: 1;
+        }
+
+        .sp-option:hover {
+            background-color: gray;
+        }
+
+        .sp-option.active {
+            background-color: rgb(121, 166, 210);
+        }
+
+        .sp-option:hover:not(.active) {
+            background-color: #e0e0e0;
+        }
+
+        .panel {
+            display: none;
+            overflow: auto;
+        }
+
+        .accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: 1px solid white;
+            text-align: center;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+            overflow: auto;
+        }
+
+        .accordion.active {
+            background-color: #ccc;
+        }
+
+
+        tr.accordion-header>td {
+            background-color: rgb(239 239 239);
+            text-align: center;
+            cursor: pointer;
+        }
+
+        tr.accordion-header.actives {
+            background-color: #e6f0ff;
+            text-align: center;
+            color: #000000;
+            box-sizing: border-box !important;
+        }
+
+        .header-div {
+            display: block;
+            background-color: #f1f1f1;
+            text-align: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+
+        /*----------------- Crosshair highlight classes ------------------*/
+        .crosshair-table .highlight-row {
+            background-color: lightgray;
+        }
+
+        .crosshair-table .highlight-col {
+            background-color: lightgray;
+        }
+
+        .crosshair-table .highlight-both {
+            background-color: rgba(99, 172, 192, 0.5);
+            font-weight: bold;
+        }
+
+        /*----------------- New UI Styles ------------------*/
+        .input-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .control-panel {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .btn-group-custom {
+            margin: 5px;
+        }
+
+        .output-section {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        #tableOutput {
+            width: 100%;
+            min-height: 300px;
+            margin-top: 15px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: white;
+        }
+
+        .table-tool {
+            display: flex;
+            min-height: 300px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-wrapper {
+            border-right: 1px solid #e0e4e8;
+            flex-wrap: wrap;
+            width: 33%;
+            font-size: 0.9rem;
+            padding: 15px;
+            background-color: white;
+            /* overflow: auto; */
+        }
+        .apply-element {
+            background-color: rgb(229, 231, 233);
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .control-panel {
+            background-color: #f1f3f5;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        .separator {
+            height: 1px;
+            width: 100%;
+            background-color: #525252;
+        }
+        
+        .btn-group-custom {
+            margin-bottom: 10px;
+        }
+
+        .btn-group-horizontal .btn {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .table-container {
+            /* margin-top: 5px; */
+            flex-grow: 1;
+            overflow: auto;
+            background-color: #f0f2f4;
+            padding: 20px;
+            display: flex;
+            /* align-items: center; */
+            /* justify-content: center; */
+            flex-direction: column;
+        }
+
+        .selected-cell {
+            background-color: rgba(255, 255, 0, 0.3) !important;
+        }
+
+        .cell-controls {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /*================ Media Manipulation ====================*/
+        @media (max-width: 767px) {
+
+            #test td,
+            #test th {
+                font-size: 0.8rem;
+            }
+
+            .btn-group-custom {
+                display: block;
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+
+
+            #test td,
+            #test th {
+                font-size: 0.8rem;
+                word-wrap: break-word;
+            }
+
+            .freeze-pane {
+                display: sticky;
+                left: 0;
+                background-color: aliceblue;
+
+            }
+
+            .sideways-face {
+                writing-mode: sideways-lr;
+            }
+        }
+
+        /* -------------------Draggable ------------------------ */
+        /* Dragging Handles */
+        .drag-handle {
+            cursor: grab;
+            user-select: none;
+            /* Prevents text selection while dragging */
+            text-align: center;
+            font-weight: bold;
+            color: #999;
+            background-color: #f0f0f0;
+        }
+
+        .row-handle {
+            width: 20px;
+        }
+
+        .col-handle {
+            height: 25px;
+            background-color: rgba(116, 162, 248, 0.562);
+            color: white;
+            /* line-height: 5px; */
+        }
+
+        /* Visual feedback for the item being dragged */
+        .dragging,
+        .row-dragging>td,
+        .row-dragging>th,
+        .column-dragging {
+            opacity: 0.5;
+            background-color: #aae !important;
+            /* Light blue */
+            border: 1px dashed #337ab7;
+        }
+
+        /* Highlight for the potential drop target */
+        .drag-over {
+            background-color: #dff0d8 !important;
+            /* Light green */
+            outline: 2px solid #5cb85c;
+        }
+
+        /* Drop Indicator Styles */
+        .drop-indicator-row td {
+            height: 5px;
+            background-color: #337ab7;
+            /* Blue line */
+            padding: 0;
+            border: none;
+            line-height: 0;
+        }
+
+        .drop-indicator-col {
+            width: 1px;
+            background-color: #3379b715;
+            /* Blue line */
+            padding: 0;
+            border: none;
+        }

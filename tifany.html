@@ -1,0 +1,338 @@
+<!-- Table Formatter and Editor TIFANE -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIFANY</title>
+    <!-- Bootstrap and jQuery -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- JQuery Plugins -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.css"
+        integrity="sha512-8D+M+7Y6jVsEa7RD6Kv/Z7EImSpNpQllgaEIQAtqHcI0H6F4iZknRj0Nx1DCdB+TwBaS+702BGWYC0Ze2hpExQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- TIFANY CSS ---- local CSS -->
+    <link rel="stylesheet" href="tifany.css">
+    <!-- With this corrected version -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <!-- Toast -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"
+        integrity="sha512-zlWWyZq71UMApAjih4WkaRpikgY9Bz1oXIW5G0fED4vk14JjGlQ1UmkGM392jEULP8jbNMiwLWdM8Z87Hu88Fw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- TIFFANY JS -- local JS -->
+    <script src="tifany.js"></script>
+
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Table Format &amp; Editor Library - T-FANY</h1>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <h3>Input Table Data</h3>
+            <div class="form-group">
+                <label for="inputType">Input Format:</label>
+                <select class="form-control" id="inputType">
+                    <option value="html">HTML</option>
+                    <option value="ascii">ASCII</option>
+                    <option value="csv">CSV/Spreadsheet</option>
+                    <option value="text">Text</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tableInput">Paste your table data:</label>
+                <p><small>Add this to your code for navigation toggling and accordions <br><br>
+                        <b>Use Alt + (0 9) to create a table </b></small></p>
+                <pre><code>&lt;button class="accordion"&gt;Accordion Button&lt;/button&gt;
+&lt;div class="panel"&gt;
+  &lt;div class="sp-selector"&gt;
+    &lt;button class="sp-option active" data-value="1" data-panel="0"&gt;Tab 1&lt;/button&gt;
+    &lt;button class="sp-option" data-value="2" data-panel="0"&gt;Tab 2&lt;/button&gt;
+    &lt;button class="sp-option" data-value="2" data-panel="0"&gt;Tab 3&lt;/button&gt;
+  &lt;/div&gt;
+</code></pre>
+                <textarea class="form-control" id="tableInput" rows="8"
+                    placeholder="Paste your table data here..."></textarea>
+            </div>
+            <button id="parseInput" class="btn btn-primary">Parse Input</button>
+        </div>
+        <br>
+
+        <!-- </div> -->
+        <!-- </div> -->
+        <div class="table-tutorial">
+            <div style="border: 1px solid lightgrey; border-radius: 8px; padding: 20px; box-shadow: 5px 10px 8px lightgrey;"
+                class="text-wrap">
+                <small>
+                    <button class="accordion"><b>Table Interaction Guide</b></button>
+                    <div class="panel">
+                        <br>
+                        <table class=" table-bordered" style="justify-self: center;">
+                        <tbody>
+                            <tr id="test" class="accordion-header">
+                                <th class="" colspan="2">Cell Selection Methods</th>
+                            </tr>
+                            <tr id="test">
+                                <td>Single cell </td>
+                                <td>Click on any cell</td>
+                            </tr>
+                            <tr id="test">
+                                <td class="">Multiple individual cells</td>
+                                <td>Hold Ctrl/Cmd and click on cells</td>
+                            </tr>
+                            <tr id="test">
+                                <td class="">Range selection (drag)</td>
+                                <td>Click on a cell and drag to another cell to select a rectangular range</td>
+                            </tr>
+                            <tr id="test">
+                                <td class="">Range selection (Shift)</td>
+                                <td>Click on a cell, then hold Shift and click on another cell to select all cells in
+                                    between</td>
+                            </tr>
+                            <tr id="test">
+                                <td class="">Right-Click</td>
+                                <td>Right click on cell to show Edit Cell</td>
+                            </tr>
+                            <tr id="test" class="accordion-header">
+                                <th class="" colspan="2">Class Names</th>
+                            </tr>
+                            <tr id="test">
+                                <td class="">accordion</td>
+                                <td>Creates an Accordion header for a panel</td>
+                            </tr>
+                            <tr id="test">
+                                <td class="">accordion-header</td>
+                                <td>Element Type: Row - Row becomes accordion until closest or next accordion-header
+                                </td>
+                            </tr>
+                            <tr id="test">
+                                <td class="">sp-$index</td>
+                                <td>sp- of any index of a column creates a toggle for the column</td>
+                            </tr>
+                            <tr id="test" class="accordion-header">
+                                <th class="" colspan="2">Mobile Style New Cell</th>
+                            </tr>
+                            <tr id="test">
+                                <td>highlighted</td>
+                                <td>Element Type: Cell - turns a table cell purple (add-gray to highlighted to change
+                                    color to gray)</td>
+                            </tr>
+                            <tr id="test">
+                                <td>sideways-face</td>
+                                <td> Element Type: Cell - Flips the text horizontal</td>
+                            </tr>
+                            <tr id="test">
+                                <td>freeze-pane</td>
+                                <td>Element Type: Column/Row - Freezes a row or a Column</td>
+                            </tr>
+                            <tr id="test" class="accordion-header">
+                                <th class="" colspan="2">After selecting cells, you can apply classnames or IDs to them.
+                                    New Cell</th>
+                            </tr>
+                            <tr id="test" class="accordion-header">
+                                <th class="" colspan="2">Shortcuts</th>
+                            </tr>
+                            <tr id="test">
+                                <td class="">Insert</td>
+                                <td class="">Add New Cell</td>
+                            </tr>
+                            <tr id="test">
+                                <td class="">Delete/ Ctrl + Backspace: </td>
+                                <td class="">Delete Cell</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </small>
+                <br>
+                <p><small>*Table is Collapsible. Click on the header to collapse table conent</small></p>
+            </div>
+        </div>
+        <br>
+        <div class="apply-element">
+            <!-- Control Panel -->
+            <h5>Apply Classes/IDs</h5>
+            <div class="form-row">
+                <div class="form-group" style="margin-right: 15px;">
+                    <label for="elementType">Element Type:</label>
+                    <select class="form-control" id="elementType">
+                        <option value="cell">Cell</option>
+                        <option value="row">Row</option>
+                        <option value="column">Column</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="classInput">Class Name:</label>
+                    <input type="text" class="form-control" id="classInput" placeholder="Enter class name">
+                </div>
+                <div class="form-group">
+                    <label for="idInput">ID:</label>
+                    <input type="text" class="form-control" id="idInput" placeholder="Enter ID">
+                </div>
+                <div class="form-group">
+                    <label for="idInput">CSS Style:</label>
+                    <input type="text" class="form-control" id="styleInput" placeholder="Enter Style">
+                </div>
+            </div>
+            <button id="applyClassId" class="btn btn-outline-secondary">Apply to Selected</button>
+        </div>
+        <!-- <div class="row"> -->
+        <div class="table-tool">
+            <div class="tool-wrapper">
+                <br><br>
+                <div class="control-panel">
+                    <h3>Table Manipulation Tools</h3>
+                    <div class="separator"></div>
+                    <div class="btn-group-vertical btn-group-custom w-100">
+                        <h5>Drag &amp; Drop Table Data</h5>
+                        <button id="toggleDragDrop" class="btn btn-outline-secondary">Toggle Drag &amp;
+                            Drop</button>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="btn-group-horizontal btn-group-custom w-100">
+                                <h5>Basic Operations</h5>
+                                <button id="applyStyle" class="btn btn-outline-primary">Apply Style</button>
+                                <button id="transposeTable" class="btn btn-outline-secondary">Transpose
+                                    Table</button>
+                                <button id="toggleCrosshair" class="btn btn-outline-secondary">Toggle Crosshair</button>
+                                <button class="textSplit btn btn-outline-secondary">Text Split</button>
+                            </div>
+                        </div>
+                        <div class="separator"></div>
+                        <!-- <div class="col-md-6"> -->
+                        <div class="btn-group-horizontal btn-group-custom w-100">
+                            <h5>Cell/Row/Column Operations</h5>
+                            <button id="" class="btn btn-outline-secondary addRow">Add Row(s)</button>
+                            <button id="" class="btn btn-outline-secondary addColumn">Add Column(s)</button>
+                            <button id="" class="btn btn-outline-secondary addCell">Add Cell(s)</button>
+                            <button id="" class="btn btn-outline-secondary mergeCells">Merge Cells(s)</button>
+                            <div class="separator"></div>
+                            <h5>Delete Operations</h5>
+                            <button id="" class="btn btn-outline-secondary deleteCell">Delete Cell(s)</button>
+                            <button id="" class="btn btn-outline-secondary deleteRow">Delete Row(s)</button>
+                            <button id="" class="btn btn-outline-secondary deleteColumn">Delete
+                                Column(s)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="table-wrapper"> -->
+            <!-- Table Display Area -->
+            <div class="table-container" id="tableContainer">
+                <div class="text-center p-5">
+                    <p>Parse input data to display your table here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Output Section -->
+    <div class="output-section">
+        <h3>Generated Code</h3>
+        <button id="generateCode" class="btn btn-success mb-2">Generate Clean Code</button>
+        <textarea class="form-control" id="tableOutput" rows="8"
+            placeholder="Paste your table data here...">        </textarea>
+        <br>
+        <button id="copyInput" class="btn btn-primary mb-2 float-right">Copy to Clipboard</button>
+        <!-- <pre id="tableOutput"></pre> -->
+    </div>
+
+
+    <!-- Cell Context Menu -->
+    <div id="cellContextMenu" class="cell-controls">
+        <h6>Cell Options</h6>
+        <button id="" class="editCell btn btn-sm btn-outline-primary">Edit Content</button>
+        <button id="" class="deleteCell btn btn-sm btn-outline-danger">Delete Cell</button>
+        <button id="" class="addCell btn btn-outline-secondary">Add Cell</button>
+        <button id="" class="mergeCells btn btn-outline-secondary">Merge Selected Cells</button>
+        <button id="" class="addRow btn btn-outline-secondary">Add Row</button>
+        <button id="" class="addColumn btn btn-outline-secondary">Add Column</button>
+        <button class="textSplit btn btn-outline-secondary">Text Split</button>
+        <h6>Delete Operations</h6>
+        <!-- <button id="deleteCell" class="btn btn-outline-secondary">Delete Cell(s)</button> -->
+        <button id="deleteRow" class="btn btn-outline-secondary">Delete Row(s)</button>
+        <button id="deleteColumn" class="btn btn-outline-secondary">Delete Column(s)</button>
+    </div>
+
+    <!-- Edit Cell Modal -->
+    <div class="modal fade" id="editCellModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Cell Content</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="cellContent">Cell Content:</label>
+                        <textarea class="form-control" id="cellContent" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveCellContent">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Split Modal -->
+    <div class="modal fade" id="textSplitModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Text Split Options</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="colDelimiter">Column Delimiter(s):</label>
+                        <input type="text" class="form-control" id="colDelimiter"
+                            placeholder="Enter delimiter(s), e.g., , or | or ;">
+                        <small class="form-text text-muted">You can enter multiple delimiters separated by commas. For
+                            example: ,|;</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="rowDelimiter">Row Delimiter(s):</label>
+                        <input type="text" class="form-control" id="rowDelimiter"
+                            placeholder="Enter delimiter(s), e.g., \n or |">
+                        <small class="form-text text-muted">You can enter multiple delimiters separated by commas. For
+                            example: \n|;</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="splitDirection">Split Direction:</label>
+                        <select class="form-control" id="splitDirection">
+                            <option value="rows">Split into Columns</option>
+                            <option value="columns">Split into Rows</option>
+                            <option value="both">Split into Rows and Columns</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="applyTextSplit">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
