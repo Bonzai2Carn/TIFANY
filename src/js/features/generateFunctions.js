@@ -50,6 +50,13 @@ function generateCode() {
 
     console.group('Generate Code Process');
     console.log('Current Table Status:', !!currentTable);
+    $.toast({
+                    // heading: 'Success',
+                    text: `Current Table Status: ${!!currentTable}`,
+                    showHideTransition: 'slide',
+                    loader: false,
+                    stack: 'false'
+                })
     try {
         // Reset the table container before cloning
         // $('#tableContainer').empty().append(currentTable.clone());

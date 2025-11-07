@@ -1,0 +1,28 @@
+{
+  "name": "tifany",
+  "version": "1.0.0",
+  "description": "TIFANY is a table formatter and editor for anything html, ascii, pdf, images will be added soon",
+  "keywords": [
+    "\"table\"",
+    "\"editor\"",
+    "\"manipulation\"",
+    "\"jquery\"",
+    "\"transpose\"",
+    "\"crosshair\""
+  ],
+  "homepage": "https://github.com/Bonzai2Carn/TIFANY#readme",
+  "bugs": {
+    "url": "https://github.com/Bonzai2Carn/TIFANY/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bonzai2Carn/TIFANY.git"
+  },
+  "license": "MIT",
+  "author": "Bonzai Carn",
+  "type": "module",
+  "main": "./tifany.html",
+  "scripts": {
+    "test": "jest"
+  }
+}
