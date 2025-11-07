@@ -40,7 +40,7 @@
     <script src="js/features/tableOperations.js"></script>
     <script src="js/features/tifanyTabs.js"></script>
     <!-- TIFANY CSS ---- local CSS -->
-     <link rel="stylesheet" href="css/tableEditor.css">
+    <link rel="stylesheet" href="css/tableEditor.css">
     <link rel="stylesheet" href="css/tifanyUI.css">
 </head>
 
@@ -78,13 +78,17 @@
         <div class="sidebar-container">
             <div class="accordion side-accordion"></div>
             <div class="panel">
-                <h3>History</h3>
-                <div class="button-controls m-1">
-                    <button class="undoHistory btn w-100" title="undo">&#9100; Undo • <span class="undoState"></span></button>
-                    <button class="redoHistory btn w-100" title="redo">&#10227; Redo • <span class="redoState"></span></button>
-                </div>
                 <div class="instructions">
                     <div class="sidebar">
+                        <div class="control-group">
+                            <h3>History</h3>
+                            <div class="style-controls">
+                                <button class="undoHistory btn" title="undo">&#9100; Undo • <span
+                                        class="undoState"></span></button>
+                                <button class="redoHistory btn" title="redo">&#10227; Redo • <span
+                                        class="redoState"></span></button>
+                            </div>
+                        </div>
                         <button class="accordion btn btn-info">Table Instruction</button>
                         <div class="panel panel-style">
                             <h5><b><u>Shortcuts</u></b></h5>
@@ -130,141 +134,144 @@
                         </div>
                         <br>
                         <!-- Control Panel -->
-                        <div class=" control-group">
-                            <!-- <button class="accordion btn btn-secondary">Styles & Classes/IDs</button> -->
+                        <button class="accordion active btn btn-secondary">Styles & Classes/IDs</button>
+                        <div class="panel control-group">
                             <!-- <div class="panel"> -->
-                            <div class="control-group">
-                                <label for="elementType">Element Type:</label>
-                                <select class="form-control" id="elementType">
-                                    <option value="cell">Cell</option>
-                                    <option value="row">Row</option>
-                                    <option value="column">Column</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="classInput">Class Name:</label>
-                                <div class="input-group">
-                                    <button class="input-group-text sp-class" id="basic-addon1">sp-</button>
-                                    <input type="text" class="form-control" id="classInput"
-                                        placeholder="Enter class name">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="idInput">ID:</label>
-                                <input type="text" class="form-control" id="idInput" placeholder="Enter ID">
-                            </div>
-                            <div class="form-group tableStyle">
-                                <label for="styleInput">CSS Style</label>
-                                <select id="styleInput" class="w-100" name="styleInput">
-                                    <optgroup label="COLORS">
-                                        <option value="background-color">BACKGROUND COLOR</option>
-                                        <option value="color">TEXT COLOR</option>
-                                        <option value="border-color">BORDER COLOR</option>
-                                    </optgroup>
-                                    <optgroup label="SPACING">
-                                        <option value="padding">PADDING</option>
-                                        <option value="margin">MARGIN</option>
-                                    </optgroup>
-                                    <optgroup label="BORDER-COLLAPSE">
-                                        <option value="border-collapse: collapse">BORDER-COLLAPSE: COLLAPSE ⊥
-                                        </option>
-                                        <option value="border-collapse: separate">BORDER-COLLAPSE: SEPARATE ⅃L
-                                        </option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="cellColor">Color</label>
-                                <input class="w-100" type="color" id="cellColor" value="#cccccc">
-                            </div>
-                            <p>Spacing</p>
-                            <div class="style-controls">
-                                <div class="form-group">
-                                    <label>T:</label>
-                                    <input type="number" class="text-center" id="spacingTop" min="0" max="20" step="1">
+                                <div class="control-group">
+                                    <label for="elementType">Element Type:</label>
+                                    <select class="form-control" id="elementType">
+                                        <option value="cell">Cell</option>
+                                        <option value="row">Row</option>
+                                        <option value="column">Column</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>R:</label>
-                                    <input type="number" class="text-center" id="spacingRight" min="0" max="20"
-                                        step="1">
+                                    <label for="classInput">Class Name:</label>
+                                    <div class="input-group">
+                                        <button class="input-group-text sp-class" id="basic-addon1">sp-</button>
+                                        <input type="text" class="form-control" id="classInput"
+                                            placeholder="Enter class name">
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>B:</label>
-                                    <input type="number" class="text-center" id="spacingBottom" min="0" max="1"
-                                        step="0.1">
+                                    <label for="idInput">ID:</label>
+                                    <input type="text" class="form-control" id="idInput" placeholder="Enter ID">
+                                </div>
+                                <div class="form-group tableStyle">
+                                    <label for="styleInput">CSS Style</label>
+                                    <select id="styleInput" class="w-100" name="styleInput">
+                                        <optgroup label="COLORS">
+                                            <option value="background-color">BACKGROUND COLOR</option>
+                                            <option value="color">TEXT COLOR</option>
+                                            <option value="border-color">BORDER COLOR</option>
+                                        </optgroup>
+                                        <optgroup label="SPACING">
+                                            <option value="padding">PADDING</option>
+                                            <option value="margin">MARGIN</option>
+                                        </optgroup>
+                                        <optgroup label="BORDER-COLLAPSE">
+                                            <option value="border-collapse: collapse">BORDER-COLLAPSE: COLLAPSE ⊥
+                                            </option>
+                                            <option value="border-collapse: separate">BORDER-COLLAPSE: SEPARATE ⅃L
+                                            </option>
+                                        </optgroup>
+                                    </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>L:</label>
-                                    <input type="number" class="text-center" id="spacingLeft" min="0" max="1"
-                                        step="0.1">
+                                    <label for="cellColor">Color</label>
+                                    <input class="w-100" type="color" id="cellColor" value="#cccccc">
                                 </div>
-                            </div>
-                            <!-- Table Attributes -->
-                            <div class="form-group">
-                                <label for="tableAttributeLabel">Attributes</label>
-                                <select id="tableAttribute" class="w-100" name="tableAttribute">
-                                    <optgroup label="ATTRIBUTES">
-                                        <option value="colspan">COLSPAN</option>
-                                        <option value="rowspan">ROWSPAN</option>
-                                        <!-- <option value="table-layout">TABLE LAYOUT</option> -->
-                                    </optgroup>
-                                    <!-- <optgroup label="TYPOGRAPHY">
+                                <p>Spacing</p>
+                                <div class="style-controls">
+                                    <div class="form-group">
+                                        <label>T:</label>
+                                        <input type="number" class="text-center" id="spacingTop" min="0" max="20"
+                                            step="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>R:</label>
+                                        <input type="number" class="text-center" id="spacingRight" min="0" max="20"
+                                            step="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>B:</label>
+                                        <input type="number" class="text-center" id="spacingBottom" min="0" max="1"
+                                            step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>L:</label>
+                                        <input type="number" class="text-center" id="spacingLeft" min="0" max="1"
+                                            step="0.1">
+                                    </div>
+                                </div>
+                                <!-- Table Attributes -->
+                                <div class="form-group">
+                                    <label for="tableAttributeLabel">Attributes</label>
+                                    <select id="tableAttribute" class="w-100" name="tableAttribute">
+                                        <optgroup label="ATTRIBUTES">
+                                            <option value="colspan">COLSPAN</option>
+                                            <option value="rowspan">ROWSPAN</option>
+                                            <!-- <option value="table-layout">TABLE LAYOUT</option> -->
+                                        </optgroup>
+                                        <!-- <optgroup label="TYPOGRAPHY">
                                         <option value="font-size">FONT SIZE</option>
                                         <option value="font-weight">FONT WEIGHT</option>
                                     </optgroup> -->
-                                </select>
-                            </div>
-                            <!-- <div class="style-controls"> -->
-                            <div class="form-group">
-                                <input type="number" class="form-cotrol text-center" id="attributeValue" min="0"
-                                    max="20" step="1" value="1">
-                            </div>
-                            <button id="applyClassId" class="btn btn-outline-secondary">Apply to
-                                Selected</button>
+                                    </select>
+                                </div>
+                                <!-- <div class="style-controls"> -->
+                                <div class="form-group">
+                                    <input type="number" class="form-cotrol text-center" id="attributeValue" min="0"
+                                        max="20" step="1" value="1">
+                                </div>
+                                <button id="applyClassId" class="btn btn-outline-secondary">Apply to
+                                    Selected</button>
                             <!-- </div> -->
                         </div>
-                        <!-- <br><br> -->
+                        <br><br>
                         <div class="control-group">
                             <h3>Drag & Drop Table Data</h3>
                             <button id="toggleDragDrop" class="btn btn-outline-primary w-100">Toggle Drag &
                                 Drop</button>
                         </div>
-                        <div class="control-group">
-                            <h3>Table Manipulation Tools</h3>
-                            <h5>Basic Operations</h5>
-                            <hr>
-                            <div class="button-controls">
-                                <button id="transposeTable"
-                                    class="transposeTable btn btn-outline-secondary w-100">Transpose
-                                    Table</button>
-                                <button id="toggleCrosshair"
-                                    class="toggleCrosshair btn btn-outline-secondary w-100">Toggle
-                                    Crosshair
-                                    Highlight</button>
-                                <button id="applyStyle" class="applyStyle btn btn-outline-secondary w-100">Apply
-                                    Style</button>
-                                <button class="textSplit btn btn-outline-secondary w-100">Text Split</button>
-                            </div>
-                            <h5>Cell/Row/Column Operations</h5>
-                            <hr>
-                            <div class="button-controls">
-                                <button id="addRow" class="addRow btn btn-outline-secondary w-50">Add Row</button>
-                                <button id="addColumn" class="addColumn btn btn-outline-secondary">Add
-                                    Column</button>
-                                <button id="addCell" class="addCell btn btn-outline-secondary">Add Cell</button>
-                                <button id="mergeCells" class="mergeCells btn btn-outline-secondary">Merge Selected
-                                    Cells</button>
-                                <h5>Delete Operations</h5>
+                        <button class="accordion active btn btn-secondary">Table Manipulation Tools</button>
+                        <!-- <div class="panel"> -->
+                            <div class="panel control-group">
+                                <!-- <h3>Table Manipulation Tools</h3> -->
+                                <h5>Basic Operations</h5>
                                 <hr>
-                                <button id="deleteCell" class="deleteCell btn btn-outline-danger w-50">Delete
-                                    Cell(s)</button>
-                                <button id="deleteRow" class="deleteRow btn btn-outline-danger w-45">Delete
-                                    Row(s)</button>
-                                <button id="deleteColumn" class="deleteColumn btn btn-outline-danger w-100">Delete
-                                    Column(s)</button>
+                                <div class="button-controls">
+                                    <button id="transposeTable"
+                                        class="transposeTable btn btn-outline-secondary w-100">Transpose
+                                        Table</button>
+                                    <button id="toggleCrosshair"
+                                        class="toggleCrosshair btn btn-outline-secondary w-100">Toggle
+                                        Crosshair
+                                        Highlight</button>
+                                    <button id="applyStyle" class="applyStyle btn btn-outline-secondary w-100">Apply
+                                        Style</button>
+                                    <button class="textSplit btn btn-outline-secondary w-100">Text Split</button>
+                                </div>
+                                <h5>Cell/Row/Column Operations</h5>
+                                <hr>
+                                <div class="button-controls">
+                                    <button id="addRow" class="addRow btn btn-outline-secondary w-50">Add Row</button>
+                                    <button id="addColumn" class="addColumn btn btn-outline-secondary">Add
+                                        Column</button>
+                                    <button id="addCell" class="addCell btn btn-outline-secondary">Add Cell</button>
+                                    <button id="mergeCells" class="mergeCells btn btn-outline-secondary">Merge Selected
+                                        Cells</button>
+                                    <h5>Delete Operations</h5>
+                                    <hr>
+                                    <button id="deleteCell" class="deleteCell btn btn-outline-danger w-50">Delete
+                                        Cell(s)</button>
+                                    <button id="deleteRow" class="deleteRow btn btn-outline-danger w-45">Delete
+                                        Row(s)</button>
+                                    <button id="deleteColumn" class="deleteColumn btn btn-outline-danger w-100">Delete
+                                        Column(s)</button>
+                                </div>
                             </div>
-                            <!-- </div> -->
-                        </div>
+                        <!-- </div> -->
                     </div>
                 </div>
             </div>
@@ -383,7 +390,7 @@
         </div>
     </div>
 
-    
+
 </body>
 
 </html>

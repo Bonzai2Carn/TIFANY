@@ -12,7 +12,7 @@ function generateTabs(tableHtml) {
     // const existingContent = $('#tableInput').val();
     // Create tabs container if it doesn't exist
     if ($('#tableContainer .panel').length === 0) {
-        $('#tableContainer').prepend('<button class="accordion"><b>Unit Size</b></button>' + '<div class="panel">');
+        $('#tableContainer').prepend('<button class="accordion active"><b>Table Heading</b></button>' + '<div class="panel">');
     }
 
     // Generate the tabs HTML

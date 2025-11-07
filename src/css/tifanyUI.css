@@ -91,10 +91,9 @@ body {
 .sidebar-container {
     display: flex;
     flex-direction: column;
-    /* justify-content: flex-start; */
     opacity: 0.8;
     border-radius: 5px;
-
+    word-wrap: break-word;
 }
 
 .sidebar {
@@ -169,7 +168,7 @@ body {
 
 .style-controls {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 6px;
     margin: 8px 0;
 }

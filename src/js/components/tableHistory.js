@@ -36,12 +36,14 @@ class TableHistoryManager {
 
         console.log(`History saved. Current index: ${this.currentIndex}, Total states: ${this.history.length}`);
         // $('.undoState').text(`States: ${this.currentIndex}`);
+        this.updateHistoryButtons();
     }
 
     undo() {
         if (this.canUndo()) {
             this.currentIndex--;
             console.log(`Undo to index: ${this.currentIndex}`);
+            this.updateHistoryButtons();
             return this.history[this.currentIndex];
         }
         console.log('Cannot undo - at beginning of history');
@@ -52,6 +54,7 @@ class TableHistoryManager {
         if (this.canRedo()) {
             this.currentIndex++;
             console.log(`Redo to index: ${this.currentIndex}`);
+            this.updateHistoryButtons();
             return this.history[this.currentIndex];
         }
         console.log('Cannot redo - at end of history');
@@ -59,17 +62,43 @@ class TableHistoryManager {
     }
 
     canUndo() {
-        return this.currentIndex > 0;
+        return this.currentIndex >= 0;
     }
 
     canRedo() {
-        return this.currentIndex < this.history.length - 1;
+        return this.currentIndex <= this.history.length - 1;
     }
 
     clear() {
         this.history = [];
         this.currentIndex = -1;
+        this.updateHistoryButtons();
         console.log('History cleared');
+    }
+
+    updateHistoryButtons() {
+        const undoCount = this.currentIndex;
+        const redoCount = this.history.length - this.currentIndex - 1;
+        
+        $('.undoState').text(`${undoCount} available`);
+        $('.redoState').text(`${redoCount} available`);
+        
+        // Enable/disable buttons
+        $('.undoHistory').prop('disabled', !this.canUndo());
+        $('.redoHistory').prop('disabled', !this.canRedo());
+        
+        // Update button appearance
+        if (this.canUndo()) {
+            $('.undoHistory').css('opacity', '1');
+        } else {
+            $('.undoHistory').css('opacity', '0.5');
+        }
+        
+        if (this.canRedo()) {
+            $('.redoHistory').css('opacity', '1');
+        } else {
+            $('.redoHistory').css('opacity', '0.5');
+        }
     }
 }
 
@@ -84,19 +113,19 @@ function performUndo() {
     const state = window.historyManager.undo();
     if (state) {
         window.historyManager.isRestoring = true;
-        
+
         $('#tableContainer').html(state);
         window.currentTable = $('#tableContainer table')[0];
-        
+
         if (typeof window.initializeAllFeatures === 'function') {
             window.initializeAllFeatures();
         }
         if (typeof window.setupTableInteraction === 'function') {
             window.setupTableInteraction();
         }
-        
+
         window.historyManager.isRestoring = false;
-        
+
         $.toast({
             heading: 'Undo',
             text: 'Action undone',
@@ -105,7 +134,7 @@ function performUndo() {
             position: 'top-right',
             hideAfter: 2000
         });
-        
+
         console.log('Undo performed successfully');
     } else {
         $.toast({
@@ -123,19 +152,19 @@ function performRedo() {
     const state = window.historyManager.redo();
     if (state) {
         window.historyManager.isRestoring = true;
-        
+
         $('#tableContainer').html(state);
         window.currentTable = $('#tableContainer table')[0];
-        
+
         if (typeof window.initializeAllFeatures === 'function') {
             window.initializeAllFeatures();
         }
         if (typeof window.setupTableInteraction === 'function') {
             window.setupTableInteraction();
         }
-        
+
         window.historyManager.isRestoring = false;
-        
+
         $.toast({
             heading: 'Redo',
             text: 'Action redone',
@@ -144,7 +173,7 @@ function performRedo() {
             position: 'top-right',
             hideAfter: 2000
         });
-        
+
         console.log('Redo performed successfully');
     } else {
         $.toast({
@@ -166,27 +195,27 @@ function saveCurrentState() {
     }
 }
 
-function updateHistoryButtons() {
-    const canUndo = window.historyManager.canUndo();
-    const canRedo = window.historyManager.canRedo();
+// function updateHistoryButtons() {
+//     const canUndo = window.historyManager.canUndo();
+//     const canRedo = window.historyManager.canRedo();
 
-    const undoCount = this.currentIndex;
-    const redoCount = this.history.length - this.currentIndex - 1;
-    
-    // $('.undoHistory').prop('disabled', !this.canUndo());
-    // $('.redoHistory').prop('disabled', !this.canRedo());
-    
-    // $('.undoHistory').prop('disabled', !canUndo);
-    // $('.redoHistory').prop('disabled', !canRedo);
-    
-    const statusText = `History: ${window.historyManager.currentIndex + 1}/${window.historyManager.history.length}`;
-    // $('.undoState').text(`${undoCount} available`);
-    // $('.redoState').text(`${redoCount} available`);
-    // $('.undoState').text(statusText);
-}
+//     const undoCount = this.currentIndex;
+//     const redoCount = this.history.length - this.currentIndex - 1;
 
-// Call this after every operation
-window.updateHistoryButtons = updateHistoryButtons;
+//     // $('.undoHistory').prop('disabled', !this.canUndo());
+//     // $('.redoHistory').prop('disabled', !this.canRedo());
+
+//     // $('.undoHistory').prop('disabled', !canUndo);
+//     // $('.redoHistory').prop('disabled', !canRedo);
+
+//     const statusText = `History: ${window.historyManager.currentIndex + 1}/${window.historyManager.history.length}`;
+//     // $('.undoState').text(`${undoCount} available`);
+//     // $('.redoState').text(`${redoCount} available`);
+//     // $('.undoState').text(statusText);
+// }
+
+// // Call this after every operation
+// window.updateHistoryButtons = updateHistoryButtons;
 
 // Modify saveCurrentState to update buttons
 function saveCurrentState() {
