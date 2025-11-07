@@ -90,7 +90,7 @@ function deleteCell() {
     });
 
     // Reinitialize features
-    window.initializeAllFeatures();
+    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
 
@@ -125,7 +125,7 @@ function deleteRows() {
     });
 
     // Reinitialize features
-    window.initializeAllFeatures();
+    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
 
@@ -172,7 +172,7 @@ function deleteColumns() {
     });
     
     // Reinitialize features
-    window.initializeAllFeatures();
+    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
 

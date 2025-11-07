@@ -86,7 +86,7 @@ function transposeTable() {
     $originalTable.replaceWith($transposedTable);
     currentTable = $transposedTable[0];
 
-    initializeAllFeatures();
+    // initializeAllFeatures();
     setupTableInteraction();
 }
 
@@ -268,7 +268,7 @@ function applyTextSplit() {
     $('#textSplitModal').modal('hide');
 
     // Reinitialize features for the new table
-    initializeAllFeatures();
+    // initializeAllFeatures();
     setupTableInteraction();
 };
 

@@ -36,7 +36,7 @@ function generateTabs(tableHtml) {
     // // Set the generated HTML in the textarea
     // $('#tableInput').val(finalContent);
 
-    initializeAllFeatures();
+    // initializeAllFeatures();
     setupTableInteraction();
     console.log(`Generated ${buttonIndex} tabs`);
     $.toast(`Generated ${buttonIndex} tabs`)
@@ -88,7 +88,7 @@ function generateCode() {
 
         $('#tableOutput').text(formattedHtml);
 
-        initializeAllFeatures();
+        // initializeAllFeatures();
         setupTableInteraction();
         console.log('HTML Generation Successful');
         console.log('Generated HTML Length:', formattedHtml.length);

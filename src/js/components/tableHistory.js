@@ -80,8 +80,12 @@ class TableHistoryManager {
         const undoCount = this.currentIndex;
         const redoCount = this.history.length - this.currentIndex - 1;
         
-        $('.undoState').text(`${undoCount} available`);
-        $('.redoState').text(`${redoCount} available`);
+        if (this.currentIndex != -1) {
+            $('.undoState').text(`${undoCount}`)
+        };
+        if(this.currentIndex == -1){
+            $('.redoState').text(`${redoCount}`)
+        };
         
         // Enable/disable buttons
         $('.undoHistory').prop('disabled', !this.canUndo());
