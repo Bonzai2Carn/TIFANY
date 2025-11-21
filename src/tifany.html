@@ -31,7 +31,7 @@
     <!-- Component Classes -->
     <script src="js/components/visualGridMapper.js"></script>
     <script src="js/components/tableHistory.js"></script>
-    <!-- component Features -->
+    <!-- Component Features -->
     <script src="js/features/applyClassID.js"></script>
     <script src="js/features/dragDrop.js"></script>
     <script src="js/features/generateFunctions.js"></script>
@@ -42,101 +42,145 @@
     <!-- TIFANY CSS ---- local CSS -->
     <link rel="stylesheet" href="css/tableEditor.css">
     <link rel="stylesheet" href="css/tifanyUI.css">
+    <link rel="stylesheet" href="../../../assets/css/portfolio.css">
+    <!-- Fonts -->
+    <link rel="stylesheet" href="assets/css/portfolio.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ceviche+One&family=Ga+Maamli&family=Gluten:wght@100..900&family=Gochi+Hand&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
-    <h1 class="text-center">Table Editor & Formatter</h1>
-    <div class="input-container control-group">
-        <h3>Input Table Data</h3>
-        <div class="form-group">
-            <label for="inputType">Input Format:</label>
-            <select class="form-control" id="inputType">
-                <option value="html">HTML</option>
-                <option value="ascii">ASCII</option>
-                <option value="csv">CSV/Spreadsheet</option>
-                <option value="text">Text</option>
-            </select>
+    <!-- Header -->
+    <header class="header">
+        <div class="dev-container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>
+                        <a href="../../../index.html#home">CANWORK<span class="logo-accent">STUDIOS</a></span>
+                    </h1>
+                </div>
+                <nav class="nav">
+                    <a href="#inputTableData" class="nav-link">Table Input</a>
+                    <a href="#tableViewer" class="nav-link">Table Viewer</a>
+                    <a href="#tableGenerator" class="nav-link">Table Generator</a>
+                </nav>
+                <nav class="nav">
+                    <a href="../../../index.html#projects" class="nav-link">Projects</a>
+                    <a href="../../../index.html#about" class="nav-link">About</a>
+                    <a href="../../../index.html#contact" class="nav-link">Contact</a>
+                    <a href="https://github.com/yourusername" target="_blank" class="nav-link">GitHub</a>
+                </nav>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="tableInput">Paste your table data:</label>
-            <textarea class="form-control" id="tableInput" rows="8"
-                placeholder="Paste your table data here..."></textarea>
-        </div>
-        <!-- Generate Tabs for Table  -->
-        <div class="form-group">
-            <h6>Generate Tabs</h6>
-            <hr>
-            <p><small>*Add how many tabs you want to generate for your table</small></p>
-            <label for="generateButton">Add Tabs</label>
-            <input type="number" class="text-center" id="buttonIndex" name="buttonIndex" min="1" max="100" value="1">
-            <!-- <button id="generateTabs" class="rounded btn-outline-primary">Generate</button> -->
-        </div>
-        <button id="parseInput" class="btn btn-primary">Parse Input</button>
+    </header>
+
+    <div class="hero">
+        <h1 class="text-center">Table Editor & Formatter</h1>
     </div>
-    <div class="container col-12">
-        <!-- Input Section -->
-        <div class="sidebar-container">
-            <div class="accordion side-accordion"></div>
-            <div class="panel">
-                <div class="instructions">
-                    <div class="sidebar">
-                        <div class="control-group">
-                            <h3>History</h3>
-                            <div class="style-controls">
-                                <button class="undoHistory btn" title="undo">&#9100; Undo • <span
-                                        class="undoState"></span></button>
-                                <button class="redoHistory btn" title="redo">&#10227; Redo • <span
-                                        class="redoState"></span></button>
+
+    <section id="inputTableData">
+        <div class="input-container control-group">
+            <h3>Input Table Data</h3>
+            <div class="form-group">
+                <label for="inputType">Input Format:</label>
+                <select class="form-control" id="inputType">
+                    <option value="html">HTML</option>
+                    <option value="ascii">ASCII</option>
+                    <option value="csv">CSV/Spreadsheet</option>
+                    <option value="text">Text</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tableInput">Paste your table data:</label>
+                <textarea class="form-control" id="tableInput" rows="8"
+                    placeholder="Paste your table data here..."></textarea>
+            </div>
+            <!-- Generate Tabs for Table  -->
+            <div class="form-group">
+                <h6>Generate Tabs</h6>
+                <hr>
+                <p><small>*Add how many tabs you want to generate for your table</small></p>
+                <label for="generateButton">Add Tabs</label>
+                <input type="number" class="text-center" id="buttonIndex" name="buttonIndex" min="1" max="100"
+                    value="1">
+                <!-- <button id="generateTabs" class="rounded btn-outline-primary">Generate</button> -->
+            </div>
+            <button id="parseInput" class="btn btn-primary">Parse Input</button>
+        </div>
+    </section>
+    <section id="tableViewer">
+        <div class="container">
+            <!-- Input Section -->
+            <div class="sidebar-container">
+                <div class="accordion side-accordion"></div>
+                <div class="panel">
+                    <div class="instructions">
+                        <div class="sidebar">
+                            <div class="control-group">
+                                <h3>History</h3>
+                                <div class="style-controls">
+                                    <button class="undoHistory btn" title="undo">&#9100; Undo • <span
+                                            class="undoState"></span></button>
+                                    <button class="redoHistory btn" title="redo">&#10227; Redo • <span
+                                            class="redoState"></span></button>
+                                </div>
                             </div>
-                        </div>
-                        <button class="accordion active btn btn-info">Table Instruction</button>
-                        <div class="panel panel-style">
-                            <h5><b><u>Shortcuts</u></b></h5>
-                            <p>
-                                <button class="p-1 m-0.5 rounded">Insert</button><span> Insert Cell</span>
-                                <button class="p-1 m-0.5 rounded">Delete</button><span> Delete Cell</span>
-                                <button class="p-1 m-0.5 rounded">Alt + Shift + W</button><span> Merge Cell</span>
-                                <button class="p-1 m-0.5 rounded">Alt + Shift + T</button><span> Text Split
-                                    Option</span>
-                            </p>
-                            <b>Cell Selection Methods:</b>
-                            <ol>
-                                <li><b>Single cell:</b> Click on any cell</li>
-                                <li><b>Multiple individual cells:</b> Hold Ctrl/Cmd and click on cells</li>
-                                <li><b>Range selection (drag):</b> Click on a cell and drag to another cell to
-                                    select a
-                                    rectangular range
-                                </li>
-                                <li><b>Range selection (Shift):</b> Click on a cell, then hold Shift and click on
-                                    another
-                                    cell
-                                    to select all cells in between</li>
-                                <li><b>Right-Click:</b> Right click on cell to show Edit Cell</li>
-                                <li><b>Double-click</b> Double click to edit a cell</li>
-                            </ol>
-                            <b>Built-In Class Names: </b>
-                            <ol>
-                                <li><b>accordion</b> | Creates an Accordion header for a panel</li>
-                                <li><b>accordion-header</b> | Element Type: Row - Row becomes accordion until closest or
-                                    next
-                                    accordion-header</li>
-                                <li><b>sp-$index</b> | sp- of any index of a column creates a toggle for the column</li>
-                            </ol>
-                            <b>Mobile Style</b>
-                            <ol>
-                                <li><b>highlighted</b> | Element Type: Cell - turns a table cell purple (add-gray to
-                                    highlighted to
-                                    change color to gray)</li>
-                                <li><b>sideways-face</b> | Element Type: Cell - Flips the text horizontal</li>
-                                <li><b>freeze-pane</b> | Element Type: Column/Row - Freezes a row or a Column</li>
-                            </ol>
-                            <p>After selecting cells, you can apply classnames or IDs to them.</p>
-                        </div>
-                        <br>
-                        <!-- Control Panel -->
-                        <button class="accordion active btn btn-primary">Styles & Classes/IDs</button>
-                        <div class="panel control-group">
-                            <!-- <div class="panel"> -->
+                            <button class="accordion active btn btn-info">Table Instruction</button>
+                            <div class="panel panel-style">
+                                <h5><b><u>Shortcuts</u></b></h5>
+                                <p>
+                                    <button class="p-1 m-0.5 rounded">Insert</button><span> Insert Cell</span>
+                                    <button class="p-1 m-0.5 rounded">Delete</button><span> Delete Cell</span>
+                                    <button class="p-1 m-0.5 rounded">Alt + Shift + W</button><span> Merge Cell</span>
+                                    <button class="p-1 m-0.5 rounded">Alt + Shift + T</button><span> Text Split
+                                        Option</span>
+                                </p>
+                                <b>Cell Selection Methods:</b>
+                                <ol>
+                                    <li><b>Single cell:</b> Click on any cell</li>
+                                    <li><b>Multiple individual cells:</b> Hold Ctrl/Cmd and click on cells</li>
+                                    <li><b>Range selection (drag):</b> Click on a cell and drag to another cell to
+                                        select a
+                                        rectangular range
+                                    </li>
+                                    <li><b>Range selection (Shift):</b> Click on a cell, then hold Shift and click on
+                                        another
+                                        cell
+                                        to select all cells in between</li>
+                                    <li><b>Right-Click:</b> Right click on cell to show Edit Cell</li>
+                                    <li><b>Double-click</b> Double click to edit a cell</li>
+                                </ol>
+                                <b>Built-In Class Names: </b>
+                                <ol>
+                                    <li><b>accordion</b> | Creates an Accordion header for a panel</li>
+                                    <li><b>accordion-header</b> | Element Type: Row - Row becomes accordion until
+                                        closest or
+                                        next
+                                        accordion-header</li>
+                                    <li><b>sp-$index</b> | sp- of any index of a column creates a toggle for the column
+                                    </li>
+                                </ol>
+                                <b>Mobile Style</b>
+                                <ol>
+                                    <li><b>highlighted</b> | Element Type: Cell - turns a table cell purple (add-gray to
+                                        highlighted to
+                                        change color to gray)</li>
+                                    <li><b>sideways-face</b> | Element Type: Cell - Flips the text horizontal</li>
+                                    <li><b>freeze-pane</b> | Element Type: Column/Row - Freezes a row or a Column</li>
+                                </ol>
+                                <p>After selecting cells, you can apply classnames or IDs to them.</p>
+                            </div>
+                            <br>
+                            <!-- Control Panel -->
+                            <button class="accordion active btn btn-primary">Styles & Classes/IDs</button>
+                            <div class="panel control-group">
+                                <!-- <div class="panel"> -->
                                 <div class="control-group">
                                     <label for="elementType">Element Type:</label>
                                     <select class="form-control" id="elementType">
@@ -160,6 +204,7 @@
                                 <div class="form-group tableStyle">
                                     <label for="styleInput">CSS Style</label>
                                     <select id="styleInput" class="w-100" name="styleInput">
+                                        <option value=""></option>
                                         <optgroup label="COLORS">
                                             <option value="background-color">BACKGROUND COLOR</option>
                                             <option value="color">TEXT COLOR</option>
@@ -208,15 +253,16 @@
                                 <div class="form-group">
                                     <label for="tableAttributeLabel">Attributes</label>
                                     <select id="tableAttribute" class="w-100" name="tableAttribute">
+                                        <option value=""></option>
                                         <optgroup label="ATTRIBUTES">
                                             <option value="colspan">COLSPAN</option>
                                             <option value="rowspan">ROWSPAN</option>
                                             <!-- <option value="table-layout">TABLE LAYOUT</option> -->
                                         </optgroup>
                                         <!-- <optgroup label="TYPOGRAPHY">
-                                        <option value="font-size">FONT SIZE</option>
-                                        <option value="font-weight">FONT WEIGHT</option>
-                                    </optgroup> -->
+                                            <option value="font-size">FONT SIZE</option>
+                                            <option value="font-weight">FONT WEIGHT</option>
+                                        </optgroup> -->
                                     </select>
                                 </div>
                                 <!-- <div class="style-controls"> -->
@@ -226,16 +272,16 @@
                                 </div>
                                 <button id="applyClassId" class="btn btn-outline-secondary">Apply to
                                     Selected</button>
-                            <!-- </div> -->
-                        </div>
-                        <br><br>
-                        <div class="control-group">
-                            <h3>Drag & Drop Table Data</h3>
-                            <button id="toggleDragDrop" class="btn btn-outline-primary w-100">Toggle Drag &
-                                Drop</button>
-                        </div>
-                        <button class="accordion active btn btn-primary">Table Manipulation Tools</button>
-                        <!-- <div class="panel"> -->
+                                <!-- </div> -->
+                            </div>
+                            <br><br>
+                            <div class="control-group">
+                                <h3>Drag & Drop Table Data</h3>
+                                <button id="toggleDragDrop" class="btn btn-outline-primary w-100">Toggle Drag &
+                                    Drop</button>
+                            </div>
+                            <button class="accordion active btn btn-primary">Table Manipulation Tools</button>
+                            <!-- <div class="panel"> -->
                             <div class="panel control-group">
                                 <!-- <h3>Table Manipulation Tools</h3> -->
                                 <h5>Basic Operations</h5>
@@ -271,31 +317,31 @@
                                         Column(s)</button>
                                 </div>
                             </div>
-                        <!-- </div> -->
+                            <!-- </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
-
-        </div>
-
-        <!-- Table Display Area -->
-        <div class="table-wrapper" contentEditable=true>
-            <p contentEditable=true data-text="Table View" class="text-center"></p>
-            <div class="table-container" id="tableContainer">
+            <!-- Table Display Area -->
+            <div class="table-wrapper" contentEditable=true>
+                <p contentEditable=true data-text="Table View" class="text-center"></p>
+                <div class="table-container" id="tableContainer">
+                </div>
             </div>
+            <!-- Output Section -->
         </div>
-
-        <!-- Output Section -->
-    </div>
-    <div class="output-section">
-        <h3>Generated Code</h3>
-        <button id="generateCode" class="btn btn-success mb-2">Generate Clean Code</button>
-        <textarea class="form-control" id="tableOutput" rows="8" placeholder="Paste your table data here...">
-    </textarea>
-        <br>
-        <button id="copyInput" class="btn btn-primary mb-2 float-right">Copy to Clipboard</button>
-        <!-- <pre id="tableOutput"></pre> -->
-    </div>
+    </section>
+    <section id="tableGenerator">
+        <div class="output-section">
+            <h3>Generated Code</h3>
+            <button id="generateCode" class="btn btn-success mb-2">Generate Clean Code</button>
+            <textarea class="form-control" id="tableOutput" rows="8"
+                placeholder="Paste your table data here..."></textarea>
+            <br>
+            <button id="copyInput" class="btn btn-primary mb-2 float-right">Copy to Clipboard</button>
+            <!-- <pre id="tableOutput"></pre> -->
+        </div>
+    </section>
 
     <!-- Cell Context Menu -->
     <div id="cellContextMenu" class="cell-controls">

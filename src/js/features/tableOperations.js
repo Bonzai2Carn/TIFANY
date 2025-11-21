@@ -30,7 +30,7 @@ function addCell() {
     });
     
     // Reinitialize features
-    window.initializeAllFeatures();
+    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
 
@@ -61,7 +61,7 @@ function addCellBefore() {
     });
     
     // Reinitialize features
-    window.initializeAllFeatures();
+    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
 

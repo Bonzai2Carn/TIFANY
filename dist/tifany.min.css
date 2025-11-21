@@ -1,0 +1,483 @@
+/*!
+ * TIFANY.css - Table Input Formatter and ANalYzer Styles
+ * Version: 2.0.0
+ * Author: Bonzai Carn
+ * License: MIT
+ * Repository: https://github.com/Bonzai2Carn/TIFANY
+ */
+
+/* ===============================================================================
+   1. BASE TABLE STYLES (.tablecoil class)
+   =============================================================================== */
+
+.tablecoil {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: separate;
+    border: 1px solid lightgrey;
+    text-align: center;
+    border-radius: 12px;
+    table-layout: auto;
+}
+
+.tablecoil tr:last-child,
+.tablecoil tr:last-child > td:last-child {
+    border-bottom-right-radius: 10px;
+}
+
+.tablecoil tr:last-child,
+.tablecoil tr:last-child > td:first-child {
+    border-bottom-left-radius: 10px;
+}
+
+.tablecoil tr:first-child,
+.tablecoil tr:first-child > th:first-child {
+    border-top-left-radius: 10px;
+}
+
+.tablecoil tr:first-child,
+.tablecoil tr:first-child > th:last-child {
+    border-top-right-radius: 10px;
+}
+
+.tablecoil td,
+.tablecoil th {
+    border: 1px solid lightgrey;
+    border-bottom: none;
+    border-right: none;
+    text-align: center;
+    padding: 8px;
+}
+
+.tablecoil td:hover {
+    background-color: rgb(119, 206, 230, 0.2);
+    font-weight: 800;
+}
+
+.tablecoil tr:hover td.active {
+    background-color: rgb(194, 232, 243, 0.3);
+}
+
+/* ===============================================================================
+   2. CROSSHAIR HIGHLIGHT STYLES (.crosshair-table class)
+   =============================================================================== */
+
+.crosshair-table .highlight-row {
+    background-color: rgba(166, 221, 236, 0.5);
+}
+
+.crosshair-table .highlight-col {
+    background-color: rgba(166, 221, 236, 0.5);
+}
+
+.crosshair-table .highlight-both {
+    background-color: rgba(99, 172, 192, 0.5);
+    font-weight: bold;
+}
+
+/* ===============================================================================
+   3. ACCORDION STYLES (.accordion class)
+   =============================================================================== */
+
+.accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: 1px solid white;
+    text-align: center;
+    outline: none;
+    font-size: 15px;
+    transition: 0.6s;
+    border-radius: 5px;
+}
+
+.accordion.active {
+    background-color: #ccc;
+    transition: 0.6s;
+}
+
+.accordion::after {
+    content: " \25BD";
+}
+
+.accordion.active::after {
+    content: ' \25B3';
+}
+
+.accordion:hover,
+.accordion:focus {
+    background-color: #ddd;
+}
+
+/* ===============================================================================
+   4. PANEL STYLES (.panel class)
+   =============================================================================== */
+
+.panel {
+    display: none;
+    overflow: auto;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 5px 5px;
+}
+
+.panel.show {
+    display: block;
+}
+
+/* ===============================================================================
+   5. ACCORDION HEADER STYLES (.accordion-header class - for table rows)
+   =============================================================================== */
+
+tr.accordion-header > td,
+tr.accordion-header > th {
+    background-color: rgb(239, 239, 239);
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+tr.accordion-header.actives > td,
+tr.accordion-header.actives > th {
+    background-color: #e6f0ff;
+    text-align: center;
+    color: #000000;
+    box-sizing: border-box !important;
+}
+
+tr.accordion-header:hover > td,
+tr.accordion-header:hover > th {
+    background-color: #d4e4f7;
+}
+
+/* ===============================================================================
+   6. SP-SELECTOR STYLES (Column Visibility Toggle)
+   =============================================================================== */
+
+/* Hide all sp-* columns by default */
+[class^="sp-"],
+[class*=" sp-"] {
+    display: none;
+}
+
+/* Show active column */
+[class^="sp-"].active,
+[class*=" sp-"].active {
+    display: table-cell;
+    background-color: #ffffff;
+    color: #212121;
+}
+
+/* SP-Selector container */
+.sp-selector {
+    padding: 12px;
+    border-radius: 12px;
+    background-color: rgb(119, 206, 230, 0.2);
+    display: flex;
+    width: 95%;
+    flex-wrap: wrap;
+    border-radius: 10px;
+    justify-content: flex-start;
+    gap: 5px;
+}
+
+/* SP-Selector buttons */
+.sp-option {
+    border: none;
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 5px;
+    font-weight: 500;
+}
+
+.sp-option:hover {
+    background-color: #d0d0d0;
+}
+
+.sp-option.active {
+    background-color: rgb(121, 166, 210);
+    color: white;
+    font-weight: 600;
+}
+
+/* ===============================================================================
+   7. HIGHLIGHTED CELLS (Custom highlighting)
+   =============================================================================== */
+
+.highlighted {
+    background-color: #CCCCFF !important;
+}
+
+.highlighted-gray {
+    background-color: lightgray !important;
+}
+
+/* ===============================================================================
+   8. SELECTION STYLES
+   =============================================================================== */
+
+.selected-cell {
+    border: 4px solid rgba(7, 2, 77, 0.3) !important;
+    box-shadow: 0 0 10px rgba(7, 2, 77, 0.2);
+}
+
+/* ===============================================================================
+   9. RESPONSIVE / MOBILE STYLES
+   =============================================================================== */
+
+@media (max-width: 767px) {
+    .tablecoil td,
+    .tablecoil th {
+        font-size: 0.8rem;
+        word-wrap: break-word;
+        padding: 6px;
+    }
+
+    .freeze-pane {
+        position: sticky;
+        left: 0;
+        background-color: aliceblue;
+        z-index: 10;
+    }
+
+    .sideways-face {
+        writing-mode: sideways-lr;
+    }
+}
+
+/* ===============================================================================
+   10. UTILITY CLASSES
+   =============================================================================== */
+
+/* For frozen columns/rows */
+.freeze-pane {
+    position: sticky;
+    background-color: aliceblue;
+    z-index: 10;
+}
+
+/* For rotated text */
+.sideways-face {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+}
+
+/* Static row style */
+.static-row td,
+.static-row th {
+    border-top: 1px solid lightgrey;
+    text-align: left;
+}
+
+/* ===============================================================================
+   11. ANIMATIONS
+   =============================================================================== */
+
+@keyframes tifany-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes tifany-slide-down {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 500px;
+        opacity: 1;
+    }
+}
+
+.panel {
+    animation: tifany-fade-in 0.3s ease-in-out;
+}
+
+/* Hover animation for accordion */
+@keyframes hvr-bob {
+    0% {
+        transform: translateY(-6px);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+    100% {
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes hvr-bob-float {
+    0% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(-6px);
+    }
+}
+
+.accordion:hover::after,
+.accordion:focus::after,
+.accordion:active::after {
+    animation-name: hvr-bob-float, hvr-bob;
+    animation-duration: .3s, 1.5s;
+    animation-delay: 0s, .3s;
+    animation-timing-function: ease-out, ease-in-out;
+    animation-iteration-count: 1, infinite;
+    animation-fill-mode: forwards;
+    animation-direction: normal, alternate;
+}
+
+/* ===============================================================================
+   12. DRAG & DROP STYLES (Optional feature)
+   =============================================================================== */
+
+.dragging,
+.row-dragging > td,
+.row-dragging > th,
+.column-dragging {
+    opacity: 0.5;
+    background-color: #aae !important;
+    border: 1px dashed #337ab7;
+}
+
+.drag-over {
+    background-color: #dff0d8 !important;
+    outline: 2px solid #5cb85c;
+}
+
+.drag-handle {
+    cursor: move;
+    user-select: none;
+    text-align: center;
+    font-weight: bold;
+    color: #999;
+    background-color: #f0f0f0;
+}
+
+.row-handle {
+    width: 20px;
+}
+
+.col-handle {
+    height: 25px;
+    background-color: rgba(116, 162, 248, 0.562);
+    color: white;
+}
+
+/* Drop indicators */
+.drop-indicator-row td {
+    height: 5px;
+    background-color: #337ab7;
+    padding: 0;
+    border: none;
+    line-height: 0;
+}
+
+.drop-indicator-col {
+    width: 1px;
+    background-color: #3379b715;
+    padding: 0;
+    border: none;
+}
+
+/* ===============================================================================
+   13. PRINT STYLES
+   =============================================================================== */
+
+@media print {
+    .tablecoil {
+        border-collapse: collapse;
+    }
+
+    .accordion,
+    .sp-selector,
+    .drag-handle {
+        display: none;
+    }
+
+    .crosshair-table .highlight-row,
+    .crosshair-table .highlight-col {
+        background-color: transparent;
+    }
+
+    [class^="sp-"].active,
+    [class*=" sp-"].active {
+        display: table-cell !important;
+    }
+}
+
+/* ===============================================================================
+   14. THEME VARIANTS (Optional)
+   =============================================================================== */
+
+/* Dark theme for tables */
+.tablecoil.dark-theme {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border-color: #444;
+}
+
+.tablecoil.dark-theme td,
+.tablecoil.dark-theme th {
+    border-color: #444;
+}
+
+.tablecoil.dark-theme td:hover {
+    background-color: rgba(119, 206, 230, 0.3);
+}
+
+/* Minimal theme */
+.tablecoil.minimal {
+    border: none;
+    border-radius: 0;
+}
+
+.tablecoil.minimal td,
+.tablecoil.minimal th {
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* ===============================================================================
+   15. ACCESSIBILITY
+   =============================================================================== */
+
+.tablecoil:focus-within {
+    outline: 2px solid #4A90E2;
+    outline-offset: 2px;
+}
+
+.accordion:focus,
+.sp-option:focus,
+.accordion-header:focus {
+    outline: 2px solid #4A90E2;
+    outline-offset: -2px;
+}
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/*!
+ * End of TIFANY.css
+ */

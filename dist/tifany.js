@@ -380,6 +380,10 @@ $(function () {
                 showCellOptions(e.currentTarget);
             });
 
+            // button.addEventListener('mouseleave', () => {
+            //     hideCellOptions();
+            // });
+
             cellOptions.addEventListener('mouseenter', () => {
                 if (hideTimeout) {
                     clearTimeout(hideTimeout);
@@ -392,6 +396,113 @@ $(function () {
             });
         });
     });
+
+    // toolboxButtons.forEach(selector => {
+    //     const button = document.querySelector(selector);
+    //     const cellOptions = document.querySelector('.cell-options');
+
+    //     // Create Popper instance variable
+    //     let popperInstance = null;
+
+    //     // Function to show and set up the cell options
+    //     const showCellOptions = (triggerElement) => {
+    //         // Ensure cell options are visible
+    //         cellOptions.style.display = 'block';
+
+    //         // Create Popper instance using the global Popper object
+    //         popperInstance = new Popper(triggerElement, cellOptions, {
+    //             placement: 'top',
+    //             // modifiers: {
+    //             //     offset: {
+    //             //         enabled: true,
+    //             //         offset: '0,10' // 10px vertical offset
+    //             //     },
+    //             //     preventOverflow: {
+    //             //         enabled: true,
+    //             //         boundariesElement: 'viewport',
+    //             //         padding: 10
+    //             //     }
+    //             // }
+    //         });
+
+    //         // Set up click handlers based on the selector
+    //         const beforeCell = cellOptions.querySelector('.beforeCell');
+    //         const afterCell = cellOptions.querySelector('.afterCell');
+
+    //         // Remove previous event listeners to prevent multiple bindings
+    //         beforeCell.onclick = null;
+    //         afterCell.onclick = null;
+
+    //         // Add new event listeners based on the current selector
+    //         switch (selector) {
+    //             case '.addCell':
+    //                 beforeCell.onclick = () => {
+    //                     addCellBefore();
+    //                     hideCellOptions();
+    //                 };
+    //                 afterCell.onclick = () => {
+    //                     addCell();
+    //                     console.log("Cell added");
+    //                     hideCellOptions();
+    //                 };
+    //                 break;
+    //             case '.addRow':
+    //                 beforeCell.onclick = () => {
+    //                     addRowBefore();
+    //                     hideCellOptions();
+    //                 };
+    //                 afterCell.onclick = () => {
+    //                     addRow();
+    //                     console.log("Row added");
+    //                     hideCellOptions();
+    //                 };
+    //                 break;
+    //             case '.addColumn':
+    //                 beforeCell.onclick = () => {
+    //                     addColumnBefore();
+    //                     console.log("Column added before");
+    //                     hideCellOptions();
+    //                 };
+    //                 afterCell.onclick = () => {
+    //                     addColumn();
+    //                     console.log("Column added");
+    //                     hideCellOptions();
+    //                 };
+    //                 break;
+    //             default:
+    //                 console.log("That didn't work but hey");
+    //         }
+    //     };
+
+    //     // hide cell options
+    //     const hideCellOptions = () => {
+    //         if (popperInstance) {
+    //             popperInstance.destroy();
+    //             popperInstance = null;
+    //         }
+    //         cellOptions.style.display = 'none';
+    //     };
+
+    //     // Add event listeners
+    //     button.addEventListener('mouseenter', (e) => {
+    //         console.log(`${selector} button hovered`);
+    //         showCellOptions(e.currentTarget);
+    //     });
+
+    //     // button.addEventListener('mouseleave', () => {
+    //     //     // Add a small delay to allow interaction with cell options
+    //     //     setTimeout(hideCellOptions, 500);
+    //     // });
+
+    //     // Prevent hiding if mouse is over cell options
+    //     cellOptions.addEventListener('mouseenter', () => {
+    //         if (popperInstance) {
+    //             popperInstance.update();
+    //         }
+    //     });
+
+    //     cellOptions.addEventListener('mouseleave', hideCellOptions);
+    // });
 
     // =================== EVENT HANDLERS ===================
     $('#generateTabs').on('click', function () {
@@ -456,7 +567,14 @@ $(function () {
         if (typeof applyStyle === 'function') applyStyle();
     });
 
-    // Table Operations - Delete Operations
+    $('.addCell').on('click', function () {
+        if (window.selectedCells.length !== 1) {
+            alert('Please select exactly one cell to add a new cell next to.');
+            return;
+        }
+        if (typeof addCell === 'function') addCell();
+    });
+
     $('.deleteCell').on('click', function () {
         if (window.selectedCells.length === 0) {
             alert('Please select at least one cell to delete.');
