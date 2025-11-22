@@ -9,6 +9,7 @@
     <!-- Bootstrap and jQuery -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <!-- JQuery Plugins -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.css"
         integrity="sha512-8D+M+7Y6jVsEa7RD6Kv/Z7EImSpNpQllgaEIQAtqHcI0H6F4iZknRj0Nx1DCdB+TwBaS+702BGWYC0Ze2hpExQ=="
@@ -31,6 +32,7 @@
     <!-- Component Classes -->
     <script src="js/components/visualGridMapper.js"></script>
     <script src="js/components/tableHistory.js"></script>
+    <script src="../../../assets/js/portfolio.js"></script>
     <!-- Component Features -->
     <script src="js/features/applyClassID.js"></script>
     <script src="js/features/dragDrop.js"></script>
@@ -44,7 +46,6 @@
     <link rel="stylesheet" href="css/tifanyUI.css">
     <link rel="stylesheet" href="../../../assets/css/portfolio.css">
     <!-- Fonts -->
-    <link rel="stylesheet" href="assets/css/portfolio.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -69,12 +70,6 @@
                     <a href="#inputTableData" class="nav-link">Table Input</a>
                     <a href="#tableViewer" class="nav-link">Table Viewer</a>
                     <a href="#tableGenerator" class="nav-link">Table Generator</a>
-                </nav>
-                <nav class="nav">
-                    <a href="../../../index.html#projects" class="nav-link">Projects</a>
-                    <a href="../../../index.html#about" class="nav-link">About</a>
-                    <a href="../../../index.html#contact" class="nav-link">Contact</a>
-                    <a href="https://github.com/yourusername" target="_blank" class="nav-link">GitHub</a>
                 </nav>
             </div>
         </div>
@@ -107,8 +102,7 @@
                 <hr>
                 <p><small>*Add how many tabs you want to generate for your table</small></p>
                 <label for="generateButton">Add Tabs</label>
-                <input type="number" class="text-center" id="buttonIndex" name="buttonIndex" min="1" max="100"
-                    value="1">
+                <input type="number" class="text-center" id="buttonIndex" name="buttonIndex" min="1" max="100">
                 <!-- <button id="generateTabs" class="rounded btn-outline-primary">Generate</button> -->
             </div>
             <button id="parseInput" class="btn btn-primary">Parse Input</button>
@@ -322,6 +316,69 @@
                     </div>
                 </div>
             </div>
+            <section id="tableViewer-mb">
+                <div class="toolbar-container">
+                    <div class="toolbar-group" data-group="history">
+                        <button class="toolbar-btn undoHistory" title="Undo">
+                            <i class="fas fa-undo"></i>
+                            <span class="nav-link">Undo</span>
+                        </button>
+                        <button class="toolbar-btn redoHistory" title="Redo">
+                            <i class="fas fa-redo"></i>
+                            <span class="nav-link">Redo</span>
+                        </button>
+                    </div>
+
+                    <div class="toolbar-group" data-group="table-operations">
+                        <button class="toolbar-btn addRow" title="Add Row">
+                            <i class="fas fa-plus-square"></i>
+                            <span class="nav-link">Add Row</span>
+                        </button>
+                        <button class="toolbar-btn addColumn" title="Add Column">
+                            <i class="fas fa-columns"></i>
+                            <span class="nav-link">Add Column</span>
+                        </button>
+                        <button class="toolbar-btn deleteRow" title="Delete Row">
+                            <i class="fas fa-minus-square"></i>
+                            <span class="nav-link">Delete Row</span>
+                        </button>
+                        <button class="toolbar-btn deleteColumn" title="Delete Column">
+                            <i class="fas fa-ban"></i>
+                            <span class="nav-link">Delete Column</span>
+                        </button>
+                    </div>
+
+                    <div class="toolbar-group" data-group="cell-operations">
+                        <button class="toolbar-btn mergeCells" title="Merge Cells">
+                            <i class="fas fa-compress"></i>
+                            <span class="nav-link">Merge Cells</span>
+                        </button>
+                        <button class="toolbar-btn addCell" title="Add Cell">
+                            <i class="fas fa-plus-circle"></i>
+                            <span class="nav-link">Add Cell</span>
+                        </button>
+                        <button class="toolbar-btn deleteCell" title="Delete Cell">
+                            <i class="fas fa-trash"></i>
+                            <span class="nav-link">Delete Cell</span>
+                        </button>
+                    </div>
+
+                    <div class="toolbar-group" data-group="table-tools">
+                        <button class="toolbar-btn transposeTable" title="Transpose Table">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span class="nav-link">Transpose</span>
+                        </button>
+                        <button class="toolbar-btn toggleCrosshair" title="Toggle Crosshair">
+                            <i class="fas fa-crosshairs"></i>
+                            <span class="nav-link">Crosshair</span>
+                        </button>
+                        <button class="toolbar-btn textSplit" title="Text Split">
+                            <i class="fas fa-cut"></i>
+                            <span class="nav-link">Split Text</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
             <!-- Table Display Area -->
             <div class="table-wrapper" contentEditable=true>
                 <p contentEditable=true data-text="Table View" class="text-center"></p>
@@ -331,6 +388,8 @@
             <!-- Output Section -->
         </div>
     </section>
+    <!-- Mobile View -->
+
     <section id="tableGenerator">
         <div class="output-section">
             <h3>Generated Code</h3>
