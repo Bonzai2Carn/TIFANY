@@ -10,9 +10,40 @@ TIFANY is a small single-page web application composed of HTML, CSS, and JavaScr
 
 ## File structure
 
-- tifany.html  — Main HTML page / UI
-- tifany.css   — Styles for the application
-- tifany.js    — Client-side JavaScript logic
+tifany/
+├── src/
+│   ├── js/
+│   │   ├── core/
+│   │   │   └── tifany.js          # Main initialization
+│   │   │   
+│   │   ├── features/
+│   │   │   ├── applyClassID.js
+│   │   │   ├── dragDrop.js
+│   │   │   ├── generateFunctions.js
+│   │   │   ├── parseInputs.js
+|   |   |   ├── tableManipulation.js   
+│   │   │   └── tifanyTabs.js
+│   │   ├── components/
+│   │   │   ├── tableHistory.js
+│   │   │   └── visualGridMapper.js
+│   │   └── tifany.js                  # Main entry point
+│   ├── css/
+│   │   ├── tifanyUI.css
+│   │   └── tifany.css                 # Main stylesheet
+│   └── tifany.html                        # Bundle entry
+├── dist/                               # Built files (generated)
+├── examples/
+│   ├── basic.html
+│   ├── advanced.html
+│   └── cdn-usage.html
+├── docs/
+│   └── API.md
+├── tests/
+├── package.json
+├── webpack.config.js
+├── .gitignore
+├── README.md
+└── LICENSE
 
 ## Getting started
 
