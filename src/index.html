@@ -113,20 +113,20 @@
         <div class="container">
             <!-- Input Section -->
             <div class="sidebar-container">
-                <div class="accordion side-accordion"></div>
+                <div class="accordion side-accordion ha-100"></div>
                 <div class="panel">
                     <div class="instructions">
                         <div class="sidebar">
                             <div class="control-group">
                                 <h3>History</h3>
                                 <div class="style-controls">
-                                    <button class="undoHistory btn" title="undo">&#9100; Undo • <span
+                                    <button class="undoHistory btn toolbar-btn" title="undo">&#9100; Undo • <span
                                             class="undoState"></span></button>
-                                    <button class="redoHistory btn" title="redo">&#10227; Redo • <span
+                                    <button class="redoHistory btn toolbar-btn" title="redo">&#10227; Redo • <span
                                             class="redoState"></span></button>
                                 </div>
                             </div>
-                            <button class="accordion active btn btn-info">Table Instruction</button>
+                            <button class="accordion active btn btn-outline-info">Table Instruction</button>
                             <div class="panel panel-style">
                                 <h5><b><u>Shortcuts</u></b></h5>
                                 <p>
@@ -173,7 +173,7 @@
                             </div>
                             <br>
                             <!-- Control Panel -->
-                            <button class="accordion active btn btn-primary">Styles & Classes/IDs</button>
+                            <button class="accordion active btn btn-outline-primary">Styles & Classes/IDs</button>
                             <div class="panel control-group">
                                 <!-- <div class="panel"> -->
                                 <div class="control-group">
@@ -275,7 +275,7 @@
                                 <button id="toggleDragDrop" class="btn btn-outline-primary w-100">Toggle Drag &
                                     Drop</button>
                             </div>
-                            <button class="accordion active btn btn-primary">Table Manipulation Tools</button>
+                            <button class="accordion active btn btn-outline-primary">Table Manipulation Tools</button>
                             <!-- <div class="panel"> -->
                             <div class="panel control-group">
                                 <!-- <h3>Table Manipulation Tools</h3> -->
@@ -283,24 +283,24 @@
                                 <hr>
                                 <div class="button-controls">
                                     <button id="transposeTable"
-                                        class="transposeTable btn btn-outline-secondary w-100">Transpose
+                                        class="transposeTable btn toolbar-btn w-100">Transpose
                                         Table</button>
                                     <button id="toggleCrosshair"
-                                        class="toggleCrosshair btn btn-outline-secondary w-100">Toggle
+                                        class="toggleCrosshair btn toolbar-btn w-100">Toggle
                                         Crosshair
                                         Highlight</button>
-                                    <button id="applyStyle" class="applyStyle btn btn-outline-secondary w-100">Apply
+                                    <button id="applyStyle" class="applyStyle btn toolbar-btn w-100">Apply
                                         Style</button>
-                                    <button class="textSplit btn btn-outline-secondary w-100">Text Split</button>
+                                    <button class="textSplit btn toolbar-btn w-100">Text Split</button>
                                 </div>
                                 <h5>Cell/Row/Column Operations</h5>
                                 <hr>
                                 <div class="button-controls">
-                                    <button id="addRow" class="addRow btn btn-outline-secondary w-50">Add Row</button>
-                                    <button id="addColumn" class="addColumn btn btn-outline-secondary">Add
+                                    <button id="addRow" class="addRow btn toolbar-btn w-50">Add Row</button>
+                                    <button id="addColumn" class="addColumn btn toolbar-btn">Add
                                         Column</button>
-                                    <button id="addCell" class="addCell btn btn-outline-secondary">Add Cell</button>
-                                    <button id="mergeCells" class="mergeCells btn btn-outline-secondary">Merge Selected
+                                    <button id="addCell" class="addCell btn toolbar-btn">Add Cell</button>
+                                    <button id="mergeCells" class="mergeCells btn toolbar-btn">Merge Selected
                                         Cells</button>
                                     <h5>Delete Operations</h5>
                                     <hr>
@@ -322,66 +322,67 @@
                     <div class="toolbar-group" data-group="history">
                         <button class="toolbar-btn undoHistory" title="Undo">
                             <i class="fas fa-undo"></i>
-                            <span class="nav-link">Undo</span>
+                            <span>Undo</span>
                         </button>
                         <button class="toolbar-btn redoHistory" title="Redo">
                             <i class="fas fa-redo"></i>
-                            <span class="nav-link">Redo</span>
+                            <span>Redo</span>
                         </button>
                     </div>
 
                     <div class="toolbar-group" data-group="table-operations">
                         <button class="toolbar-btn addRow" title="Add Row">
                             <i class="fas fa-plus-square"></i>
-                            <span class="nav-link">Add Row</span>
+                            <span>Add Row</span>
                         </button>
                         <button class="toolbar-btn addColumn" title="Add Column">
                             <i class="fas fa-columns"></i>
-                            <span class="nav-link">Add Column</span>
+                            <span>Add Column</span>
                         </button>
                         <button class="toolbar-btn deleteRow" title="Delete Row">
                             <i class="fas fa-minus-square"></i>
-                            <span class="nav-link">Delete Row</span>
+                            <span>Delete Row</span>
                         </button>
                         <button class="toolbar-btn deleteColumn" title="Delete Column">
                             <i class="fas fa-ban"></i>
-                            <span class="nav-link">Delete Column</span>
+                            <span>Delete Column</span>
                         </button>
                     </div>
 
                     <div class="toolbar-group" data-group="cell-operations">
                         <button class="toolbar-btn mergeCells" title="Merge Cells">
                             <i class="fas fa-compress"></i>
-                            <span class="nav-link">Merge Cells</span>
+                            <span>Merge Cells</span>
                         </button>
                         <button class="toolbar-btn addCell" title="Add Cell">
                             <i class="fas fa-plus-circle"></i>
-                            <span class="nav-link">Add Cell</span>
+                            <span>Add Cell</span>
                         </button>
                         <button class="toolbar-btn deleteCell" title="Delete Cell">
                             <i class="fas fa-trash"></i>
-                            <span class="nav-link">Delete Cell</span>
+                            <span>Delete Cell</span>
                         </button>
                     </div>
 
                     <div class="toolbar-group" data-group="table-tools">
                         <button class="toolbar-btn transposeTable" title="Transpose Table">
                             <i class="fas fa-exchange-alt"></i>
-                            <span class="nav-link">Transpose</span>
+                            <span>Transpose</span>
                         </button>
                         <button class="toolbar-btn toggleCrosshair" title="Toggle Crosshair">
                             <i class="fas fa-crosshairs"></i>
-                            <span class="nav-link">Crosshair</span>
+                            <span>Crosshair</span>
                         </button>
                         <button class="toolbar-btn textSplit" title="Text Split">
                             <i class="fas fa-cut"></i>
-                            <span class="nav-link">Split Text</span>
+                            <span>Split Text</span>
                         </button>
                     </div>
                 </div>
+                
             </section>
             <!-- Table Display Area -->
-            <div class="table-wrapper col-sm-12" contentEditable=true>
+            <div class="table-wrapper" contentEditable=true>
                 <p contentEditable=true data-text="Table View" class="text-center"></p>
                 <div class="table-container" id="tableContainer">
                 </div>
