@@ -1,19 +1,381 @@
+/* ===========================
+   TIFANY UI — 3-Panel Layout
+   =========================== */
+
+/* CSS Custom Properties — Light (default) */
+:root {
+    --t-primary: #1a73e8;
+    --t-primary-dark: #1557b0;
+    --t-bg-surface: #ffffff;
+    --t-bg-workspace: #f8f9fa;
+    --t-bg-input: #ffffff;
+    --t-border: #e5e7eb;
+    --t-text: #111827;
+    --t-text-muted: #6b7280;
+    --t-text-light: #9ca3af;
+    --t-section-header: #1a73e8;
+    --t-hover-bg: rgba(26, 115, 232, 0.07);
+    --t-active-bg: rgba(26, 115, 232, 0.12);
+    --t-toolbar-bg: #f0f4ff;
+    --t-toolbar-border: rgba(79, 172, 254, 0.4);
+    --t-header-height: 52px;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+    --t-bg-surface: #252526;
+    --t-bg-workspace: #1e1e1e;
+    --t-bg-input: #2d2d30;
+    --t-border: #3e3e42;
+    --t-text: #d4d4d4;
+    --t-text-muted: #9d9d9d;
+    --t-text-light: #6a6a6a;
+    --t-hover-bg: rgba(255, 255, 255, 0.06);
+    --t-active-bg: rgba(255, 255, 255, 0.1);
+    --t-toolbar-bg: rgba(79, 172, 254, 0.15);
+    --t-toolbar-border: rgba(79, 172, 254, 0.3);
+}
+
+/* ===========================
+   RESET (scoped to TIFANY)
+   =========================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html,
-body {
-    margin: 0;
-    padding: 0;
+html, body {
     height: 100%;
     overflow-x: hidden;
-    /* background-color: rgba(161, 191, 224, 0.386) !important; */
-    /* Prevents horizontal scrollbar if needed */
 }
 
+body {
+    background-color: var(--t-bg-workspace);
+    color: var(--t-text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ===========================
+   TIFANY HEADER
+   =========================== */
+.tifany-header {
+    height: var(--t-header-height);
+    background: var(--t-bg-surface);
+    border-bottom: 1px solid var(--t-border);
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+}
+
+.tifany-header .logo {
+    flex-shrink: 0;
+}
+
+.tifany-header .logo h1 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+.tifany-header .nav {
+    flex: 1;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+
+.tifany-header .nav-link {
+    font-size: 13px;
+    color: var(--t-text-muted);
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: all 150ms ease;
+}
+
+.tifany-header .nav-link:hover {
+    color: var(--t-text);
+    background: var(--t-hover-bg);
+}
+
+/* Theme toggle button */
+.theme-toggle-btn {
+    background: none;
+    border: 1px solid var(--t-border);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--t-text-muted);
+    font-size: 14px;
+    transition: all 150ms ease;
+    flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--t-hover-bg);
+    color: var(--t-text);
+}
+
+/* ===========================
+   3-PANEL APP LAYOUT
+   =========================== */
+.tifany-app {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - var(--t-header-height));
+    overflow: hidden;
+}
+
+/* --- Icon nav rail --- */
+.sidebar-nav-rail {
+    width: 48px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid var(--t-border);
+    background: var(--t-bg-surface);
+    padding: 8px 0;
+    gap: 4px;
+}
+
+.sidebar-nav-rail a,
+.sidebar-nav-rail button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: var(--t-text-muted);
+    text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: all 150ms ease;
+}
+
+.sidebar-nav-rail a:hover,
+.sidebar-nav-rail button:hover {
+    background: var(--t-hover-bg);
+    color: var(--t-primary);
+}
+
+.sidebar-nav-rail a.active {
+    color: var(--t-primary);
+    background: var(--t-active-bg);
+}
+
+/* --- Left panel --- */
+.tifany-left-panel {
+    width: 264px;
+    min-width: 200px;
+    overflow-y: auto;
+    border-right: 1px solid var(--t-border);
+    background: var(--t-bg-surface);
+    flex-shrink: 0;
+}
+
+/* --- Center panel --- */
+.tifany-center-panel {
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
+    background: var(--t-bg-workspace);
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Right panel --- */
+.tifany-right-panel {
+    width: 300px;
+    min-width: 220px;
+    overflow-y: auto;
+    border-left: 1px solid var(--t-border);
+    background: var(--t-bg-surface);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===========================
+   LEFT PANEL SECTIONS
+   =========================== */
+.left-section-header {
+    color: var(--t-section-header);
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 10px 12px 6px;
+    border-bottom: 1px solid var(--t-border);
+    user-select: none;
+}
+
+.left-section-body {
+    padding: 8px 12px 10px;
+    border-bottom: 1px solid var(--t-border);
+}
+
+/* ===========================
+   RIGHT PANEL SECTIONS (collapsible)
+   =========================== */
+.right-section {
+    border-bottom: 1px solid var(--t-border);
+}
+
+.right-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    color: var(--t-section-header);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    background: var(--t-bg-surface);
+    transition: background 150ms ease;
+}
+
+.right-section-header:hover {
+    background: var(--t-hover-bg);
+}
+
+.right-section-chevron {
+    font-size: 10px;
+    color: var(--t-text-muted);
+    transition: transform 150ms ease;
+}
+
+.right-section-body {
+    padding: 10px 14px 12px;
+    background: var(--t-bg-surface);
+}
+
+.right-section-body.collapsed {
+    display: none;
+}
+
+/* Monaco editor container */
+#monaco-editor-container {
+    height: 280px;
+    min-height: 180px;
+    border: 1px solid var(--t-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+/* Generate actions row */
+.generate-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+/* ===========================
+   CENTER — TABLE WRAPPER
+   =========================== */
+.center-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--t-text-muted);
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--t-border);
+    background: var(--t-bg-surface);
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.center-pos {
+    font-size: 11px;
+    color: var(--t-text-light);
+}
+
+.table-wrapper {
+    background-color: var(--t-bg-workspace);
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    overflow: auto;
+    padding: 16px;
+    min-height: 200px;
+}
+
+/* ===========================
+   MOBILE TOOLBAR (shown only on mobile)
+   =========================== */
+#tableViewer-mb {
+    display: none;
+}
+
+.toolbar-container {
+    display: flex;
+    background-color: var(--t-bg-surface);
+    border-bottom: 1px solid var(--t-border);
+    padding: 6px 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 4px;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-right: 8px;
+    margin-right: 4px;
+    border-right: 1px solid var(--t-border);
+}
+
+.toolbar-group:last-child {
+    border-right: none;
+}
+
+.toolbar-btn {
+    background: var(--t-toolbar-bg);
+    border: 1px solid var(--t-toolbar-border);
+    color: var(--t-text);
+    padding: 5px 10px;
+    border-radius: 16px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 200ms ease;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.toolbar-btn:hover {
+    background: var(--t-hover-bg);
+    border-color: var(--t-primary);
+    color: var(--t-primary);
+}
+
+.toolbar-btn.active {
+    background: var(--t-active-bg);
+    color: var(--t-primary);
+    border-color: var(--t-primary);
+}
+
+/* ===========================
+   LEGACY / COMPAT (Bootstrap accordion panels still used inside left sidebar)
+   =========================== */
 .panel {
     display: none;
     overflow: auto;
@@ -23,21 +385,28 @@ body {
     background-color: #eee;
     color: #444;
     cursor: pointer;
-    padding: 18px;
+    padding: 10px 14px;
     width: 100%;
-    border: 1px solid white;
-    text-align: center;
+    border: 1px solid var(--t-border);
+    text-align: left;
     outline: none;
-    font-size: 15px;
-    transition: 0.6s;
+    font-size: 12px;
+    transition: 0.3s;
     border-radius: 5px;
-    /* overflow: auto; */
+    font-family: inherit;
 }
 
 .accordion.active {
-    background-color: #ccc;
-    transition: 0.6s;
-    /* writing-mode: sideways-lr; */
+    background-color: #ddd;
+}
+
+.accordion::after {
+    content: " \25BD";
+    float: right;
+}
+
+.accordion.active::after {
+    content: " \25B3";
 }
 
 .side-accordion {
@@ -45,126 +414,63 @@ body {
     align-content: space-around;
 }
 
-.side-accordion.active {
-    /* height: 100%; */
-    transition: 0.6s;
-}
-
 .ha-100.active {
     height: 100%;
 }
 
-.accordion::after {
-    content: " \25BD"
-}
-
-.accordion.active::after {
-    content: ' \25B3';
-
-}
-
-.accordion::after:hover,
-.accordion::after:focus,
-.accordion::after:active {
-    animation-name: hvr-bob-float, hvr-bob;
-    animation-duration: .3s, 1.5s;
-    animation-delay: 0s, .3s;
-    animation-timing-function: ease-out, ease-in-out;
-    animation-iteration-count: 1, infinite;
-    animation-fill-mode: forwards;
-    animation-direction: normal, alternate;
-}
-
-/* --------------------UI Design------------------------------ */
 .input-container {
     display: block;
-    margin: 25px;
-
-}
-
-#tableViewer-mb {
-    display: none;
-}
-
-.dev-title {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 5px 0;
-    height: 10%;
-    color: white;
-
-}
-
-.container {
-    display: flex;
-    flex-direction: row;
-    /* width: 100vw; */
-    height: 85vh;
-    justify-content: center;
-    margin: 0;
-    /* background-color: yellow; */
-
+    padding: 8px 0;
 }
 
 .sidebar-container {
-    display: flex;
-    flex-direction: column;
-    opacity: 0.8;
-    border-radius: 5px;
-    word-wrap: break-word;
+    display: none; /* hidden on desktop — replaced by .tifany-left-panel */
 }
 
 .sidebar {
-
-    /* position: absolute;
-            right: 0;*/
-    width: 350px;
-    /* height: 100%; */
+    width: 100%;
     padding: 5px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 10px;
+    background: var(--t-bg-surface);
     overflow-y: auto;
-    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
-    z-index: 999;
-    border-radius: 5px;
 }
 
 .instructions {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--t-bg-surface);
     padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    font-size: 10px;
-    line-height: 1.5;
-    color: #555;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--t-text-muted);
 }
 
 .control-group {
-    margin-bottom: 20px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 8px;
 }
 
 .control-group h3 {
-    margin-bottom: 12px;
-    color: #333;
-    font-size: 13px;
+    margin-bottom: 8px;
+    color: var(--t-text);
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.table-wrapper {
-    background-color: rgba(233, 246, 247, 0.527);
-    border-radius: 5px;
-    height: 100%;
-    flex-grow: 1;
-    text-align: center;
-    cursor: pointer;
-    position: relative;
-    overflow: auto;
+.panel-style {
+    border: 1px solid var(--t-border);
+    border-radius: 8px;
+    margin-top: 5px;
+    padding: 12px;
+}
+
+.style-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 8px 0;
 }
 
 .button-controls {
@@ -175,142 +481,188 @@ body {
     min-width: 100%;
 }
 
-.panel-style {
-    border: 1px solid lightgrey;
-    border-radius: 8px;
-    margin-top: 5px;
-    padding: 20px;
-    box-shadow: 5px 10px 8px lightgrey;
-}
-
-.style-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    margin: 8px 0;
-}
-
 .sp-class:hover {
-    transition: all 300ms ease-in;
-    border-color: aliceblue;
-    transform: scale(1.1);
-    opacity: 1;
+    transition: all 200ms ease;
+    transform: scale(1.05);
 }
 
-.sp-class:active {
-    background-color: lightblue;
-
+/* ===========================
+   DARK MODE — Bootstrap 4 overrides
+   =========================== */
+[data-theme="dark"] body {
+    background-color: var(--t-bg-workspace);
+    color: var(--t-text);
 }
 
-.toolbar-container {
-    display: flex;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #d0d0d0;
-    padding: 5px;
-    overflow-x: auto;
-    white-space: nowrap;
+[data-theme="dark"] .tifany-header {
+    background: var(--t-bg-surface);
+    border-color: var(--t-border);
 }
 
-.toolbar-group {
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
-    border-right: 1px solid #d0d0d0;
-    padding-right: 10px;
+[data-theme="dark"] .tifany-left-panel,
+[data-theme="dark"] .tifany-right-panel {
+    background: var(--t-bg-surface);
+    border-color: var(--t-border);
 }
 
-.toolbar-group:last-child {
-    border-right: none;
+[data-theme="dark"] .left-section-header,
+[data-theme="dark"] .right-section-header {
+    border-color: var(--t-border);
 }
 
-/* .toolbar-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    margin: 0 2px;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-} */
-
-.toolbar-btn {
-    /* background: rgba(79, 172, 254, 0.2); */
-    background: rgb(79 172 254 / 62%);
-    border: 1px solid rgba(79, 172, 254, 0.4);
-    color: black;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-    margin-right: 5px;
-    white-space: nowrap;
+[data-theme="dark"] .left-section-body,
+[data-theme="dark"] .right-section-body {
+    background: var(--t-bg-surface);
+    border-color: var(--t-border);
 }
 
-.toolbar-btn:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+[data-theme="dark"] .right-section {
+    border-color: var(--t-border);
 }
 
-.toolbar-btn i {
-    font-size: 16px;
-    color: #333;
+[data-theme="dark"] .accordion {
+    background: #333;
+    color: #ccc;
+    border-color: var(--t-border);
 }
 
-.toolbar-btn.active {
-    background-color: #e0e0e0;
+[data-theme="dark"] .accordion.active {
+    background: #3a3a3a;
 }
 
-/* Responsive Design */
+[data-theme="dark"] .panel {
+    background: var(--t-bg-surface);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] select,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] textarea {
+    background-color: var(--t-bg-input) !important;
+    color: var(--t-text) !important;
+    border-color: var(--t-border) !important;
+}
+
+[data-theme="dark"] .btn-outline-primary {
+    color: #6ab0f5;
+    border-color: #6ab0f5;
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    color: #ccc;
+    border-color: #555;
+}
+
+[data-theme="dark"] .btn-outline-danger {
+    color: #f87171;
+    border-color: #f87171;
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--t-bg-surface);
+    color: var(--t-text);
+    border-color: var(--t-border);
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+    border-color: var(--t-border);
+}
+
+[data-theme="dark"] .close {
+    color: var(--t-text);
+}
+
+[data-theme="dark"] label {
+    color: var(--t-text-muted);
+}
+
+[data-theme="dark"] .cell-controls {
+    background: var(--t-bg-surface);
+    border-color: var(--t-border);
+    color: var(--t-text);
+}
+
+[data-theme="dark"] .toolbar-container {
+    background: var(--t-bg-surface);
+    border-color: var(--t-border);
+}
+
+[data-theme="dark"] .center-header {
+    background: var(--t-bg-surface);
+    border-color: var(--t-border);
+}
+
+[data-theme="dark"] .sidebar-nav-rail {
+    background: var(--t-bg-surface);
+    border-color: var(--t-border);
+}
+
+/* ===========================
+   MOBILE LAYOUT
+   Mobile stack order (top → bottom):
+   1. Text Input
+   2. Instruction
+   3. Toolbar + Table Viewer
+   4. Generate Code
+   =========================== */
 @media (max-width: 768px) {
+    .tifany-app {
+        flex-direction: column;
+        height: auto;
+        min-height: calc(100vh - var(--t-header-height));
+        overflow: visible;
+    }
 
+    /* Hide desktop-only elements on mobile */
+    #sidebar-nav-mount,
+    .tifany-left-panel {
+        display: none;
+    }
+
+    /* Right panel: show stacked at top on mobile */
+    .tifany-right-panel {
+        width: 100%;
+        border-left: none;
+        border-bottom: 1px solid var(--t-border);
+        order: 1;
+    }
+
+    /* Move Text Input section to top */
+    .right-section[data-mobile-order="1"] { order: 1; }
+    /* Move Instruction section second */
+    .right-section[data-mobile-order="2"] { order: 2; }
+    /* Move Generate Code section last */
+    .right-section[data-mobile-order="3"] { order: 3; }
+
+    /* Center (toolbar + table) in the middle */
+    .tifany-center-panel {
+        width: 100%;
+        order: 2;
+        height: auto;
+        overflow: visible;
+    }
+
+    /* Show mobile toolbar */
     #tableViewer-mb {
         display: block;
     }
 
-    .container {
-        flex-direction: column;
+    /* Table wrapper takes natural height on mobile */
+    .table-wrapper {
         height: auto;
-        min-height: 100vh;
+        min-height: 300px;
     }
 
-    .sidebar-container {
+    /* Monaco editor smaller on mobile */
+    #monaco-editor-container {
+        height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tifany-header .nav {
         display: none;
-    }
-
-    .toolbar-container {
-        flex-direction: row;
-    }
-
-    /* .toolbar-group {
-        border-right: none;
-        border-bottom: 1px solid #d0d0d0;
-        border-radius: 25px;
-        background-color: #ffffff;
-        ;
-        color: white;
-    } */
-
-    /* .toolbar-btn {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .toolbar-btn i {
-        align-self: center;
-    } */
-    .toolbar-btn {
-        /* background: rgba(79, 172, 254, 0.2); */
-        background: rgb(79 172 254 / 62%);
-        border: 1px solid rgba(79, 172, 254, 0.4);
-        color: black;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 11px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(5px);
-        margin-right: 5px;
-        white-space: nowrap;
     }
 }

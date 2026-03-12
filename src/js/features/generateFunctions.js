@@ -86,7 +86,11 @@ function generateCode() {
         // Format the HTML
         const formattedHtml = formatHtml(tableHtml);
 
-        $('#tableOutput').text(formattedHtml);
+        if (window.tifanyMonaco) {
+            window.tifanyMonaco.setValue(formattedHtml);
+        } else {
+            $('#tableOutput').val(formattedHtml);
+        }
 
         // initializeAllFeatures();
         setupTableInteraction();
@@ -101,7 +105,9 @@ function generateCode() {
 }
 
 function copyInput() {
-        const formatBoard = $('#tableOutput').val();
+        const formatBoard = window.tifanyMonaco
+            ? window.tifanyMonaco.getValue()
+            : $('#tableOutput').val();
         if (!formatBoard || formatBoard.trim() === '') {
             // More descriptive error message
             alert('The text area is empty. Please add content before copying.');
