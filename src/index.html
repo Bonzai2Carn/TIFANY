@@ -318,6 +318,37 @@
                 </div>
             </section>
 
+            <!-- Section 1: Text Input (default open) -->
+            <div class="right-section" data-mobile-order="1">
+                <div class="right-section-header" data-target="right-input">
+                    Text Input <span class="right-section-chevron">▼</span>
+                </div>
+                <div class="right-section-body" id="right-input">
+                    <div class="form-group mb-2">
+                        <label for="inputType" style="font-size:11px;">Input Format</label>
+                        <select class="form-control form-control-sm" id="inputType">
+                            <option value="html">HTML</option>
+                            <option value="ascii">ASCII</option>
+                            <option value="csv">CSV / Spreadsheet</option>
+                            <option value="text">Text</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="monaco-input-container" style="font-size:11px;">Paste table data</label>
+                        <div id="monaco-input-container" style="height:140px; border:1px solid var(--border-color, #ccc); border-radius:4px;"></div>
+                        <!-- Fallback textarea (used when Monaco fails to load) -->
+                        <textarea class="form-control form-control-sm" id="tableInput" rows="6"
+                            placeholder="Input Table Here..." style="display:none;"></textarea>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="buttonIndex" style="font-size:11px;">Number of Tabs</label>
+                        <input type="number" class="form-control form-control-sm text-center" id="buttonIndex"
+                            name="buttonIndex" min="1" max="100" placeholder="Tab count">
+                    </div>
+                    <button id="parseInput" class="btn btn-sm btn-primary w-100">Parse Input</button>
+                </div>
+            </div>
+
             <!-- Center header bar -->
             <div class="center-header">
                 <span>Table Viewer</span>
@@ -335,36 +366,6 @@
 
         <!-- ====== RIGHT PANEL — Input / Instruction / Generate ====== -->
         <aside class="tifany-right-panel">
-
-            <!-- Section 1: Text Input (default open) -->
-            <div class="right-section" data-mobile-order="1">
-                <div class="right-section-header" data-target="right-input">
-                    Text Input <span class="right-section-chevron">▼</span>
-                </div>
-                <div class="right-section-body" id="right-input">
-                    <div class="form-group mb-2">
-                        <label for="inputType" style="font-size:11px;">Input Format</label>
-                        <select class="form-control form-control-sm" id="inputType">
-                            <option value="html">HTML</option>
-                            <option value="ascii">ASCII</option>
-                            <option value="csv">CSV / Spreadsheet</option>
-                            <option value="text">Text</option>
-                        </select>
-                    </div>
-                    <div class="form-group mb-2">
-                        <label for="tableInput" style="font-size:11px;">Paste table data</label>
-                        <textarea class="form-control form-control-sm" id="tableInput" rows="6"
-                            placeholder="Input Table Here..."></textarea>
-                    </div>
-                    <div class="form-group mb-2">
-                        <label for="buttonIndex" style="font-size:11px;">Number of Tabs</label>
-                        <input type="number" class="form-control form-control-sm text-center" id="buttonIndex"
-                            name="buttonIndex" min="1" max="100" placeholder="Tab count">
-                    </div>
-                    <button id="parseInput" class="btn btn-sm btn-primary w-100">Parse Input</button>
-                </div>
-            </div>
-
             <!-- Section 2: Instruction (default collapsed) -->
             <div class="right-section" data-mobile-order="2">
                 <div class="right-section-header" data-target="right-instruction">
@@ -409,6 +410,13 @@
                 </div>
                 <div class="right-section-body" id="right-generate">
                     <div class="generate-actions">
+                        <select id="exportFormat" class="form-control form-control-sm" style="max-width:110px;">
+                            <option value="html">HTML</option>
+                            <option value="json">JSON</option>
+                            <option value="markdown">Markdown</option>
+                            <option value="csv">CSV</option>
+                            <option value="sql">SQL</option>
+                        </select>
                         <button id="generateCode" class="btn btn-sm btn-success flex-grow-1">Generate</button>
                         <button id="copyInput" class="btn btn-sm btn-outline-secondary">Copy</button>
                     </div>
@@ -514,6 +522,8 @@
 
     <!-- ==================== MONACO EDITOR INIT ==================== -->
     <script>
+        var INPUT_LANG_MAP = { html: 'html', ascii: 'plaintext', csv: 'plaintext', text: 'plaintext' };
+
         // Guard: only proceed if the Monaco AMD loader was loaded successfully
         if (typeof require === 'function' && typeof require.config === 'function') {
             require.config({
@@ -521,15 +531,10 @@
             });
 
             require(['vs/editor/editor.main'], function () {
-                var container = document.getElementById('monaco-editor-container');
-                if (!container) return;
-
                 var savedTheme = localStorage.getItem('tifany-theme');
                 var monacoTheme = (savedTheme === 'dark') ? 'vs-dark' : 'vs';
-
-                window.tifanyMonaco = monaco.editor.create(container, {
+                var editorOptions = {
                     value: '',
-                    language: 'html',
                     theme: monacoTheme,
                     automaticLayout: true,
                     minimap: { enabled: false },
@@ -539,17 +544,44 @@
                     fontSize: 12,
                     tabSize: 2,
                     renderLineHighlight: 'line',
-                    // Disable features that execute or fetch external content
                     links: false,
                     contextmenu: true
-                });
+                };
+
+                // ── Output editor ──
+                var outContainer = document.getElementById('monaco-editor-container');
+                if (outContainer) {
+                    window.tifanyMonaco = monaco.editor.create(outContainer, Object.assign({}, editorOptions, { language: 'html' }));
+                }
+
+                // ── Input editor ──
+                var inContainer = document.getElementById('monaco-input-container');
+                if (inContainer) {
+                    var initialLang = INPUT_LANG_MAP[document.getElementById('inputType').value] || 'plaintext';
+                    window.tifanyMonacoInput = monaco.editor.create(inContainer, Object.assign({}, editorOptions, {
+                        language: initialLang,
+                        lineNumbers: 'off',
+                        placeholder: 'Paste table data here...'
+                    }));
+
+                    // Switch language when input format changes
+                    document.getElementById('inputType').addEventListener('change', function () {
+                        var lang = INPUT_LANG_MAP[this.value] || 'plaintext';
+                        monaco.editor.setModelLanguage(window.tifanyMonacoInput.getModel(), lang);
+                    });
+                }
             });
         } else {
-            // Monaco failed to load — show the fallback textarea
+            // Monaco failed to load — show fallback textareas
             var fb = document.getElementById('tableOutput');
             if (fb) fb.style.display = 'block';
-            var container = document.getElementById('monaco-editor-container');
-            if (container) container.style.display = 'none';
+            var outCont = document.getElementById('monaco-editor-container');
+            if (outCont) outCont.style.display = 'none';
+
+            var fbIn = document.getElementById('tableInput');
+            if (fbIn) fbIn.style.display = 'block';
+            var inCont = document.getElementById('monaco-input-container');
+            if (inCont) inCont.style.display = 'none';
         }
     </script>
 

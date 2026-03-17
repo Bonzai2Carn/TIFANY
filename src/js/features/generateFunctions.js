@@ -8,8 +8,6 @@ function generateTabs(tableHtml) {
         return;
     }
 
-    //existing textarea content
-    // const existingContent = $('#tableInput').val();
     // Create tabs container if it doesn't exist
     if ($('#tableContainer .panel').length === 0) {
         $('#tableContainer').prepend('<button class="accordion active"><b>Table Heading</b></button>' + '<div class="panel">');
@@ -29,79 +27,194 @@ function generateTabs(tableHtml) {
     // Add tabs to the tabs container
     $('#tableContainer .panel').html(panelHtml);
 
-    // Add a newline after generated tabs if existing content exists
-    // const finalContent = existingContent
-    //     ? `${tabsHtml}\n${existingContent}`
-    //     : tabsHtml;
-    // // Set the generated HTML in the textarea
-    // $('#tableInput').val(finalContent);
+    // Assign unique data-tifany-id to each table for multi-table tracking
+    $('#tableContainer table').each(function (i) {
+        if (!$(this).attr('data-tifany-id')) {
+            $(this).attr('data-tifany-id', `t-${i}`);
+        }
+    });
 
-    // initializeAllFeatures();
     setupTableInteraction();
     console.log(`Generated ${buttonIndex} tabs`);
-    $.toast(`Generated ${buttonIndex} tabs`)
+    $.toast(`Generated ${buttonIndex} tabs`);
 }
 
 function generateCode() {
-    // if (!currentTable) {
-    //     alert('No table to generate code from');
-    //     return;
-    // }
+    const format = $('#exportFormat').val() || 'html';
+    console.group('Generate Code Process — format:', format);
 
-    console.group('Generate Code Process');
-    console.log('Current Table Status:', !!currentTable);
-    $.toast({
-                    // heading: 'Success',
-                    text: `Current Table Status: ${!!currentTable}`,
-                    showHideTransition: 'slide',
-                    loader: false,
-                    stack: 'false'
-                })
     try {
-        // Reset the table container before cloning
-        // $('#tableContainer').empty().append(currentTable.clone());
-
-        const $table = $('#tableContainer').clone();
-
-        // Remove interaction classes (condition)
-        if (crosshairEnabled) {
-            $table.addClass('crosshair-table');
-            initCrosshair();
-        } else {
-            $table.removeClass('crosshair-table');
-            $table.find('.highlight-row, .highlight-col').removeClass('highlight-row highlight-col');
+        const $tables = $('#tableContainer table');
+        if ($tables.length === 0) {
+            alert('No table to generate from. Please parse a table first.');
+            return;
         }
 
-        // Add test ID and remove style
-        $table.find('tr').attr('id', 'test');
-        //remove style
-        $table.removeAttr('style');
-        $table.find('td', 'th', 'tr').removeClass('selected-cell');
-        $table.find('.text-center.p-5:has(p:contains("Table View"))').remove();
-        $table.find('td').removeAttr('style');
+        let output = '';
 
-        // Generate clean HTML
-        const tableHtml = $('<div>').append($table).html();
-
-        // Format the HTML
-        const formattedHtml = formatHtml(tableHtml);
+        if (format === 'html') {
+            output = exportAsHtml();
+        } else if (format === 'json') {
+            output = exportAsJson($tables);
+        } else if (format === 'markdown') {
+            output = exportAsMarkdown($tables);
+        } else if (format === 'csv') {
+            const csvContent = exportAsCsv(window.currentTable || $tables[0]);
+            // Download the CSV file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'table.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            output = csvContent; // Also show in editor
+        } else if (format === 'sql') {
+            output = exportAsSql($tables);
+        }
 
         if (window.tifanyMonaco) {
-            window.tifanyMonaco.setValue(formattedHtml);
+            window.tifanyMonaco.setValue(output);
         } else {
-            $('#tableOutput').val(formattedHtml);
+            $('#tableOutput').val(output);
         }
 
-        // initializeAllFeatures();
         setupTableInteraction();
-        console.log('HTML Generation Successful');
-        console.log('Generated HTML Length:', formattedHtml.length);
+        console.log('Generation successful, length:', output.length);
     } catch (error) {
         console.error('Error in code generation:', error);
-        alert('Failed to generate code. Check console for details.');
+        alert('Failed to generate. Check console for details.');
     } finally {
         console.groupEnd();
     }
+}
+
+function exportAsHtml() {
+    const $clone = $('#tableContainer').clone();
+
+    if (crosshairEnabled) {
+        $clone.find('table').addClass('crosshair-table');
+    } else {
+        $clone.find('.highlight-row, .highlight-col').removeClass('highlight-row highlight-col');
+    }
+
+    $clone.find('tr').attr('id', 'test');
+    $clone.removeAttr('style');
+    $clone.find('td, th, tr').removeClass('selected-cell');
+    $clone.find('.text-center.p-5:has(p:contains("Table View"))').remove();
+    $clone.find('td').removeAttr('style');
+
+    return formatHtml($('<div>').append($clone).html());
+}
+
+// Helper: get headers and rows from a table DOM element
+function getTableData(tableEl) {
+    const $table = $(tableEl);
+    const headers = [];
+    const rows = [];
+
+    $table.find('tr').each(function (rowIdx) {
+        const cells = [];
+        $(this).find('th, td').each(function () {
+            cells.push($(this).text().trim());
+        });
+        if (rowIdx === 0 && $(this).find('th').length > 0) {
+            headers.push(...cells);
+        } else {
+            if (cells.length > 0) rows.push(cells);
+        }
+    });
+
+    // If no <th> headers were found, treat first row as headers
+    if (headers.length === 0 && rows.length > 0) {
+        headers.push(...rows.shift());
+    }
+
+    return { headers, rows };
+}
+
+function exportAsJson($tables) {
+    const result = {};
+    const tableCount = $tables.length;
+
+    $tables.each(function (i) {
+        const { headers, rows } = getTableData(this);
+        const key = tableCount === 1 ? 'table' : `table_${i + 1}`;
+        result[key] = rows.map(row => {
+            const obj = {};
+            headers.forEach((h, idx) => {
+                obj[h || `col_${idx + 1}`] = row[idx] !== undefined ? row[idx] : '';
+            });
+            return obj;
+        });
+    });
+
+    return JSON.stringify(tableCount === 1 ? result['table'] : result, null, 2);
+}
+
+function exportAsCsv(tableEl) {
+    const { headers, rows } = getTableData(tableEl);
+    const escapeCell = val => {
+        const str = String(val);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+    };
+
+    const lines = [];
+    if (headers.length > 0) lines.push(headers.map(escapeCell).join(','));
+    rows.forEach(row => lines.push(row.map(escapeCell).join(',')));
+    return lines.join('\r\n');
+}
+
+function exportAsMarkdown($tables) {
+    const parts = [];
+
+    $tables.each(function () {
+        const { headers, rows } = getTableData(this);
+        if (headers.length === 0) return;
+
+        const lines = [];
+        lines.push('| ' + headers.join(' | ') + ' |');
+        lines.push('| ' + headers.map(() => '---').join(' | ') + ' |');
+        rows.forEach(row => {
+            const padded = headers.map((_, i) => row[i] !== undefined ? row[i] : '');
+            lines.push('| ' + padded.join(' | ') + ' |');
+        });
+        parts.push(lines.join('\n'));
+    });
+
+    return parts.join('\n\n');
+}
+
+function exportAsSql($tables) {
+    const parts = [];
+
+    $tables.each(function (i) {
+        const { headers, rows } = getTableData(this);
+        const tableName = `table_${i + 1}`;
+        const cols = headers.length > 0
+            ? headers.map((h, idx) => h ? h.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '') || `col_${idx + 1}` : `col_${idx + 1}`)
+            : (rows[0] || []).map((_, idx) => `col_${idx + 1}`);
+
+        const colDefs = cols.map(c => `  ${c} TEXT`).join(',\n');
+        let sql = `CREATE TABLE ${tableName} (\n${colDefs}\n);\n`;
+
+        rows.forEach(row => {
+            const values = cols.map((_, idx) => {
+                const v = row[idx] !== undefined ? row[idx] : '';
+                return `'${v.replace(/'/g, "''")}'`;
+            });
+            sql += `INSERT INTO ${tableName} (${cols.join(', ')}) VALUES (${values.join(', ')});\n`;
+        });
+
+        parts.push(sql);
+    });
+
+    return parts.join('\n');
 }
 
 function copyInput() {

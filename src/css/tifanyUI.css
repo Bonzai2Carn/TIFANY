@@ -270,7 +270,7 @@ body {
 
 /* Monaco editor container */
 #monaco-editor-container {
-    height: 280px;
+    height: 480px;
     min-height: 180px;
     border: 1px solid var(--t-border);
     border-radius: 4px;

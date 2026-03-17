@@ -40,7 +40,7 @@ function initSpSelectors() {
     $('body').off('click.sp_selector').on('click.sp_selector', '.sp-option', function () {
         const $option = $(this);
         const panel = $option.closest('.panel');
-        const table = panel.find('.tablecoil');
+        const table = panel.find('table');
         const spValue = $option.data('value');
 
         panel.find('.sp-option').removeClass('active');

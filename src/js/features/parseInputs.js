@@ -3,7 +3,10 @@
 // ===================================================================================
 function parseInput() {
     const inputType = $('#inputType').val();
-    const inputData = $('#tableInput').val().trim();
+    const inputData = (window.tifanyMonacoInput
+        ? window.tifanyMonacoInput.getValue()
+        : $('#tableInput').val()
+    ).trim();
 
     if (!inputData) {
         alert('Please input some data');
@@ -30,26 +33,40 @@ function parseInput() {
             return;
     }
 
-    // $('#tableContainer').html(tableHtml);
     generateTabs(tableHtml);
-    currentTable = $('#tableContainer table')[0];
+    // Set active table to first table; interaction will update it on click
+    window.currentTable = $('#tableContainer table')[0];
 
     initializeAllFeatures();
     setupTableInteraction();
+    // Save initial state so undo can return to it
+    window.saveCurrentState();
 }
 
 function parseHtmlInput(html) {
-    // Check if it's already a table
-    if (html.toLowerCase().includes('<table')) {
-        return html;
-    }
-
     // Try to extract table-like structure
     const tablePattern = /<table[\s\S]*?<\/table>/gi;
-    const match = html.match(tablePattern);
+    const matches = html.match(tablePattern);
 
-    if (match && match.length > 0) {
-        return match[0];
+    if (matches && matches.length > 0) {
+        // Inject .tablecoil and .crosshair-table into every matched table that lacks them
+        const normalized = matches.map(tableHtml => {
+            return tableHtml.replace(/^<table([^>]*)>/i, (_fullMatch, attrs) => {
+                const hasClass = /class\s*=/i.test(attrs);
+                if (!hasClass) {
+                    return `<table class="tablecoil crosshair-table"${attrs}>`;
+                }
+                // Add classes if missing
+                let updated = attrs.replace(/class\s*=\s*["']([^"']*)["']/i, (_m, existing) => {
+                    const classes = existing.split(/\s+/).filter(Boolean);
+                    if (!classes.includes('tablecoil')) classes.push('tablecoil');
+                    if (!classes.includes('crosshair-table')) classes.push('crosshair-table');
+                    return `class="${classes.join(' ')}"`;
+                });
+                return `<table${updated}>`;
+            });
+        });
+        return normalized.join('\n');
     }
 
     // If no table found, create a simple table

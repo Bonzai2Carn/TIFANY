@@ -13,9 +13,7 @@ $(function () {
     // =================== CLEANUP FUNCTION ===================
     function cleanupEventHandlers() {
         $(document).off('.cell .cellEditor .hideMenu .accordion .sp_selector');
-        if (window.currentTable) {
-            $(window.currentTable).off('.cell .drag');
-        }
+        $('#tableContainer').off('.cell .drag');
     }
 
     // Make cleanupEventHandlers globally accessible
@@ -41,20 +39,32 @@ $(function () {
 
     // =================== TABLE INTERACTION ===================
     function setupTableInteraction() {
-        if (!window.currentTable) return;
-        const $table = $(window.currentTable);
+        const $container = $('#tableContainer');
         let isSelecting = false;
         let startCell = null;
         let endCell = null;
         let lastSelectedCell = null;
 
-        // Clear previous event handlers
-        $table.off('mousedown.cell mousemove.cell mouseup.cell click.cell');
+        // Clear previous event handlers on container
+        $container.off('mousedown.cell mousemove.cell selectstart.cell contextmenu.cell dblclick.cell');
 
-        // Mouse down - start selection
-        $table.on('mousedown.cell', 'td, th', function (e) {
+        // Mouse down - start selection; also update currentTable to the clicked table
+        $container.on('mousedown.cell', 'td, th', function (e) {
             e.preventDefault();
             e.stopPropagation();
+
+            // Update active table to whichever table was clicked
+            const clickedTable = $(this).closest('table')[0];
+            if (clickedTable && clickedTable !== window.currentTable) {
+                // Clear selection from previous table
+                if (window.currentTable) {
+                    $(window.currentTable).find('.selected-cell').removeClass('selected-cell');
+                }
+                window.currentTable = clickedTable;
+                window.selectedCells = [];
+            }
+
+            const $table = $(window.currentTable);
 
             if (e.button === 0) { // Left mouse button only
                 if (e.ctrlKey || e.metaKey) {
@@ -91,7 +101,7 @@ $(function () {
         });
 
         // Mouse move - extend selection during drag
-        $table.on('mousemove.cell', 'td, th', function (e) {
+        $container.on('mousemove.cell', 'td, th', function (e) {
             if (isSelecting) {
                 endCell = this;
                 selectRange(startCell, endCell);
@@ -109,7 +119,7 @@ $(function () {
         });
 
         // Prevent text selection during drag
-        $table.on('selectstart.cell', function (e) {
+        $container.on('selectstart.cell', function (e) {
             if (isSelecting) {
                 e.preventDefault();
             }
@@ -117,8 +127,9 @@ $(function () {
 
         // Helper function to select a range of cells
         function selectRange(start, end) {
-            if (!start || !end) return;
+            if (!start || !end || !window.currentTable) return;
 
+            const $table = $(window.currentTable);
             const mapper = new VisualGridMapper($table);
             const startPos = mapper.getVisualPosition(start);
             const endPos = mapper.getVisualPosition(end);
@@ -152,7 +163,7 @@ $(function () {
         }
 
         // Context menu for cells
-        $table.on('contextmenu.cell', 'td, th', function (e) {
+        $container.on('contextmenu.cell', 'td, th', function (e) {
             e.preventDefault();
             const $menu = $('#cellContextMenu');
             $menu.css({
@@ -197,7 +208,7 @@ $(function () {
         });
 
         // Double click to edit cell
-        $table.off('dblclick.cell').on('dblclick.cell', 'td, th', function (e) {
+        $container.off('dblclick.cell').on('dblclick.cell', 'td, th', function (e) {
             window.cellBeingEdited = this;
             window.originalContent = $(this).html();
 
@@ -234,6 +245,7 @@ $(function () {
             if ($(e.target).closest(window.cellBeingEdited).length) {
                 return;
             }
+            window.saveCurrentState();
             const content = $('<span>').text($editor.val()).html();
             $(window.cellBeingEdited).html(content);
             $editor.remove();
@@ -248,6 +260,7 @@ $(function () {
                 const $editor = $(this);
                 const newContent = $('<div>').text($editor.val()).html();
                 const $cell = $editor.closest('td, th');
+                window.saveCurrentState();
                 $cell.html(newContent);
                 window.cellBeingEdited = null;
                 $.toast({
@@ -509,6 +522,7 @@ $(function () {
         if (!window.cellBeingEdited) return;
 
         const newContent = $('#cellContent').val();
+        window.saveCurrentState();
         $(window.cellBeingEdited).html(newContent);
 
         $('#editCellModal').modal('hide');

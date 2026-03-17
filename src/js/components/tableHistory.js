@@ -62,7 +62,7 @@ class TableHistoryManager {
     }
 
     canUndo() {
-        return this.currentIndex >= 0;
+        return this.currentIndex > 0;
     }
 
     canRedo() {
@@ -113,13 +113,24 @@ window.historyManager = new TableHistoryManager();
 // 3. HISTORY FUNCTIONS
 // ===================================================================================
 
+function restoreActiveTable(activeId) {
+    // Try to restore the previously active table by data-tifany-id
+    if (activeId) {
+        const found = $(`#tableContainer table[data-tifany-id="${activeId}"]`)[0];
+        window.currentTable = found || $('#tableContainer table')[0];
+    } else {
+        window.currentTable = $('#tableContainer table')[0];
+    }
+}
+
 function performUndo() {
+    const activeId = window.currentTable ? $(window.currentTable).attr('data-tifany-id') : null;
     const state = window.historyManager.undo();
     if (state) {
         window.historyManager.isRestoring = true;
 
         $('#tableContainer').html(state);
-        window.currentTable = $('#tableContainer table')[0];
+        restoreActiveTable(activeId);
 
         if (typeof window.initializeAllFeatures === 'function') {
             window.initializeAllFeatures();
@@ -153,12 +164,13 @@ function performUndo() {
 }
 
 function performRedo() {
+    const activeId = window.currentTable ? $(window.currentTable).attr('data-tifany-id') : null;
     const state = window.historyManager.redo();
     if (state) {
         window.historyManager.isRestoring = true;
 
         $('#tableContainer').html(state);
-        window.currentTable = $('#tableContainer table')[0];
+        restoreActiveTable(activeId);
 
         if (typeof window.initializeAllFeatures === 'function') {
             window.initializeAllFeatures();
@@ -196,40 +208,6 @@ function saveCurrentState() {
         const state = $('#tableContainer').html();
         window.historyManager.saveState(state);
         console.log('Current state saved');
-    }
-}
-
-// function updateHistoryButtons() {
-//     const canUndo = window.historyManager.canUndo();
-//     const canRedo = window.historyManager.canRedo();
-
-//     const undoCount = this.currentIndex;
-//     const redoCount = this.history.length - this.currentIndex - 1;
-
-//     // $('.undoHistory').prop('disabled', !this.canUndo());
-//     // $('.redoHistory').prop('disabled', !this.canRedo());
-
-//     // $('.undoHistory').prop('disabled', !canUndo);
-//     // $('.redoHistory').prop('disabled', !canRedo);
-
-//     const statusText = `History: ${window.historyManager.currentIndex + 1}/${window.historyManager.history.length}`;
-//     // $('.undoState').text(`${undoCount} available`);
-//     // $('.redoState').text(`${redoCount} available`);
-//     // $('.undoState').text(statusText);
-// }
-
-// // Call this after every operation
-// window.updateHistoryButtons = updateHistoryButtons;
-
-// Modify saveCurrentState to update buttons
-function saveCurrentState() {
-    if (window.currentTable && !window.historyManager.isRestoring) {
-        const state = $('#tableContainer').html();
-        window.historyManager.saveState(state);
-        console.log('Current state saved');
-        if (typeof window.updateHistoryButtons === 'function') {
-            window.updateHistoryButtons();
-        }
     }
 }
 
