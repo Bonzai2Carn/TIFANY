@@ -10,6 +10,8 @@ $(function () {
     window.dragDropEnabled = false;
     window.popperInstance = null;
     window.hideTimeout = null;
+    window.lastParsedHtml = null;
+    window.drawModeEnabled = false;
     // =================== CLEANUP FUNCTION ===================
     function cleanupEventHandlers() {
         $(document).off('.cell .cellEditor .hideMenu .accordion .sp_selector');
@@ -115,6 +117,7 @@ $(function () {
                 if (endCell) {
                     lastSelectedCell = endCell;
                 }
+                // (Draw mode operates via the Draw Canvas panel, not via cell selection)
             }
         });
 
@@ -434,27 +437,18 @@ $(function () {
         window.dragDropEnabled = !window.dragDropEnabled;
 
         if (window.dragDropEnabled) {
-            $(this).text('Enabled').css({
-                'background-color': 'lightgreen',
-                'color': 'white',
-            });
+            $(this).text('Enabled').css({ 'background-color': 'lightgreen', 'color': 'white' });
             if (typeof enableDragDrop === 'function') enableDragDrop();
         } else {
-            $(this).text('Disabled').css({
-                'border': '1px solid #999999',
-                'background-color': '#cccccc',
-                'color': '#666666',
-            });
+            $(this).text('Disabled').css({ 'border': '1px solid #999999', 'background-color': '#cccccc', 'color': '#666666' });
             if (typeof disableDragDrop === 'function') disableDragDrop();
         }
+        // Sync toolbar switch
+        $('#dragDropSwitch').prop('checked', window.dragDropEnabled);
     });
 
     $('.applyTextSplit').on('click', function () {
         if (typeof applyTextSplit === 'function') applyTextSplit();
-    });
-
-    $('#parseInput').on('click', function () {
-        if (typeof parseInput === 'function') parseInput();
     });
 
     $('.transposeTable').on('click', function () {
@@ -536,6 +530,79 @@ $(function () {
         }
         $('#textSplitModal').modal('show');
     });
+
+    // =================== LEFT PANEL TOGGLE ===================
+    $('#toggleLeftPanel').on('click', function () {
+        const $panel = $('.tifany-left-panel');
+        $panel.toggleClass('panel-hidden');
+        const isHidden = $panel.hasClass('panel-hidden');
+        $(this).attr('title', isHidden ? 'Show Tools Panel' : 'Hide Tools Panel');
+        $(this).toggleClass('active', !isHidden);
+    });
+
+    // =================== DRAW MODE TOGGLE ===================
+    $('#drawModeToggle').on('click', function () {
+        if (typeof toggleDrawMode === 'function') toggleDrawMode();
+    });
+
+    // Select tool toggle (visual only — normal mode indicator)
+    $('#selectToolToggle').on('click', function () {
+        if (window.drawModeEnabled && typeof disableDrawMode === 'function') {
+            disableDrawMode();
+        }
+        $(this).addClass('active');
+    });
+
+    // =================== DRAG & DROP SWITCH (toolbar) ===================
+    $('#dragDropSwitch').on('change', function () {
+        window.dragDropEnabled = $(this).prop('checked');
+        if (window.dragDropEnabled) {
+            if (typeof enableDragDrop === 'function') enableDragDrop();
+            $('#toggleDragDrop').text('Enabled').css({ 'background-color': 'lightgreen', 'color': 'white' });
+        } else {
+            if (typeof disableDragDrop === 'function') disableDragDrop();
+            $('#toggleDragDrop').text('Toggle Drag & Drop').css({ 'border': '1px solid #999999', 'background-color': '#cccccc', 'color': '#666666' });
+        }
+    });
+
+    // =================== DECOUPLED TAB COUNT ===================
+    // Changing #buttonIndex re-renders tabs without re-parsing
+    $('#buttonIndex').on('change', function () {
+        if (window.lastParsedHtml && typeof generateTabs === 'function') {
+            generateTabs(window.lastParsedHtml);
+        }
+    });
+
+    // =================== FILE LOAD BUTTON ===================
+    $('#loadFileBtn').on('click', function () {
+        $('#fileInput').val('').trigger('click');
+    });
+
+    $('#fileInput').on('change', function () {
+        const file = this.files[0];
+        if (file && typeof handleFileLoad === 'function') {
+            handleFileLoad(file);
+        }
+    });
+
+    // =================== INPUT MODAL OPEN ===================
+    $('#inputModalBtn').on('click', function () {
+        $('#inputModal').modal('show');
+        // Trigger Monaco layout refresh after modal becomes visible
+        setTimeout(function () {
+            if (window.tifanyMonacoInput) {
+                window.tifanyMonacoInput.layout();
+            }
+        }, 200);
+    });
+
+    // =================== PARSE INSIDE MODAL ===================
+    $('#parseInputModal').on('click', function () {
+        if (typeof parseInput === 'function') parseInput();
+    });
+
+    // =================== DRAW CANVAS INIT ===================
+    if (typeof initDrawCanvas === 'function') initDrawCanvas();
 
     // Initialize
     initializeAllFeatures();

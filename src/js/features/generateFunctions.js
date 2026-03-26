@@ -1,11 +1,13 @@
 function generateTabs(tableHtml) {
-    // Get the number of tabs to generate
-    const buttonIndex = parseInt($('#buttonIndex').val());
-
-    // Validate input
-    if (isNaN(buttonIndex) || buttonIndex < 1 || buttonIndex > 100) {
-        alert('Please enter a valid number between 1 and 100');
-        return;
+    // Get the number of tabs to generate; default to 1 if empty
+    let buttonIndex = parseInt($('#buttonIndex').val());
+    if (isNaN(buttonIndex) || buttonIndex < 1) {
+        buttonIndex = 1;
+        $('#buttonIndex').val(1);
+    }
+    if (buttonIndex > 100) {
+        buttonIndex = 100;
+        $('#buttonIndex').val(100);
     }
 
     // Create tabs container if it doesn't exist

@@ -107,7 +107,9 @@ tr:hover td.active {
     display: none;
 }
 
-.active {
+/* Scope .active to only sp-* table cells — do NOT use global .active which conflicts
+   with Bootstrap and our toolbar button states */
+[class^="sp-"].active {
     display: table-cell;
     background-color: #ffffff;
     color: #212121;

@@ -8,8 +8,10 @@
 
     <!-- ── Primary SEO ── -->
     <title>Table Formatter (TIFANY) — CANWORKSTUDIOS</title>
-    <meta name="description" content="TIFANY is a free, browser-based HTML table editor and formatter. Parse HTML, ASCII, CSV, or plain text into a visual table. Edit with drag-and-drop, cell merging, and export clean HTML.">
-    <meta name="keywords" content="HTML table editor, table formatter, CSV to HTML table, ASCII table, table manipulation, drag and drop table, TIFANY, CANWORKSTUDIOS, developer tool">
+    <meta name="description"
+        content="TIFANY is a free, browser-based HTML table editor and formatter. Parse HTML, ASCII, CSV, or plain text into a visual table. Edit with drag-and-drop, cell merging, and export clean HTML.">
+    <meta name="keywords"
+        content="HTML table editor, table formatter, CSV to HTML table, ASCII table, table manipulation, drag and drop table, TIFANY, CANWORKSTUDIOS, developer tool">
     <meta name="author" content="CANWORKSTUDIOS">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://canworkstudios.com/tools/tifany/src/index.html">
@@ -18,14 +20,16 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="CANWORKSTUDIOS">
     <meta property="og:title" content="Table Formatter (TIFANY) — CANWORKSTUDIOS">
-    <meta property="og:description" content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually with drag-and-drop, and export clean HTML code.">
+    <meta property="og:description"
+        content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually with drag-and-drop, and export clean HTML code.">
     <meta property="og:url" content="https://canworkstudios.com/tools/tifany/src/index.html">
     <meta property="og:locale" content="en_US">
 
     <!-- ── Twitter / X Card ── -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Table Formatter (TIFANY) — CANWORKSTUDIOS">
-    <meta name="twitter:description" content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually, and export clean HTML.">
+    <meta name="twitter:description"
+        content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually, and export clean HTML.">
     <meta name="twitter:site" content="@canworkstudios">
 
     <!-- ── Structured Data: SoftwareApplication ── -->
@@ -107,6 +111,8 @@
     <script src="js/features/tableManipulation.js"></script>
     <script src="js/features/tableOperations.js"></script>
     <script src="js/features/tifanyTabs.js"></script>
+    <script src="js/features/drawMode.js"></script>
+    <script src="js/features/sheetManager.js"></script>
 
     <!-- TIFANY CSS -->
     <link rel="stylesheet" href="css/tableEditor.css">
@@ -144,7 +150,13 @@
     <div class="tifany-app">
 
         <!-- Icon nav rail (injected by sidebar-nav.js) -->
-        <div id="sidebar-nav-mount"></div>
+        <div id="sidebar-nav-mount">
+            <!-- Left panel toggle -->
+            <button id="toggleLeftPanel" class="theme-toggle-btn active" title="Hide Tools Panel"
+                aria-label="Toggle tools panel" style="font-size:16px;">
+                ☰
+            </button>
+        </div>
 
         <!-- ====== LEFT PANEL — Tools ====== -->
         <aside class="tifany-left-panel">
@@ -163,7 +175,8 @@
             </div>
 
             <!-- STYLES & ID -->
-            <button class="accordion active left-section-header" style="display:block; text-align:left; background:none; border:none; border-bottom:1px solid var(--t-border); width:100%; cursor:pointer; padding:10px 12px 6px; color:var(--t-section-header); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.8px;">
+            <button class="left-section-header"
+                style="display:block; position: sticky; top: 0; text-align:left; background:none; border:none; border-bottom:1px solid var(--t-border); width:100%; cursor:pointer; padding:10px 12px 6px; color:var(--t-section-header); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.8px;">
                 Styles And ID
             </button>
             <div class="panel left-section-body">
@@ -215,19 +228,23 @@
                 <div class="style-controls">
                     <div class="form-group mb-1">
                         <label style="font-size:10px;">T:</label>
-                        <input type="number" class="form-control form-control-sm text-center" id="spacingTop" min="0" max="20" step="1">
+                        <input type="number" class="form-control form-control-sm text-center" id="spacingTop" min="0"
+                            max="20" step="1">
                     </div>
                     <div class="form-group mb-1">
                         <label style="font-size:10px;">R:</label>
-                        <input type="number" class="form-control form-control-sm text-center" id="spacingRight" min="0" max="20" step="1">
+                        <input type="number" class="form-control form-control-sm text-center" id="spacingRight" min="0"
+                            max="20" step="1">
                     </div>
                     <div class="form-group mb-1">
                         <label style="font-size:10px;">B:</label>
-                        <input type="number" class="form-control form-control-sm text-center" id="spacingBottom" min="0" max="1" step="0.1">
+                        <input type="number" class="form-control form-control-sm text-center" id="spacingBottom" min="0"
+                            max="1" step="0.1">
                     </div>
                     <div class="form-group mb-1">
                         <label style="font-size:10px;">L:</label>
-                        <input type="number" class="form-control form-control-sm text-center" id="spacingLeft" min="0" max="1" step="0.1">
+                        <input type="number" class="form-control form-control-sm text-center" id="spacingLeft" min="0"
+                            max="1" step="0.1">
                     </div>
                 </div>
                 <div class="form-group mb-2">
@@ -241,45 +258,60 @@
                     </select>
                 </div>
                 <div class="form-group mb-2">
-                    <input type="number" class="form-control form-control-sm text-center" id="attributeValue" min="0" max="20" step="1" value="1">
+                    <input type="number" class="form-control form-control-sm text-center" id="attributeValue" min="0"
+                        max="20" step="1" value="1">
                 </div>
                 <button id="applyClassId" class="btn btn-sm btn-outline-secondary w-100">Apply to Selected</button>
             </div>
 
             <!-- FUNCTION (operations) -->
-            <button class="accordion active left-section-header" style="display:block; text-align:left; background:none; border:none; border-bottom:1px solid var(--t-border); width:100%; cursor:pointer; padding:10px 12px 6px; color:var(--t-section-header); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.8px;">
+            <button class="left-section-header"
+                style="display:block; position: sticky; top: 0; text-align:left; background:none; border:none; border-bottom:1px solid var(--t-border); width:100%; cursor:pointer; padding:10px 12px 6px; color:var(--t-section-header); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.8px;">
                 Function
             </button>
             <div class="panel left-section-body">
                 <div class="button-controls">
-                    <button id="transposeTable" class="transposeTable btn btn-sm btn-outline-secondary toolbar-btn w-100 mb-1">Transpose Table</button>
-                    <button id="toggleCrosshair" class="toggleCrosshair btn btn-sm btn-outline-secondary toolbar-btn w-100 mb-1">Toggle Crosshair</button>
-                    <button id="applyStyle" class="applyStyle btn btn-sm btn-outline-secondary toolbar-btn w-100 mb-1">Apply Style</button>
-                    <button class="textSplit btn btn-sm btn-outline-secondary toolbar-btn w-100 mb-1">Text Split</button>
+                    <button id="transposeTable"
+                        class="transposeTable btn btn-sm btn-outline-secondary toolbar-btn w-100 mb-1">Transpose
+                        Table</button>
+                    <button id="toggleCrosshair"
+                        class="toggleCrosshair btn btn-sm btn-outline-secondary toolbar-btn w-100 mb-1">Toggle
+                        Crosshair</button>
+                    <button id="applyStyle"
+                        class="applyStyle btn btn-sm btn-outline-secondary toolbar-btn w-100 mb-1">Apply Style</button>
+                    <button class="textSplit btn btn-sm btn-outline-secondary toolbar-btn w-100 mb-1">Text
+                        Split</button>
                 </div>
             </div>
 
             <!-- TABLE MANIPULATION TOOL -->
-            <button class="accordion active left-section-header" style="display:block; text-align:left; background:none; border:none; border-bottom:1px solid var(--t-border); width:100%; cursor:pointer; padding:10px 12px 6px; color:var(--t-section-header); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.8px;">
+            <button class="left-section-header"
+                style="display:block; display:block; position: sticky; top: 0; text-align:left; background:none; border:none; border-bottom:1px solid var(--t-border); width:100%; cursor:pointer; padding:10px 12px 6px; color:var(--t-section-header); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.8px;">
                 Table Manipulation Tool
             </button>
             <div class="panel left-section-body">
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px;">Add Operations</div>
                 <div class="button-controls mb-2">
                     <button id="addRow" class="addRow btn btn-sm btn-outline-secondary toolbar-btn">Add Row</button>
-                    <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary toolbar-btn">Add Column</button>
+                    <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary toolbar-btn">Add
+                        Column</button>
                     <button id="addCell" class="addCell btn btn-sm btn-outline-secondary toolbar-btn">Add Cell</button>
-                    <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary toolbar-btn">Merge Cells</button>
+                    <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary toolbar-btn">Merge
+                        Cells</button>
                 </div>
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px; margin-top:8px;">Delete Operations</div>
                 <div class="button-controls">
-                    <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger toolbar-btn">Delete Cell(s)</button>
-                    <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger toolbar-btn">Delete Row(s)</button>
-                    <button id="deleteColumn" class="deleteColumn btn btn-sm btn-outline-danger toolbar-btn">Delete Col(s)</button>
+                    <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger toolbar-btn">Delete
+                        Cell(s)</button>
+                    <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger toolbar-btn">Delete
+                        Row(s)</button>
+                    <button id="deleteColumn" class="deleteColumn btn btn-sm btn-outline-danger toolbar-btn">Delete
+                        Col(s)</button>
                 </div>
                 <hr style="border-color:var(--t-border); margin:10px 0;">
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px;">Drag &amp; Drop</div>
-                <button id="toggleDragDrop" class="btn btn-sm btn-outline-secondary w-100">Toggle Drag &amp; Drop</button>
+                <button id="toggleDragDrop" class="btn btn-sm btn-outline-secondary w-100">Toggle Drag &amp;
+                    Drop</button>
             </div>
 
         </aside>
@@ -300,52 +332,129 @@
                         </button>
                     </div>
                     <div class="toolbar-group" data-group="table-ops">
-                        <button class="toolbar-btn addRow" title="Add Row"><i class="fas fa-plus-square"></i> Row</button>
-                        <button class="toolbar-btn addColumn" title="Add Column"><i class="fas fa-columns"></i> Col</button>
-                        <button class="toolbar-btn deleteRow" title="Delete Row"><i class="fas fa-minus-square"></i> Row</button>
-                        <button class="toolbar-btn deleteColumn" title="Delete Column"><i class="fas fa-ban"></i> Col</button>
+                        <button class="toolbar-btn addRow" title="Add Row"><i class="fas fa-plus-square"></i>
+                            Row</button>
+                        <button class="toolbar-btn addColumn" title="Add Column"><i class="fas fa-columns"></i>
+                            Col</button>
+                        <button class="toolbar-btn deleteRow" title="Delete Row"><i class="fas fa-minus-square"></i>
+                            Row</button>
+                        <button class="toolbar-btn deleteColumn" title="Delete Column"><i class="fas fa-ban"></i>
+                            Col</button>
                     </div>
                     <div class="toolbar-group" data-group="cell-ops">
-                        <button class="toolbar-btn mergeCells" title="Merge"><i class="fas fa-compress"></i> Merge</button>
+                        <button class="toolbar-btn mergeCells" title="Merge"><i class="fas fa-compress"></i>
+                            Merge</button>
                         <button class="toolbar-btn addCell" title="Add Cell"><i class="fas fa-plus-circle"></i></button>
                         <button class="toolbar-btn deleteCell" title="Delete Cell"><i class="fas fa-trash"></i></button>
                     </div>
                     <div class="toolbar-group" data-group="tools">
-                        <button class="toolbar-btn transposeTable" title="Transpose"><i class="fas fa-exchange-alt"></i></button>
-                        <button class="toolbar-btn toggleCrosshair" title="Crosshair"><i class="fas fa-crosshairs"></i></button>
+                        <button class="toolbar-btn transposeTable" title="Transpose"><i
+                                class="fas fa-exchange-alt"></i></button>
+                        <button class="toolbar-btn toggleCrosshair" title="Crosshair"><i
+                                class="fas fa-crosshairs"></i></button>
                         <button class="toolbar-btn textSplit" title="Text Split"><i class="fas fa-cut"></i></button>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 1: Text Input (default open) -->
-            <div class="right-section" data-mobile-order="1">
-                <div class="right-section-header" data-target="right-input">
-                    Text Input <span class="right-section-chevron">▼</span>
+            <!-- Input Toolbar (replaces old Text Input section) -->
+            <div class="input-toolbar">
+                <!-- Load file -->
+                <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.html,.htm" style="display:none;">
+                <button id="loadFileBtn" class="toolbar-btn" title="Load file (.csv, .tsv, .txt, .html)">
+                    <i class="fas fa-folder-open"></i> Load
+                </button>
+
+                <!-- Text input modal trigger -->
+                <button id="inputModalBtn" class="toolbar-btn" title="Open text input">
+                    <i class="fas fa-keyboard"></i> Input
+                </button>
+
+                <div class="input-toolbar-divider"></div>
+
+                <!-- Select Tool (default active — normal selection mode) -->
+                <button id="selectToolToggle" class="toolbar-btn active" title="Select Tool">
+                    <i class="fas fa-mouse-pointer"></i> Select
+                </button>
+
+                <!-- Draw Mode -->
+                <button id="drawModeToggle" class="toolbar-btn" title="Draw Mode: OFF">
+                    <i class="fas fa-pencil-alt"></i> Draw
+                </button>
+
+                <div class="input-toolbar-divider"></div>
+
+                <!-- Drag & Drop switch -->
+                <label class="toolbar-switch-label" title="Toggle Drag &amp; Drop">
+                    <input type="checkbox" id="dragDropSwitch">
+                    <span class="toolbar-switch-track"></span>
+                    <span class="toolbar-switch-text">D&amp;D</span>
+                </label>
+
+                <div class="input-toolbar-divider"></div>
+
+                <!-- Tab count (decoupled — changes update tabs live) -->
+                <label class="toolbar-tab-label" title="Number of Tabs">
+                    <span style="font-size:10px; white-space:nowrap;">Tabs</span>
+                    <input type="number" id="buttonIndex" name="buttonIndex" min="1" max="100" placeholder="1"
+                        class="toolbar-tab-input" style="width:48px;">
+                </label>
+            </div>
+
+            <!-- Draw Canvas (shown when Draw Mode is active, covers table view) -->
+            <div id="drawCanvas" class="draw-canvas">
+                <div class="draw-canvas-header">
+                    <span><i class="fas fa-pencil-alt"></i> Draw Mode — paste raw data, select text, mark as Header / Column / Row</span>
+                    <div class="draw-canvas-header-actions">
+                        <button id="drawClearAll" class="btn btn-sm btn-outline-danger" title="Clear all">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                        <button id="exitDrawMode" class="btn btn-sm btn-outline-secondary">Exit</button>
+                    </div>
                 </div>
-                <div class="right-section-body" id="right-input">
-                    <div class="form-group mb-2">
-                        <label for="inputType" style="font-size:11px;">Input Format</label>
-                        <select class="form-control form-control-sm" id="inputType">
-                            <option value="html">HTML</option>
-                            <option value="ascii">ASCII</option>
-                            <option value="csv">CSV / Spreadsheet</option>
-                            <option value="text">Text</option>
+                <div class="draw-canvas-body">
+                    <!-- Monaco editor replaces textarea -->
+                    <div id="monaco-draw-container" class="draw-monaco-container"></div>
+                    <!-- Fallback textarea when Monaco is unavailable -->
+                    <textarea id="drawInput" class="draw-input" style="display:none;"
+                        placeholder="Paste or type raw data here. Select text, then use the buttons below to mark headers, columns, and rows."></textarea>
+                    <div class="draw-canvas-toolbar" style="flex-wrap: wrap; gap: 8px;">
+                        <span class="draw-toolbar-hint">Grid Size:</span>
+                        <input type="number" id="drawGridCols" value="3" min="1" max="100" class="form-control form-control-sm" style="width:50px; height:24px; padding:2px 4px; font-size:11px;" title="Columns">
+                        <span style="font-size:11px; color:var(--t-text-muted);">x</span>
+                        <input type="number" id="drawGridRows" value="3" min="1" max="1000" class="form-control form-control-sm" style="width:50px; height:24px; padding:2px 4px; font-size:11px;" title="Rows">
+                        <button id="drawApplySize" class="btn btn-sm btn-outline-secondary" style="height:24px; line-height:1; padding:2px 6px;">Set Grid</button>
+
+                        <div class="input-toolbar-divider" style="height:16px;"></div>
+
+                        <span class="draw-toolbar-hint">Auto-Advance:</span>
+                        <select id="drawAutoAdvance" class="form-control form-control-sm" style="width: auto; height:24px; padding:2px 4px; font-size:11px;">
+                            <option value="right">Right (Row)</option>
+                            <option value="down">Down (Col)</option>
+                            <option value="none">None</option>
                         </select>
+
+                        <div class="input-toolbar-divider" style="height:16px;"></div>
+
+                        <button id="drawPaintModeToggle" class="btn btn-sm btn-outline-warning" title="Toggle Paint Brush Mode" style="height:24px; line-height:1; padding:2px 8px;">
+                            <i class="fas fa-paint-brush"></i> Paint: OFF
+                        </button>
+
+                        <button id="drawInsertSelected" class="btn btn-sm btn-primary" title="Insert selected text into grid starting at active cell" style="height:24px; line-height:1; padding:2px 8px;">
+                            <i class="fas fa-level-down-alt"></i> Insert Selected
+                        </button>
+
+                        <div style="flex:1;"></div>
+                        <button id="drawBuildTable" class="btn btn-sm btn-success" title="Generate the HTML table from the drawn structure">
+                            <i class="fas fa-table"></i> Build Table
+                        </button>
                     </div>
-                    <div class="form-group mb-2">
-                        <label for="monaco-input-container" style="font-size:11px;">Paste table data</label>
-                        <div id="monaco-input-container" style="height:140px; border:1px solid var(--border-color, #ccc); border-radius:4px;"></div>
-                        <!-- Fallback textarea (used when Monaco fails to load) -->
-                        <textarea class="form-control form-control-sm" id="tableInput" rows="6"
-                            placeholder="Input Table Here..." style="display:none;"></textarea>
+                    <div class="draw-preview">
+                        <div class="draw-preview-label">Structure Preview</div>
+                        <div id="drawPreviewContent" class="draw-preview-content">
+                            <em style="font-size:11px;">No cells marked yet</em>
+                        </div>
                     </div>
-                    <div class="form-group mb-2">
-                        <label for="buttonIndex" style="font-size:11px;">Number of Tabs</label>
-                        <input type="number" class="form-control form-control-sm text-center" id="buttonIndex"
-                            name="buttonIndex" min="1" max="100" placeholder="Tab count">
-                    </div>
-                    <button id="parseInput" class="btn btn-sm btn-primary w-100">Parse Input</button>
                 </div>
             </div>
 
@@ -360,6 +469,9 @@
                 <p contenteditable="true" data-text="Table View" class="text-center"></p>
                 <div class="table-container" id="tableContainer"></div>
             </div>
+
+            <!-- Sheet tab bar -->
+            <div id="sheetTabBar" class="sheet-tab-bar"></div>
 
         </main>
         <!-- END CENTER PANEL -->
@@ -423,7 +535,8 @@
                     <!-- Monaco Editor mounts here -->
                     <div id="monaco-editor-container"></div>
                     <!-- Fallback textarea (hidden) -->
-                    <textarea id="tableOutput" style="display:none;" placeholder="Generated code appears here..."></textarea>
+                    <textarea id="tableOutput" style="display:none;"
+                        placeholder="Generated code appears here..."></textarea>
                 </div>
             </div>
 
@@ -447,10 +560,12 @@
         <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger">Delete Cell</button>
         <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger">Delete Row(s)</button>
         <button id="deleteColumn" class="deleteColumn btn btn-sm btn-outline-danger">Delete Col(s)</button>
-        <div class="cell-options">
-            <button class="beforeCell">Before</button>
-            <button class="afterCell">After</button>
-        </div>
+    </div>
+
+    <!-- Before/After cell options popup (outside context menu so Popper can position it freely) -->
+    <div class="cell-options">
+        <button class="beforeCell">Before</button>
+        <button class="afterCell">After</button>
     </div>
 
     <!-- ==================== EDIT CELL MODAL ==================== -->
@@ -490,14 +605,12 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="colDelimiter">Row Delimiter(s):</label>
-                        <input type="text" class="form-control" id="colDelimiter"
-                            placeholder="e.g., , or | or ;">
+                        <input type="text" class="form-control" id="colDelimiter" placeholder="e.g., , or | or ;">
                         <small class="form-text text-muted">Multiple delimiters separated by commas.</small>
                     </div>
                     <div class="form-group">
                         <label for="rowDelimiter">Column Delimiter(s):</label>
-                        <input type="text" class="form-control" id="rowDelimiter"
-                            placeholder="e.g., \n or |">
+                        <input type="text" class="form-control" id="rowDelimiter" placeholder="e.g., \n or |">
                         <small class="form-text text-muted">Multiple delimiters separated by commas.</small>
                     </div>
                     <div class="form-group">
@@ -512,6 +625,43 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary applyTextSplit" id="applyTextSplit">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== INPUT MODAL ==================== -->
+    <div class="modal fade" id="inputModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Paste / Type Table Data</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-2">
+                        <label for="inputType" style="font-size:11px;">Input Format</label>
+                        <select class="form-control form-control-sm" id="inputType">
+                            <option value="html">HTML</option>
+                            <option value="ascii">ASCII</option>
+                            <option value="csv">CSV / Spreadsheet</option>
+                            <option value="text">Text</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label style="font-size:11px;">Paste table data</label>
+                        <div id="monaco-input-container"
+                            style="height:300px; border:1px solid var(--t-border, #ccc); border-radius:4px;"></div>
+                        <!-- Fallback textarea (used when Monaco fails to load) -->
+                        <textarea class="form-control form-control-sm" id="tableInput" rows="10"
+                            placeholder="Input Table Here..." style="display:none;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="parseInputModal">Parse &amp; Load</button>
                 </div>
             </div>
         </div>
@@ -552,6 +702,18 @@
                 var outContainer = document.getElementById('monaco-editor-container');
                 if (outContainer) {
                     window.tifanyMonaco = monaco.editor.create(outContainer, Object.assign({}, editorOptions, { language: 'html' }));
+                }
+
+                // ── Draw editor ──
+                var drawContainer = document.getElementById('monaco-draw-container');
+                if (drawContainer) {
+                    window.tifanyMonacoDraw = monaco.editor.create(drawContainer, Object.assign({}, editorOptions, {
+                        language: 'plaintext',
+                        lineNumbers: 'on',
+                        wordWrap: 'on',
+                        placeholder: 'Paste or type raw data here. Select text, then click Header / Column / New Row to build your table structure.',
+                        columnSelection: true
+                    }));
                 }
 
                 // ── Input editor ──
@@ -601,12 +763,12 @@
                 if (isDark) {
                     document.documentElement.setAttribute('data-theme', 'light');
                     this.querySelector('.theme-icon').textContent = '☀';
-                    if (window.tifanyMonaco) monaco.editor.setTheme('vs');
+                    monaco.editor.setTheme('vs');
                     localStorage.setItem('tifany-theme', 'light');
                 } else {
                     document.documentElement.setAttribute('data-theme', 'dark');
                     this.querySelector('.theme-icon').textContent = '☾';
-                    if (window.tifanyMonaco) monaco.editor.setTheme('vs-dark');
+                    monaco.editor.setTheme('vs-dark');
                     localStorage.setItem('tifany-theme', 'dark');
                 }
             });
@@ -638,4 +800,5 @@
     </script>
 
 </body>
+
 </html>

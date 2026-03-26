@@ -33,14 +33,76 @@ function parseInput() {
             return;
     }
 
-    generateTabs(tableHtml);
-    // Set active table to first table; interaction will update it on click
-    window.currentTable = $('#tableContainer table')[0];
+    // Close the input modal if open
+    $('#inputModal').modal('hide');
 
-    initializeAllFeatures();
-    setupTableInteraction();
-    // Save initial state so undo can return to it
-    window.saveCurrentState();
+    // Route through sheet manager so each parse creates/updates a sheet
+    if (typeof addSheet === 'function') {
+        const sheetName = 'Sheet ' + (window._sheetCounter + 1);
+        addSheet(sheetName, tableHtml);
+    } else {
+        // Fallback: direct render (no sheet manager loaded)
+        window.lastParsedHtml = tableHtml;
+        generateTabs(tableHtml);
+        window.currentTable = $('#tableContainer table')[0];
+        initializeAllFeatures();
+        setupTableInteraction();
+        window.saveCurrentState();
+    }
+}
+
+/**
+ * Handle a file selected via the Load button.
+ * Auto-detects format from extension and parses into a new sheet.
+ */
+function handleFileLoad(file) {
+    if (!file) return;
+
+    const ext = file.name.split('.').pop().toLowerCase();
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const text = e.target.result;
+        let tableHtml = '';
+
+        if (ext === 'html' || ext === 'htm') {
+            tableHtml = parseHtmlInput(text);
+        } else if (ext === 'csv') {
+            tableHtml = parseCsvInput(text);
+        } else if (ext === 'tsv') {
+            tableHtml = parseTextInput(text);
+        } else {
+            // .txt and others — try tab-delimited first
+            if (text.includes('\t')) {
+                tableHtml = parseTextInput(text);
+            } else if (text.includes(',')) {
+                tableHtml = parseCsvInput(text);
+            } else {
+                tableHtml = parseTextInput(text);
+            }
+        }
+
+        if (!tableHtml) {
+            alert('Could not parse file: ' + file.name);
+            return;
+        }
+
+        const sheetName = file.name.replace(/\.[^/.]+$/, ''); // strip extension
+        if (typeof addSheet === 'function') {
+            addSheet(sheetName, tableHtml);
+        } else {
+            window.lastParsedHtml = tableHtml;
+            generateTabs(tableHtml);
+            window.currentTable = $('#tableContainer table')[0];
+            initializeAllFeatures();
+            setupTableInteraction();
+            window.saveCurrentState();
+        }
+
+        $.toast({ heading: 'Loaded', text: 'Loaded: ' + file.name, icon: 'success', loader: false, stack: false });
+    };
+
+    reader.readAsText(file);
 }
 
 function parseHtmlInput(html) {
