@@ -292,6 +292,16 @@ tr.accordion-header.actives {
     cursor: cell;
 }
 
+/* Empty cell placeholder — shown visually but not exported */
+#tableContainer td:empty::before,
+#tableContainer th:empty::before {
+    content: 'Empty';
+    color: #bbb;
+    font-style: italic;
+    font-size: 0.85em;
+    pointer-events: none;
+}
+
 .selected-cell {
     border: 4px solid rgba(7, 2, 77, 0.3) !important;
     /* opacity: 0.5; */
@@ -410,12 +420,24 @@ tr.accordion-header.actives {
 /* Visual feedback for the item being dragged */
 .dragging,
 .row-dragging>td,
-.row-dragging>th,
-.column-dragging {
+.row-dragging>th {
     opacity: 0.5;
     background-color: #aae !important;
-    /* Light blue */
     border: 1px dashed #337ab7;
+}
+
+/* Column being dragged — purple tint */
+.column-dragging {
+    opacity: 0.6;
+    background-color: rgba(160, 100, 220, 0.35) !important;
+    border: 1px dashed #7b2cbf;
+}
+
+/* Column drop target — green highlight so user knows where it will land */
+.column-drop-target {
+    background-color: rgba(92, 184, 92, 0.3) !important;
+    outline: 2px solid #5cb85c;
+    outline-offset: -2px;
 }
 
 /* Highlight for the potential drop target */
@@ -435,10 +457,10 @@ tr.accordion-header.actives {
     line-height: 0;
 }
 
-.drop-indicator-col {
-    width: 1px;
-    background-color: #3379b715;
-    /* Blue line */
-    padding: 0;
-    border: none;
+.col-drop-target-left {
+    border-left: 3px solid #337ab7 !important;
+}
+
+.col-drop-target-right {
+    border-right: 3px solid #337ab7 !important;
 }

@@ -199,6 +199,9 @@ $(function () {
             } else if (e.altKey && e.shiftKey && e.key === 'T') {
                 e.preventDefault();
                 $('#textSplitModal').modal('show');
+            } else if (e.altKey && e.shiftKey && e.key === 'X') {
+                e.preventDefault();
+                if (typeof applyTextSplit === 'function') applyTextSplit();
             } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
                 e.preventDefault();
                 performUndo();
@@ -496,6 +499,10 @@ $(function () {
         if (typeof applyClassId === 'function') applyClassId();
     });
 
+    $('#basic-addon1').on('click', function () {
+        $(this).toggleClass('sp-active');
+    });
+
     $('#generateCode').on('click', function () {
         if (typeof generateCode === 'function') generateCode();
     });
@@ -566,10 +573,25 @@ $(function () {
     });
 
     // =================== DECOUPLED TAB COUNT ===================
-    // Changing #buttonIndex re-renders tabs without re-parsing
+    // Changing #buttonIndex only updates the tab buttons — never re-renders the table
     $('#buttonIndex').on('change', function () {
-        if (window.lastParsedHtml && typeof generateTabs === 'function') {
-            generateTabs(window.lastParsedHtml);
+        let count = Math.min(100, Math.max(1, parseInt($(this).val()) || 1));
+        $(this).val(count);
+
+        const $panel = $('#tableContainer .panel');
+        if ($panel.length === 0) return;
+
+        let tabsHtml = '<div class="sp-selector">\n';
+        for (let i = 1; i <= count; i++) {
+            tabsHtml += `<button class="sp-option" data-value="${i}" data-panel="0">${i}</button>\n`;
+        }
+        tabsHtml += '</div>';
+
+        const $existing = $panel.find('.sp-selector');
+        if ($existing.length) {
+            $existing.replaceWith(tabsHtml);
+        } else {
+            $panel.prepend(tabsHtml);
         }
     });
 

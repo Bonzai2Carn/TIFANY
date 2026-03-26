@@ -8,7 +8,9 @@ function applyClassId() {
     window.saveCurrentState();
 
     const elementType = $('#elementType').val();
-    const className = $('#classInput').val();
+    const rawClass = $('#classInput').val();
+    const spActive = $('#basic-addon1').hasClass('sp-active');
+    const className = rawClass && spActive ? 'sp-' + rawClass : rawClass;
     const id = $('#idInput').val();
 
     // Get style values

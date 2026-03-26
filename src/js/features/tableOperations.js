@@ -17,7 +17,7 @@ function addCell() {
     const cellIndex = $selectedCell.index();
 
     // Create a new cell
-    const $newCell = $('<td>New Cell</td>');
+    const $newCell = $('<td></td>');
 
     // Insert the new cell after the selected cell
     $selectedCell.after($newCell);
@@ -48,7 +48,7 @@ function addCellBefore() {
     const cellIndex = $selectedCell.index();
 
     // Create a new cell
-    const $newCell = $('<td>New Cell</td>');
+    const $newCell = $('<td></td>');
 
     // Insert the new cell before the selected cell
     $selectedCell.before($newCell);
@@ -189,7 +189,7 @@ function addRow() {
 
     let newRowHtml = '<tr id="test">';
     for (let i = 0; i < colCount; i++) {
-        newRowHtml += '<td>New Row</td>';
+        newRowHtml += '<td></td>';
     }
     newRowHtml += '</tr>';
 
@@ -220,7 +220,7 @@ function addRowBefore() {
 
     let newRowHtml = '<tr id="test">';
     for (let i = 0; i < colCount; i++) {
-        newRowHtml += '<td>New Row</td>';
+        newRowHtml += '<td></td>';
     }
     newRowHtml += '</tr>';
 
@@ -254,7 +254,7 @@ function addColumn() {
         const tagName = $selectedCell.prop('tagName');
 
         // Insert new column after the selected cell
-        $selectedCell.after(`<${tagName}>New Col</${tagName}>`);
+        $selectedCell.after(`<${tagName}></${tagName}>`);
     });
 
     $.toast({
@@ -284,7 +284,7 @@ function addColumnBefore() {
         const tagName = $selectedCell.prop('tagName');
 
         // Insert new column before the selected cell
-        $selectedCell.before(`<${tagName}>New Col</${tagName}>`);
+        $selectedCell.before(`<${tagName}></${tagName}>`);
     });
 
     $.toast({

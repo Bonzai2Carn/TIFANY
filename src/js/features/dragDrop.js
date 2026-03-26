@@ -7,7 +7,7 @@
     function enableDragDrop() {
         if (!currentTable) return;
         const $table = $(currentTable);
-        const mapper = new VisualGridMapper($table);
+        const mapper = new window.VisualGridMapper($table);
 
         // Make the table a positioning context for absolute elements
         $table.css({
@@ -25,43 +25,33 @@
         });
 
         // --- Enable COLUMN dragging ---
-        //     const $headerRow = $table.find('tr:first');
+        let maxCols = mapper.maxCols;
+        if (maxCols === 0) maxCols = 1;
 
-        //     $headerRow.find('td, th').each(function (cellIndex) {
-        //         // Add a handle to the top of the header cell for dragging
-        //         $(this).prepend('<div class="drag-handle col-handle">::</div>');
-        //     });
-        //     $table.on('mousedown.drag', '.col-handle', function (e) {
-        //         const position = mapper.getVisualPosition(this);
-        //         // const colIndex = $(this).parent('tr').index();
-        //         // startColumnDrag(colIndex, e);
-        //         const colIndex = position ? position.startCol : -1;
-        //         if (colIndex !== -1) {
-        //             startColumnDrag(colIndex, e);
-        //         }
-        //     });
+        // Inject dedicated drag handle row at the top
+        // Start with an empty spacer to align with the row-handle column
+        let dragRowHtml = '<tr class="tifany-drag-row ignore-export" style="background:var(--t-bg-workspace); border-bottom:2px solid var(--t-primary);">';
+        dragRowHtml += '<td class="drag-handle drag-row-spacer" style="width:20px; padding:0;"></td>';
+        for (let i = 0; i < maxCols; i++) {
+            dragRowHtml += `<td class="drag-handle col-handle" data-col-index="${i}" style="text-align:center; font-weight:bold; color:var(--t-primary); cursor:ew-resize; padding:4px;">::</td>`;
+        }
+        dragRowHtml += '</tr>';
+        
+        if ($table.find('thead').length) {
+            $table.find('thead').prepend(dragRowHtml);
+        } else if ($table.find('tbody').length) {
+            $table.find('tbody').prepend(dragRowHtml);
+        } else {
+            $table.prepend(dragRowHtml);
+        }
 
-        //     // --- Enable CELL dragging ---
-        //     $table.on('mousedown.drag', 'td:not(.drag-handle), th:not(:has(.col-handle))', function (e) {
-        //         // Exclude handles from being draggable as cells
-        //         startCellDrag(this, e);
-        //     });
-        // }
-
-        // COLUMN handles — fix: compute cell index, not row index
-        const $headerRow = $table.find('tr:first');
-        $headerRow.find('td, th').each(function (cellIndex) {
-            $(this).prepend('<div class="drag-handle col-handle">::</div>');
-            // store the index on the header cell so handler can read the correct index
-            $(this).attr('data-col-index', cellIndex);
-        });
         $table.on('mousedown.drag', '.col-handle', function (e) {
-            const colIndex = parseInt($(this).closest('td,th').attr('data-col-index'), 10);
+            const colIndex = parseInt($(this).attr('data-col-index'), 10);
             startColumnDrag(colIndex, e);
         });
 
-        // CELL dragging (unchanged)
-        $table.on('mousedown.drag', 'td:not(.drag-handle), th:not(:has(.col-handle))', function (e) {
+        // --- Enable CELL dragging ---
+        $table.on('mousedown.drag', 'td:not(.drag-handle), th:not(.drag-handle)', function (e) {
             startCellDrag(this, e);
         });
     }
@@ -71,7 +61,6 @@
         const $table = $(currentTable);
 
         // Remove the relative positioning
-        // $table.css('position', '');
         $table.css({
             'position': '',
             'cursor': 'cell'
@@ -80,8 +69,9 @@
         // Remove all event listeners namespaced with .drag
         $table.off('.drag');
 
-        // Remove handles
+        // Remove handles and the custom drag row
         $table.find('.drag-handle').remove();
+        $table.find('.tifany-drag-row').remove();
 
         // Clean up any active drag indicators
         endDrag();
@@ -129,7 +119,7 @@
 
         // Create drop indicators between rows
         $(currentTable).find('tr').each(function () {
-            if (this !== draggedElement) {
+            if (this !== draggedElement && !$(this).hasClass('tifany-drag-row')) {
                 $(this).before('<tr class="drop-indicator-row"><td colspan="999"></td></tr>');
             }
         });
@@ -142,37 +132,84 @@
         });
     }
 
+    let colDropTarget = -1; // tracks the target column index during column drag
+
     function startColumnDrag(colIndex, e) {
         e.preventDefault();
         e.stopPropagation();
 
         dragType = 'column';
         draggedElement = colIndex; // keep as number
+        colDropTarget = -1;
 
-        // highlight dragged column
-        $(currentTable).find('tr').each(function () {
-            $(this).find('td, th').eq(colIndex).addClass('column-dragging');
+        const mapper = new window.VisualGridMapper(currentTable);
+        // Offset: visual column 0 in the mapper is the row-handle column,
+        // so data-col-index N corresponds to mapper column N+1
+        const COL_OFFSET = 1;
+
+        // highlight dragged column visually
+        const cellsInCol = mapper.getCellsInColumn(colIndex + COL_OFFSET);
+        $(cellsInCol).not('.drag-handle').addClass('column-dragging');
+
+        // Build a lookup of column boundaries from the drag-row handles
+        const $dragRow = $(currentTable).find('.tifany-drag-row');
+        const colEdges = []; // array of { left, right, colIdx }
+        $dragRow.find('.col-handle').each(function () {
+            const rect = this.getBoundingClientRect();
+            const idx = parseInt($(this).attr('data-col-index'), 10);
+            colEdges.push({ left: rect.left, right: rect.right, center: (rect.left + rect.right) / 2, colIdx: idx });
         });
 
-        // create drop indicators between columns: add a small td/th before each cell and one at end
-        $(currentTable).find('tr').each(function () {
-            // use a fragment of cells for this row
-            const $cells = $(this).find('td, th');
-            // insert indicators before each existing cell
-            $cells.each(function (idx) {
-                $(this).before('<td class="drop-indicator-col" data-indicator-col="' + idx + '"></td>');
-            });
-            // indicator after last cell: its index equals number of columns
-            $(this).append('<td class="drop-indicator-col" data-indicator-col="' + $cells.length + '"></td>');
+        // On mousemove, determine which column gap the cursor is closest to
+        $(document).on('mousemove.coldrag', function (ev) {
+            if (colEdges.length === 0) return;
+
+            // Find which column the mouse is over or between
+            let targetCol = -1;
+            for (let i = 0; i < colEdges.length; i++) {
+                if (ev.clientX < colEdges[i].center) {
+                    targetCol = colEdges[i].colIdx;
+                    break;
+                }
+            }
+            // Past the last column center → drop after last column
+            if (targetCol === -1) {
+                targetCol = colEdges[colEdges.length - 1].colIdx + 1;
+            }
+
+            if (targetCol !== colDropTarget) {
+                colDropTarget = targetCol;
+
+                // Clear previous target highlights
+                $dragRow.find('.col-handle').removeClass('col-drop-target col-drop-target-left col-drop-target-right');
+                $(currentTable).find('.column-drop-target').removeClass('column-drop-target');
+
+                // Highlight the border between columns in the drag row
+                if (targetCol < mapper.maxCols) {
+                    $dragRow.find('.col-handle[data-col-index="' + targetCol + '"]').addClass('col-drop-target col-drop-target-left');
+                }
+                if (targetCol > 0) {
+                    $dragRow.find('.col-handle[data-col-index="' + (targetCol - 1) + '"]').addClass('col-drop-target col-drop-target-right');
+                }
+
+                // Highlight the target column cells with green so user sees where it will land
+                // Show the column that will be displaced (the one at targetCol, if it exists)
+                if (targetCol + COL_OFFSET < mapper.maxCols && targetCol !== colIndex) {
+                    const targetCells = mapper.getCellsInColumn(targetCol + COL_OFFSET);
+                    $(targetCells).not('.drag-handle').addClass('column-drop-target');
+                }
+            }
         });
 
-        $(document).one('mouseup', endDrag);
-
-        // click handler: compute target column index from indicator's data attribute
-        $(currentTable).on('mouseup.drag', '.drop-indicator-col', function (ev) {
-            const targetCol = parseInt($(this).attr('data-indicator-col'), 10);
-            console.log('moveColumn called from', draggedElement, 'to', targetCol);
-            moveColumn(draggedElement, targetCol);
+        // On mouseup anywhere, perform the column move
+        $(document).one('mouseup.drag', function () {
+            $(document).off('mousemove.coldrag');
+            if (colDropTarget >= 0 && colDropTarget !== colIndex) {
+                console.log('moveColumn called from', draggedElement, 'to', colDropTarget);
+                moveColumn(draggedElement, colDropTarget);
+            } else {
+                endDrag();
+            }
         });
     }
 
@@ -202,21 +239,82 @@
             return;
         }
 
-        $(currentTable).find('tr').each(function () {
-            const $cells = $(this).find('td, th');
-            const $moving = $cells.eq(fromIndex);
-            // clone to preserve event handlers/markup, remove original
-            const $clone = $moving.clone(true);
-            $moving.remove();
+        const $table = $(currentTable);
+        const mapper = new window.VisualGridMapper($table);
+        const movedElements = new Set(); // avoid moving a cell twice (colspan spans multiple grid rows)
 
-            // recompute insertion position: if moving from left to right, removing the cell shifts indices left
-            const insertIndex = (fromIndex < toIndex) ? toIndex - 1 : toIndex;
-            if (insertIndex >= $cells.length) {
-                $(this).append($clone);
-            } else {
-                $cells.eq(insertIndex).before($clone);
+        // Offset: visual column 0 in the mapper is the row-handle column,
+        // so data-col-index N corresponds to mapper column N+1
+        const COL_OFFSET = 1;
+        const mapperFrom = fromIndex + COL_OFFSET;
+        const mapperTo = toIndex + COL_OFFSET;
+
+        for (let r = 0; r < mapper.maxRows; r++) {
+            const rowData = mapper.grid[r];
+            if (!rowData) continue;
+
+            // Skip the drag-handle row — we'll reorder its handles separately
+            const rowEl = $table.find('tr').eq(r);
+            if (rowEl.hasClass('tifany-drag-row')) continue;
+
+            const fromCellData = rowData[mapperFrom];
+
+            // Only move origin cells mapped to this visual column (skip already-moved spanned cells)
+            if (fromCellData && fromCellData.isOrigin && !movedElements.has(fromCellData.element)) {
+                movedElements.add(fromCellData.element);
+                const $moving = $(fromCellData.element);
+
+                // Skip drag handles
+                if ($moving.hasClass('drag-handle')) continue;
+
+                let targetCellData = rowData[mapperTo];
+
+                if (targetCellData && targetCellData.isOrigin && targetCellData.element !== fromCellData.element) {
+                    // Insert immediately before the target origin cell
+                    $(targetCellData.element).before($moving);
+                } else if (!targetCellData) {
+                    // Past the end of the row — append
+                    $moving.closest('tr').append($moving);
+                } else {
+                    // Target is inside a colspan that started before mapperTo
+                    // Find the next origin cell to the right and insert before it
+                    let foundOrigin = null;
+                    for (let c = mapperTo; c < mapper.maxCols; c++) {
+                        if (rowData[c] && rowData[c].isOrigin && rowData[c].element !== fromCellData.element) {
+                            foundOrigin = rowData[c].element;
+                            break;
+                        }
+                    }
+                    if (foundOrigin) {
+                        $(foundOrigin).before($moving);
+                    } else {
+                        $moving.closest('tr').append($moving);
+                    }
+                }
             }
+        }
+
+        // Reorder the col-handle in the drag row to match
+        const $dragRow = $table.find('.tifany-drag-row');
+        const $handles = $dragRow.find('.col-handle');
+        const $fromHandle = $handles.eq(fromIndex);
+
+        // Adjust target: if moving right, account for the fact that removing from shifts indices
+        const adjustedTo = (toIndex > fromIndex) ? toIndex - 1 : toIndex;
+        const $targetHandle = $handles.eq(adjustedTo);
+
+        if (toIndex > fromIndex) {
+            $targetHandle.after($fromHandle);
+        } else {
+            $targetHandle.before($fromHandle);
+        }
+
+        // Re-index all handles
+        $dragRow.find('.col-handle').each(function(idx) {
+            $(this).attr('data-col-index', idx);
         });
+
+        if (typeof window.saveCurrentState === 'function') window.saveCurrentState();
 
         endDrag();
     }
@@ -228,7 +326,12 @@
     function endDrag() {
         // Remove all visual indicators
         $('.dragging, .row-dragging, .column-dragging, .drag-over').removeClass('dragging row-dragging column-dragging drag-over');
-        $('.drop-indicator-row, .drop-indicator-col').remove();
+        $('.col-drop-target, .col-drop-target-left, .col-drop-target-right').removeClass('col-drop-target col-drop-target-left col-drop-target-right');
+        $('.column-drop-target').removeClass('column-drop-target');
+        $('.drop-indicator-row').remove();
+
+        // Remove column drag mousemove listener
+        $(document).off('mousemove.coldrag');
 
         // Remove all temporary drag-related event listeners
         if (currentTable) {
@@ -239,4 +342,5 @@
         // Reset state
         draggedElement = null;
         dragType = null;
+        colDropTarget = -1;
     }
