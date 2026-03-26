@@ -92,10 +92,12 @@ function applyClassId() {
         });
     }
 
-    // Optional: Clear inputs after applying
-    // $('#classInput').val('');
-    // $('#idInput').val('');
-    // $('#styleInput').val('');
+    // Clear inputs after applying
+    $('#classInput').val('');
+    $('#idInput').val('');
+    $('#styleInput').val('');
+    $('#tableAttribute').val('');
+    $('#attributeValue').val('1');
 }
 
 // Make globally accessible

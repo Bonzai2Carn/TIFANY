@@ -81,10 +81,6 @@
         integrity="sha512-8D+M+7Y6jVsEa7RD6Kv/Z7EImSpNpQllgaEIQAtqHcI0H6F4iZknRj0Nx1DCdB+TwBaS+702BGWYC0Ze2hpExQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- Monaco Editor CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"
-        crossorigin="anonymous"></script>
-
     <!-- jQuery (must be before Bootstrap JS and TIFANY scripts) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
@@ -97,6 +93,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"
         integrity="sha512-zlWWyZq71UMApAjih4WkaRpikgY9Bz1oXIW5G0fED4vk14JjGlQ1UmkGM392jEULP8jbNMiwLWdM8Z87Hu88Fw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Monaco Editor CDN (must be after Bootstrap to prevent AMD loader conflict) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"
+        crossorigin="anonymous"></script>
 
     <!-- TIFANY Core -->
     <script src="js/core/tifany.js"></script>
