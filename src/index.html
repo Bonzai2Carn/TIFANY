@@ -97,9 +97,8 @@
     <!-- Monaco Editor CDN (must be after Bootstrap to prevent AMD loader conflict) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"
         crossorigin="anonymous"></script>
-    <!-- GSAP (pinned 3.12.2 — same version as schema-editor; required by Node Editor renderer) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"
-        crossorigin="anonymous"></script>
+    <!-- GSAP (pinned 3.12.2 — same version as schema-editor; used by Node Editor renderer) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <!-- TIFANY Core -->
     <script src="js/core/tifany.js"></script>
@@ -159,12 +158,39 @@
     <div class="tifany-app">
 
         <!-- Icon nav rail (injected by sidebar-nav.js) -->
-        <div id="sidebar-nav-mount">
+        <div id="sidebar-nav-mount" style="display: flex; flex-direction: column; gap: 5px;">
             <!-- Left panel toggle -->
             <button id="toggleLeftPanel" class="theme-toggle-btn active" title="Hide Tools Panel"
                 aria-label="Toggle tools panel" style="font-size:16px;">
                 ☰
             </button>
+            <!-- Load file -->
+                <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.html,.htm" style="display:none;">
+                <button id="loadFileBtn" class="theme-toggle-btn" title="Load file (.csv, .tsv, .txt, .html)">
+                    <i class="fas fa-folder-open"></i>
+                </button>
+
+                <!-- Text input modal trigger -->
+                <button id="inputModalBtn" class="theme-toggle-btn" title="Open text input">
+                    <i class="fas fa-keyboard"></i>
+                </button>
+
+                <div class="input-toolbar-divider"></div>
+
+                <!-- Select Tool (default active; normal selection mode) -->
+                <button id="selectToolToggle" class="theme-toggle-btn active" title="Table Mode">
+                    <i class="fas fa-table"></i>
+                </button>
+
+                <!-- Draw Mode -->
+                <button id="drawModeToggle" class="theme-toggle-btn" title="Draw Mode: OFF">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+
+                <!-- Node Editor -->
+                <button id="nodeEditorToggle" class="theme-toggle-btn" title="Node Editor: OFF">
+                    <i class="fas fa-project-diagram"></i>
+                </button>
         </div>
 
         <!-- ====== LEFT PANEL; Tools ====== -->
@@ -366,62 +392,13 @@
                 </div>
             </section>
 
-            <!-- Input Toolbar (replaces old Text Input section) -->
-            <div class="input-toolbar">
-                <!-- Load file -->
-                <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.html,.htm" style="display:none;">
-                <button id="loadFileBtn" class="toolbar-btn" title="Load file (.csv, .tsv, .txt, .html)">
-                    <i class="fas fa-folder-open"></i> Load
-                </button>
-
-                <!-- Text input modal trigger -->
-                <button id="inputModalBtn" class="toolbar-btn" title="Open text input">
-                    <i class="fas fa-keyboard"></i> Input
-                </button>
-
-                <div class="input-toolbar-divider"></div>
-
-                <!-- Select Tool (default active; normal selection mode) -->
-                <button id="selectToolToggle" class="toolbar-btn active" title="Select Tool">
-                    <i class="fas fa-mouse-pointer"></i> Select
-                </button>
-
-                <!-- Draw Mode -->
-                <button id="drawModeToggle" class="toolbar-btn" title="Draw Mode: OFF">
-                    <i class="fas fa-pencil-alt"></i> Draw
-                </button>
-
-                <!-- Node Editor -->
-                <button id="nodeEditorToggle" class="toolbar-btn" title="Node Editor: OFF">
-                    <i class="fas fa-project-diagram"></i> Nodes
-                </button>
-
-                <div class="input-toolbar-divider"></div>
-
-                <!-- Drag & Drop switch -->
-                <label class="toolbar-switch-label" title="Toggle Drag &amp; Drop">
-                    <input type="checkbox" id="dragDropSwitch">
-                    <span class="toolbar-switch-track"></span>
-                    <span class="toolbar-switch-text">D&amp;D</span>
-                </label>
-
-                <div class="input-toolbar-divider"></div>
-
-                <!-- Tab count (decoupled; changes update tabs live) -->
-                <label class="toolbar-tab-label" title="Number of Tabs">
-                    <span style="font-size:10px; white-space:nowrap;">Tabs</span>
-                    <input type="number" id="buttonIndex" name="buttonIndex" min="1" max="100" placeholder="1"
-                        class="toolbar-tab-input" style="width:48px;">
-                </label>
-            </div>
-
             <!-- Node Editor Canvas (shown when Node Editor mode is active) -->
             <div id="nodeEditorCanvas" class="node-editor-canvas">
                 <div class="node-editor-header">
                     <span><i class="fas fa-project-diagram"></i> Node Editor</span>
                     <div class="node-editor-header-actions">
-                        <button id="neAddFromSheet" class="btn btn-sm btn-outline-primary" title="Add current sheet as a node">
-                            <i class="fas fa-plus"></i> Add Sheet
+                        <button id="neAddFromSheet" class="btn btn-sm btn-outline-primary" title="Load current sheet as a node">
+                            <i class="fas fa-plus"></i> Load Sheet
                         </button>
                         <button id="neBuildTable" class="btn btn-sm btn-success" title="Build table from selected node">
                             <i class="fas fa-table"></i> Build Table
@@ -507,6 +484,25 @@
             <!-- Center header bar -->
             <div class="center-header">
                 <span>Table Viewer</span>
+
+                <div class="table-edit" style="display: flex; flex-directon: row; gap: 10px;">
+                    <!-- Drag & Drop switch -->
+                <label class="toolbar-switch-label" title="Toggle Drag &amp; Drop">
+                    <input type="checkbox" id="dragDropSwitch">
+                    <span class="toolbar-switch-track"></span>
+                    <span class="toolbar-switch-text">DRAG-DROP</span>
+                </label>
+
+                <div class="input-toolbar-divider"></div>
+
+                <!-- Tab count (decoupled; changes update tabs live) -->
+                <label class="toolbar-tab-label" title="Number of Tabs">
+                    <span style="font-size:10px; white-space:nowrap;">Tabs</span>
+                    <input type="number" id="buttonIndex" name="buttonIndex" min="1" max="100" placeholder="1"
+                        class="toolbar-tab-input" style="width:48px;">
+                </label>
+                </div>
+
                 <span class="center-pos" id="tablePosition">Pos · 1:1</span>
             </div>
 

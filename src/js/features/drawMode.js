@@ -20,6 +20,11 @@ window._drawGridState = {
 // ──────────────────────────────────────────────
 
 function enableDrawMode() {
+    // Exit Node Editor if it's active before entering Draw Mode
+    if (window.nodeEditorEnabled && typeof disableNodeEditor === 'function') {
+        disableNodeEditor();
+    }
+
     window.drawModeEnabled = true;
     $('#drawModeToggle').addClass('active').attr('title', 'Draw Mode: ON');
     $('#selectToolToggle').removeClass('active');

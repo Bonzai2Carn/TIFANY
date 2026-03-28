@@ -27,28 +27,28 @@ class NodeInteractionManager {
 
     init(containerEl) {
         this.container = containerEl;
+        // Wheel zoom stays on the viewport container (only fires when hovering it)
         this.container.addEventListener('wheel',     this._boundWheel,     { passive: false });
+        // mousedown on container to start interactions
         this.container.addEventListener('mousedown', this._boundMouseDown);
-        this.container.addEventListener('mousemove', this._boundMouseMove);
-        this.container.addEventListener('mouseup',   this._boundMouseUp);
-        // mouseup outside container (wire cancel on release outside)
-        document.addEventListener('mouseup', this._boundMouseUp);
-        document.addEventListener('keydown', this._boundKeyDown);
-        document.addEventListener('keyup',   this._boundKeyUp);
+        // mousemove + mouseup on document so drags/pans don't break when cursor leaves container
+        document.addEventListener('mousemove', this._boundMouseMove);
+        document.addEventListener('mouseup',   this._boundMouseUp);
+        document.addEventListener('keydown',   this._boundKeyDown);
+        document.addEventListener('keyup',     this._boundKeyUp);
     }
 
     destroy() {
         if (!this.container) return;
         this.container.removeEventListener('wheel',     this._boundWheel);
         this.container.removeEventListener('mousedown', this._boundMouseDown);
-        this.container.removeEventListener('mousemove', this._boundMouseMove);
-        this.container.removeEventListener('mouseup',   this._boundMouseUp);
-        document.removeEventListener('mouseup', this._boundMouseUp);
-        document.removeEventListener('keydown', this._boundKeyDown);
-        document.removeEventListener('keyup',   this._boundKeyUp);
-        this.container   = null;
-        this.isPanning   = false;
-        this.draggedNode = null;
+        document.removeEventListener('mousemove', this._boundMouseMove);
+        document.removeEventListener('mouseup',   this._boundMouseUp);
+        document.removeEventListener('keydown',   this._boundKeyDown);
+        document.removeEventListener('keyup',     this._boundKeyUp);
+        this.container      = null;
+        this.isPanning      = false;
+        this.draggedNode    = null;
         this.wireInProgress = null;
         this.selectionBox   = null;
     }

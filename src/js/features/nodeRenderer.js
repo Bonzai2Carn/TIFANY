@@ -55,12 +55,29 @@ class NodeCanvasRenderer {
     start() {
         if (this.isRunning) return;
         this.isRunning = true;
-        gsap.ticker.add(this._boundFrame);
+
+        // Prefer GSAP ticker for lag-smoothing; fall back to rAF if GSAP didn't load
+        if (typeof gsap !== 'undefined' && gsap.ticker) {
+            this._usingGsap = true;
+            gsap.ticker.add(this._boundFrame);
+        } else {
+            this._usingGsap = false;
+            this._rafLoop();
+        }
+    }
+
+    _rafLoop() {
+        if (!this.isRunning) return;
+        this._renderFrame();
+        requestAnimationFrame(() => this._rafLoop());
     }
 
     stop() {
         this.isRunning = false;
-        gsap.ticker.remove(this._boundFrame);
+        if (this._usingGsap && typeof gsap !== 'undefined' && gsap.ticker) {
+            gsap.ticker.remove(this._boundFrame);
+        }
+        // rAF loop self-terminates via this.isRunning check
     }
 
     markBgDirty()     { this._bgDirty = true; }
