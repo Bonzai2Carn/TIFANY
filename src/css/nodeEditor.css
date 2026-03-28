@@ -1,0 +1,344 @@
+/* ===================================================================================
+   NODE EDITOR — Overlay, Canvas Layers, Node Cards, Ports, Wires
+   =================================================================================== */
+
+/* ── Overlay Container ─────────────────────────────────────────────────────── */
+#nodeEditorCanvas {
+    position: absolute;
+    inset: 0;
+    display: none;   /* toggled to flex by JS */
+    flex-direction: column;
+    background: var(--t-bg-workspace);
+    z-index: 50;
+    overflow: hidden;
+}
+
+/* ── Toolbar / Header ──────────────────────────────────────────────────────── */
+.node-editor-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--t-bg-surface);
+    border-bottom: 1px solid var(--t-border);
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--t-text-muted);
+    user-select: none;
+}
+
+.node-editor-header > span:first-child {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.node-editor-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ── Viewport (where canvas + HTML layer live) ─────────────────────────────── */
+#nodeEditorViewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+}
+
+/* Space-bar grab cursor applied via JS */
+#nodeEditorViewport.grabbing { cursor: grabbing !important; }
+
+/* ── Canvas layers ─────────────────────────────────────────────────────────── */
+#nodeCanvasLayer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none; /* mouse events go to the viewport container */
+}
+
+/* Offscreen buffers — always hidden */
+#neBgBuffer,
+#neStaticBuffer {
+    display: none;
+}
+
+/* ── HTML Overlay Layer ────────────────────────────────────────────────────── */
+#nodeHtmlLayer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* transform set via JS: translate + scale in sync with canvas viewport */
+    transform-origin: 0 0;
+    pointer-events: none; /* children re-enable pointer-events individually */
+}
+
+/* ── Node Card ─────────────────────────────────────────────────────────────── */
+.ne-node {
+    position: absolute;
+    width: 280px;
+    background: var(--t-bg-surface);
+    border: 1.5px solid var(--t-border);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    font-size: 12px;
+    color: var(--t-text);
+    pointer-events: all;   /* re-enable inside the overlay layer */
+    transition: box-shadow 120ms ease, border-color 120ms ease;
+    user-select: none;
+    min-width: 180px;
+}
+
+.ne-node:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.ne-node.selected {
+    border-color: var(--t-primary);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.25), 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Node Header ───────────────────────────────────────────────────────────── */
+.ne-node-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 8px 7px 6px;
+    background: var(--t-toolbar-bg);
+    border-bottom: 1px solid var(--t-border);
+    border-radius: 8px 8px 0 0;
+    cursor: grab;
+}
+
+.ne-node.collapsed .ne-node-header {
+    border-radius: 8px;
+    border-bottom: none;
+}
+
+.ne-node-header:active {
+    cursor: grabbing;
+}
+
+.ne-node-collapse-btn {
+    font-size: 9px;
+    color: var(--t-text-muted);
+    cursor: pointer;
+    padding: 2px 3px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: color 100ms;
+}
+
+.ne-node-collapse-btn:hover {
+    color: var(--t-primary);
+}
+
+.ne-node-label {
+    flex: 1;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--t-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ne-node-meta {
+    font-size: 10px;
+    color: var(--t-text-light);
+    flex-shrink: 0;
+}
+
+.ne-node-delete-btn {
+    background: none;
+    border: none;
+    color: var(--t-text-light);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 1px 4px;
+    border-radius: 4px;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: color 100ms, background 100ms;
+}
+
+.ne-node-delete-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* ── Node Body ─────────────────────────────────────────────────────────────── */
+.ne-node-body {
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+}
+
+.ne-node-body.ne-hidden {
+    display: none;
+}
+
+/* ── Column (port) rows ────────────────────────────────────────────────────── */
+.ne-node-col-rows {
+    border-bottom: 1px solid var(--t-border);
+}
+
+.ne-node-col-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px 4px 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    background: var(--t-bg-surface);
+    min-height: 28px;
+}
+
+.ne-node-col-row:last-child {
+    border-bottom: none;
+}
+
+.ne-cell-label {
+    flex: 1;
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--t-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 4px;
+}
+
+/* ── Data rows ─────────────────────────────────────────────────────────────── */
+.ne-node-data-rows {
+    background: var(--t-bg-workspace);
+}
+
+.ne-node-data-row {
+    display: flex;
+    border-bottom: 1px solid var(--t-border);
+}
+
+.ne-node-data-row:last-child {
+    border-bottom: none;
+}
+
+.ne-cell-value {
+    flex: 1;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: var(--t-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: text;
+    min-width: 0;
+    border-right: 1px solid var(--t-border);
+    transition: background 80ms;
+}
+
+.ne-cell-value:last-child {
+    border-right: none;
+}
+
+.ne-cell-value:hover {
+    background: var(--t-hover-bg);
+}
+
+.ne-cell-empty {
+    color: var(--t-text-light);
+    font-style: normal;
+}
+
+/* ── Inline edit input ─────────────────────────────────────────────────────── */
+.ne-cell-edit-input {
+    flex: 1;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-family: inherit;
+    color: var(--t-text);
+    background: var(--t-bg-input);
+    border: 1.5px solid var(--t-primary);
+    border-radius: 3px;
+    outline: none;
+    min-width: 0;
+    width: 100%;
+}
+
+/* ── Overflow hint ─────────────────────────────────────────────────────────── */
+.ne-node-overflow-hint {
+    padding: 4px 8px;
+    font-size: 10px;
+    color: var(--t-text-light);
+    background: var(--t-bg-workspace);
+    text-align: center;
+    border-top: 1px dashed var(--t-border);
+}
+
+/* ── Ports ─────────────────────────────────────────────────────────────────── */
+.ne-port {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 2px solid var(--t-primary);
+    background: var(--t-bg-surface);
+    cursor: crosshair;
+    flex-shrink: 0;
+    transition: background 100ms, transform 100ms, border-color 100ms;
+    position: relative;
+    z-index: 1;
+}
+
+.ne-port:hover {
+    background: var(--t-primary);
+    transform: scale(1.3);
+}
+
+.ne-port-in {
+    border-color: var(--t-primary);
+}
+
+.ne-port-out {
+    border-color: #10b981;  /* teal for output */
+}
+
+.ne-port-out:hover {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+/* ── Minimap (bottom-right overlay) ───────────────────────────────────────── */
+.node-editor-minimap {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: var(--t-bg-surface);
+    border: 1px solid var(--t-border);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    opacity: 0.85;
+    transition: opacity 150ms;
+    pointer-events: none;
+}
+
+.node-editor-minimap:hover {
+    opacity: 1;
+}
+
+/* ── Responsive: hide minimap on small containers ─────────────────────────── */
+@media (max-width: 600px) {
+    .node-editor-minimap {
+        display: none;
+    }
+    .node-editor-header-actions .btn {
+        display: none;
+    }
+    .node-editor-header-actions .btn:last-child {
+        display: inline-flex;
+    }
+}

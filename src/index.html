@@ -1,4 +1,4 @@
-<!-- Table Formatter and Editor — TIFANY -->
+<!-- Table Formatter and Editor; TIFANY -->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 
@@ -7,27 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- ── Primary SEO ── -->
-    <title>Table Formatter (TIFANY) — CANWORKSTUDIOS</title>
+    <title>Table Formatter (TIFANY); CANWORKSTUDIOS</title>
     <meta name="description"
         content="TIFANY is a free, browser-based HTML table editor and formatter. Parse HTML, ASCII, CSV, or plain text into a visual table. Edit with drag-and-drop, cell merging, and export clean HTML.">
     <meta name="keywords"
         content="HTML table editor, table formatter, CSV to HTML table, ASCII table, table manipulation, drag and drop table, TIFANY, CANWORKSTUDIOS, developer tool">
     <meta name="author" content="CANWORKSTUDIOS">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://canworkstudios.com/tools/tifany/src/index.html">
+    <link rel="canonical" href="https://canworkstudios.com/tools/table-formatter/src/index.html">
 
     <!-- ── Open Graph ── -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="CANWORKSTUDIOS">
-    <meta property="og:title" content="Table Formatter (TIFANY) — CANWORKSTUDIOS">
+    <meta property="og:title" content="Table Formatter (TIFANY); CANWORKSTUDIOS">
     <meta property="og:description"
         content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually with drag-and-drop, and export clean HTML code.">
-    <meta property="og:url" content="https://canworkstudios.com/tools/tifany/src/index.html">
+    <meta property="og:url" content="https://canworkstudios.com/tools/table-formatter/src/index.html">
     <meta property="og:locale" content="en_US">
 
     <!-- ── Twitter / X Card ── -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Table Formatter (TIFANY) — CANWORKSTUDIOS">
+    <meta name="twitter:title" content="Table Formatter (TIFANY); CANWORKSTUDIOS">
     <meta name="twitter:description"
         content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually, and export clean HTML.">
     <meta name="twitter:site" content="@canworkstudios">
@@ -39,7 +39,7 @@
       "@type": "SoftwareApplication",
       "name": "Table Formatter",
       "alternateName": "TIFANY",
-      "url": "https://canworkstudios.com/tools/tifany/src/index.html",
+      "url": "https://canworkstudios.com/tools/table-formatter/src/index.html",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Web Browser",
       "description": "Parse, edit, and format HTML tables visually. Supports HTML, ASCII, CSV, and plain text input with drag-and-drop, cell merging, transpose, text split, and clean HTML code output.",
@@ -97,12 +97,17 @@
     <!-- Monaco Editor CDN (must be after Bootstrap to prevent AMD loader conflict) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"
         crossorigin="anonymous"></script>
+    <!-- GSAP (pinned 3.12.2 — same version as schema-editor; required by Node Editor renderer) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"
+        crossorigin="anonymous"></script>
 
     <!-- TIFANY Core -->
     <script src="js/core/tifany.js"></script>
     <!-- TIFANY Components -->
     <script src="js/components/visualGridMapper.js"></script>
     <script src="js/components/tableHistory.js"></script>
+    <script src="js/components/cellStore.js"></script>
+    <script src="js/components/nodeGraph.js"></script>
     <!-- TIFANY Features -->
     <script src="js/features/applyClassID.js"></script>
     <script src="js/features/dragDrop.js"></script>
@@ -113,10 +118,14 @@
     <script src="js/features/tifanyTabs.js"></script>
     <script src="js/features/drawMode.js"></script>
     <script src="js/features/sheetManager.js"></script>
+    <script src="js/features/nodeRenderer.js"></script>
+    <script src="js/features/nodeInteractions.js"></script>
+    <script src="js/features/nodeEditor.js"></script>
 
     <!-- TIFANY CSS -->
     <link rel="stylesheet" href="css/tableEditor.css">
     <link rel="stylesheet" href="css/tifanyUI.css">
+    <link rel="stylesheet" href="css/nodeEditor.css">
     <!-- Shared portfolio CSS (header/logo styles) -->
     <link rel="stylesheet" href="../../../assets/css/portfolio.css">
 
@@ -158,7 +167,7 @@
             </button>
         </div>
 
-        <!-- ====== LEFT PANEL — Tools ====== -->
+        <!-- ====== LEFT PANEL; Tools ====== -->
         <aside class="tifany-left-panel">
 
             <!-- HISTORY -->
@@ -317,7 +326,7 @@
         </aside>
         <!-- END LEFT PANEL -->
 
-        <!-- ====== CENTER PANEL — Table Viewer ====== -->
+        <!-- ====== CENTER PANEL; Table Viewer ====== -->
         <main class="tifany-center-panel">
 
             <!-- Mobile toolbar (shown on ≤768px only) -->
@@ -372,7 +381,7 @@
 
                 <div class="input-toolbar-divider"></div>
 
-                <!-- Select Tool (default active — normal selection mode) -->
+                <!-- Select Tool (default active; normal selection mode) -->
                 <button id="selectToolToggle" class="toolbar-btn active" title="Select Tool">
                     <i class="fas fa-mouse-pointer"></i> Select
                 </button>
@@ -380,6 +389,11 @@
                 <!-- Draw Mode -->
                 <button id="drawModeToggle" class="toolbar-btn" title="Draw Mode: OFF">
                     <i class="fas fa-pencil-alt"></i> Draw
+                </button>
+
+                <!-- Node Editor -->
+                <button id="nodeEditorToggle" class="toolbar-btn" title="Node Editor: OFF">
+                    <i class="fas fa-project-diagram"></i> Nodes
                 </button>
 
                 <div class="input-toolbar-divider"></div>
@@ -393,7 +407,7 @@
 
                 <div class="input-toolbar-divider"></div>
 
-                <!-- Tab count (decoupled — changes update tabs live) -->
+                <!-- Tab count (decoupled; changes update tabs live) -->
                 <label class="toolbar-tab-label" title="Number of Tabs">
                     <span style="font-size:10px; white-space:nowrap;">Tabs</span>
                     <input type="number" id="buttonIndex" name="buttonIndex" min="1" max="100" placeholder="1"
@@ -401,10 +415,42 @@
                 </label>
             </div>
 
+            <!-- Node Editor Canvas (shown when Node Editor mode is active) -->
+            <div id="nodeEditorCanvas" class="node-editor-canvas">
+                <div class="node-editor-header">
+                    <span><i class="fas fa-project-diagram"></i> Node Editor</span>
+                    <div class="node-editor-header-actions">
+                        <button id="neAddFromSheet" class="btn btn-sm btn-outline-primary" title="Add current sheet as a node">
+                            <i class="fas fa-plus"></i> Add Sheet
+                        </button>
+                        <button id="neBuildTable" class="btn btn-sm btn-success" title="Build table from selected node">
+                            <i class="fas fa-table"></i> Build Table
+                        </button>
+                        <button id="neFitView" class="btn btn-sm btn-outline-secondary" title="Fit all nodes into view">
+                            <i class="fas fa-compress-arrows-alt"></i> Fit
+                        </button>
+                        <button id="neExit" class="btn btn-sm btn-outline-secondary">Exit</button>
+                    </div>
+                </div>
+                <div id="nodeEditorViewport">
+                    <!-- Visible composite canvas -->
+                    <canvas id="nodeCanvasLayer"></canvas>
+                    <!-- Offscreen render buffers (hidden) -->
+                    <canvas id="neBgBuffer"></canvas>
+                    <canvas id="neStaticBuffer"></canvas>
+                    <!-- HTML overlay for node cards -->
+                    <div id="nodeHtmlLayer"></div>
+                    <!-- Minimap -->
+                    <div class="node-editor-minimap">
+                        <canvas id="neMinimapCanvas" width="160" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <!-- Draw Canvas (shown when Draw Mode is active, covers table view) -->
             <div id="drawCanvas" class="draw-canvas">
                 <div class="draw-canvas-header">
-                    <span><i class="fas fa-pencil-alt"></i> Draw Mode — paste raw data, select text, mark as Header / Column / Row</span>
+                    <span><i class="fas fa-pencil-alt"></i> Draw Mode; paste raw data, select text, mark as Header / Column / Row</span>
                     <div class="draw-canvas-header-actions">
                         <button id="drawClearAll" class="btn btn-sm btn-outline-danger" title="Clear all">
                             <i class="fas fa-trash"></i> Clear
@@ -476,7 +522,7 @@
         </main>
         <!-- END CENTER PANEL -->
 
-        <!-- ====== RIGHT PANEL — Input / Instruction / Generate ====== -->
+        <!-- ====== RIGHT PANEL; Input / Instruction / Generate ====== -->
         <aside class="tifany-right-panel">
             <!-- Section 2: Instruction (default collapsed) -->
             <div class="right-section" data-mobile-order="2">
@@ -503,15 +549,15 @@
                     </ol>
                     <h6><b>Built-In Classes</b></h6>
                     <ol style="font-size:11px; padding-left:16px; line-height:1.8;">
-                        <li><b>accordion</b> — Accordion header</li>
-                        <li><b>accordion-header</b> — Row becomes accordion</li>
-                        <li><b>sp-$index</b> — Column toggle</li>
+                        <li><b>accordion</b>; Accordion header</li>
+                        <li><b>accordion-header</b>; Row becomes accordion</li>
+                        <li><b>sp-$index</b>; Column toggle</li>
                     </ol>
                     <h6><b>Mobile Styles</b></h6>
                     <ol style="font-size:11px; padding-left:16px; line-height:1.8;">
-                        <li><b>highlighted</b> — Purple cell</li>
-                        <li><b>sideways-face</b> — Flip text</li>
-                        <li><b>freeze-pane</b> — Freeze row/col</li>
+                        <li><b>highlighted</b>; Purple cell</li>
+                        <li><b>sideways-face</b>; Flip text</li>
+                        <li><b>freeze-pane</b>; Freeze row/col</li>
                     </ol>
                 </div>
             </div>
@@ -735,7 +781,7 @@
                 }
             });
         } else {
-            // Monaco failed to load — show fallback textareas
+            // Monaco failed to load; show fallback textareas
             var fb = document.getElementById('tableOutput');
             if (fb) fb.style.display = 'block';
             var outCont = document.getElementById('monaco-editor-container');

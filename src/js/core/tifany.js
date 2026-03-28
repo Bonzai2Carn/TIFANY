@@ -11,7 +11,8 @@ $(function () {
     window.popperInstance = null;
     window.hideTimeout = null;
     window.lastParsedHtml = null;
-    window.drawModeEnabled = false;
+    window.drawModeEnabled    = false;
+    window.nodeEditorEnabled  = false;
     // =================== CLEANUP FUNCTION ===================
     function cleanupEventHandlers() {
         $(document).off('.cell .cellEditor .hideMenu .accordion .sp_selector');
@@ -552,10 +553,16 @@ $(function () {
         if (typeof toggleDrawMode === 'function') toggleDrawMode();
     });
 
-    // Select tool toggle (visual only — normal mode indicator)
+    // =================== NODE EDITOR TOGGLE ===================
+    // (initNodeEditor wires the button; this disables it from selectToolToggle context)
+
+    // Select tool toggle (visual only; normal mode indicator)
     $('#selectToolToggle').on('click', function () {
         if (window.drawModeEnabled && typeof disableDrawMode === 'function') {
             disableDrawMode();
+        }
+        if (window.nodeEditorEnabled && typeof disableNodeEditor === 'function') {
+            disableNodeEditor();
         }
         $(this).addClass('active');
     });
@@ -573,7 +580,7 @@ $(function () {
     });
 
     // =================== DECOUPLED TAB COUNT ===================
-    // Changing #buttonIndex only updates the tab buttons — never re-renders the table
+    // Changing #buttonIndex only updates the tab buttons; never re-renders the table
     $('#buttonIndex').on('change', function () {
         let count = Math.min(100, Math.max(1, parseInt($(this).val()) || 1));
         $(this).val(count);
@@ -625,6 +632,9 @@ $(function () {
 
     // =================== DRAW CANVAS INIT ===================
     if (typeof initDrawCanvas === 'function') initDrawCanvas();
+
+    // =================== NODE EDITOR INIT ===================
+    if (typeof initNodeEditor === 'function') initNodeEditor();
 
     // Initialize
     initializeAllFeatures();

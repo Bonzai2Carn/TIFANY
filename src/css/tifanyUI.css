@@ -1,8 +1,8 @@
 /* ===========================
-   TIFANY UI — 3-Panel Layout
+   TIFANY UI; 3-Panel Layout
    =========================== */
 
-/* CSS Custom Properties — Light (default) */
+/* CSS Custom Properties; Light (default) */
 :root {
     --t-primary: #1a73e8;
     --t-primary-dark: #1557b0;
@@ -294,7 +294,7 @@ body {
 }
 
 /* ===========================
-   CENTER — TABLE WRAPPER
+   CENTER; TABLE WRAPPER
    =========================== */
 .center-header {
     font-size: 12px;
@@ -437,7 +437,7 @@ body {
 }
 
 .sidebar-container {
-    display: none; /* hidden on desktop — replaced by .tifany-left-panel */
+    display: none; /* hidden on desktop; replaced by .tifany-left-panel */
 }
 
 .sidebar {
@@ -506,7 +506,7 @@ body {
 }
 
 /* ===========================
-   DARK MODE — Bootstrap 4 overrides
+   DARK MODE; Bootstrap 4 overrides
    =========================== */
 [data-theme="dark"] body {
     background-color: var(--t-bg-workspace);
@@ -805,7 +805,7 @@ body {
 }
 
 /* ===========================
-   BOOTSTRAP MODAL — z-index safety
+   BOOTSTRAP MODAL; z-index safety
    Ensures modals always render above sticky header (z-200) and all panels.
    =========================== */
 .modal { z-index: 1055 !important; }
@@ -973,6 +973,28 @@ body.draw-mode-active #drawModeToggle {
    =========================== */
 body.draw-mode-active .table-wrapper {
     cursor: default;
+}
+
+/* ===========================
+   NODE EDITOR MODE
+   =========================== */
+
+/* Toolbar button active state */
+body.node-editor-active #nodeEditorToggle {
+    background: var(--t-active-bg);
+    color: var(--t-primary);
+    border-color: var(--t-primary);
+}
+
+/* Hide table view and sheet tabs while node editor is active */
+body.node-editor-active .table-wrapper,
+body.node-editor-active #sheetTabBar {
+    display: none !important;
+}
+
+/* Center panel needs relative positioning for the absolute overlay */
+.tifany-center-panel {
+    position: relative;
 }
 
 /* Dark mode overrides for new components */
