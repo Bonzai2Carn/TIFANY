@@ -1,5 +1,5 @@
 // ===================================================================================
-// SHEET MANAGER — Excel-style sheet tabs for multi-table support
+// SHEET MANAGER; Excel-style sheet tabs for multi-table support
 // ===================================================================================
 
 window.sheets = [];
@@ -117,7 +117,7 @@ function _activateSheet(id) {
         initializeAllFeatures();
         setupTableInteraction();
     } else {
-        // First time loading this sheet — render via generateTabs
+        // First time loading this sheet; render via generateTabs
         generateTabs(sheet.rawHtml);
         window.currentTable = $('#tableContainer table')[0] || null;
         initializeAllFeatures();

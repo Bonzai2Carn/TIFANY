@@ -117,6 +117,15 @@ class NodeInteractionManager {
             return;
         }
 
+        // ── Config button → open config panel
+        if (target.classList.contains('ne-node-config-btn')) {
+            const nodeEl = target.closest('.ne-node');
+            if (nodeEl && typeof window.nodeConfigPanel !== 'undefined') {
+                window.nodeConfigPanel.open(nodeEl.dataset.nodeId);
+            }
+            return;
+        }
+
         // ── Delete node button
         if (target.classList.contains('ne-node-delete-btn')) {
             const nodeEl = target.closest('.ne-node');
@@ -313,6 +322,37 @@ class NodeInteractionManager {
         const targetPortId = targetPortEl.dataset.portId;
 
         if (targetNodeId === wp.sourceNodeId) return; // no self-connect
+
+        // ── Direction validation ──────────────────────────────────────────────
+        // Source port must be 'out' or 'inout'; target port must be 'in' or 'inout'
+        const srcNode = window.NodeGraph.nodes[wp.sourceNodeId];
+        const tgtNode = window.NodeGraph.nodes[targetNodeId];
+
+        if (srcNode && tgtNode) {
+            const _portDir = (node, rawPortId) => {
+                // Strip '-out' suffix to find the base header
+                const baseId = rawPortId.replace(/-out$/, '');
+                const header = node.headers.find(h => h.portId === baseId);
+                if (!header) return rawPortId.endsWith('-out') ? 'out' : 'in';
+                return header.direction || 'inout';
+            };
+
+            const srcDir = _portDir(srcNode, wp.sourcePortId);
+            const tgtDir = _portDir(tgtNode, targetPortId);
+
+            // Source must allow output; target must allow input
+            const srcCanOut = srcDir === 'out' || srcDir === 'inout';
+            const tgtCanIn  = tgtDir === 'in'  || tgtDir === 'inout';
+
+            if (!srcCanOut) {
+                $.toast({ heading: 'Node Editor', text: 'Source port does not support output', icon: 'warning', loader: false, stack: false });
+                return;
+            }
+            if (!tgtCanIn) {
+                $.toast({ heading: 'Node Editor', text: 'Target port does not support input', icon: 'warning', loader: false, stack: false });
+                return;
+            }
+        }
 
         const wireId = window.nodeGraphManager.addWire(
             wp.sourceNodeId, wp.sourcePortId,

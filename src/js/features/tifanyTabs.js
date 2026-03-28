@@ -18,7 +18,7 @@ function initAccordions() {
 // 2.5 The Header Accordion
 //===============================================================================================
 function headerAccordion() {
-    // Scope to table container only — left panel accordions are persistent and
+    // Scope to table container only; left panel accordions are persistent and
     // managed independently to avoid state reset on every table reload.
     const $tableAccordions = $('#tableContainer .accordion');
 

@@ -107,7 +107,7 @@ tr:hover td.active {
     display: none;
 }
 
-/* Scope .active to only sp-* table cells — do NOT use global .active which conflicts
+/* Scope .active to only sp-* table cells; do NOT use global .active which conflicts
    with Bootstrap and our toolbar button states */
 [class^="sp-"].active {
     display: table-cell;
@@ -292,7 +292,7 @@ tr.accordion-header.actives {
     cursor: cell;
 }
 
-/* Empty cell placeholder — shown visually but not exported */
+/* Empty cell placeholder; shown visually but not exported */
 #tableContainer td:empty::before,
 #tableContainer th:empty::before {
     content: 'Empty';
@@ -426,14 +426,14 @@ tr.accordion-header.actives {
     border: 1px dashed #337ab7;
 }
 
-/* Column being dragged — purple tint */
+/* Column being dragged; purple tint */
 .column-dragging {
     opacity: 0.6;
     background-color: rgba(160, 100, 220, 0.35) !important;
     border: 1px dashed #7b2cbf;
 }
 
-/* Column drop target — green highlight so user knows where it will land */
+/* Column drop target; green highlight so user knows where it will land */
 .column-drop-target {
     background-color: rgba(92, 184, 92, 0.3) !important;
     outline: 2px solid #5cb85c;

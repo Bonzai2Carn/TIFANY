@@ -214,21 +214,34 @@ function renderNodeDom(nodeId) {
     const old = htmlLayer.querySelector(`[data-node-id="${nodeId}"]`);
     if (old) old.remove();
 
-    const csm       = window.cellStoreManager;
-    const collapsed = node.collapsed;
+    const csm        = window.cellStoreManager;
+    const collapsed  = node.collapsed;
+    const nodeType   = node.nodeType || 'table';
+    const typeDef    = window.NodeTypes ? window.NodeTypes.get(nodeType) : null;
+    const isOperator = window.NodeTypes ? window.NodeTypes.isOperator(nodeType) : false;
 
-    // ── Header rows (port row per column)
+    // ── Header rows (port row per column) — direction-aware
     let headerRowsHtml = '';
     node.headers.forEach(h => {
+        const dir = h.direction || (isOperator ? 'in' : 'inout');
+        const showIn  = dir === 'in'  || dir === 'inout';
+        const showOut = dir === 'out' || dir === 'inout';
+        const inPort  = showIn
+            ? `<div class="ne-port ne-port-in"  data-port-id="${h.portId}"     title="In: ${_esc(h.label)}"></div>`
+            : `<div class="ne-port-spacer"></div>`;
+        const outPort = showOut
+            ? `<div class="ne-port ne-port-out" data-port-id="${h.portId}-out" title="Out: ${_esc(h.label)}"></div>`
+            : `<div class="ne-port-spacer"></div>`;
+
         headerRowsHtml += `
             <div class="ne-node-row ne-node-col-row">
-                <div class="ne-port ne-port-in"  data-port-id="${h.portId}"       title="In: ${_esc(h.label)}"></div>
+                ${inPort}
                 <span class="ne-cell-label" title="${_esc(h.label)}">${_esc(h.label)}</span>
-                <div class="ne-port ne-port-out" data-port-id="${h.portId}-out"   title="Out: ${_esc(h.label)}"></div>
+                ${outPort}
             </div>`;
     });
 
-    // ── Data rows (up to MAX_VISIBLE_ROWS)
+    // ── Data rows (up to MAX_VISIBLE_ROWS, only for table nodes or done operator nodes)
     let dataRowsHtml = '';
     if (!collapsed && node.headers.length > 0) {
         const rowCount    = node.headers.reduce((m, h) => Math.max(m, h.cellIds.length), 0);
@@ -250,33 +263,69 @@ function renderNodeDom(nodeId) {
         }
     }
 
+    // ── Exec state badge
+    const execState  = node.execState || 'idle';
+    const execBadges = { idle: '', running: '<span class="ne-exec-badge ne-exec-running">●</span>', done: '<span class="ne-exec-badge ne-exec-done">✓</span>', error: '<span class="ne-exec-badge ne-exec-error" title="' + _esc(node.execError || '') + '">✕</span>' };
+    const execBadge  = execBadges[execState] || '';
+
+    // ── Type badge (operator nodes only)
+    const typeBadge = typeDef && isOperator
+        ? `<span class="ne-type-badge" style="background:${typeDef.color}" title="${_esc(typeDef.description)}">${typeDef.icon} ${typeDef.label}</span>`
+        : '';
+
+    // ── Config button (operator nodes only)
+    const configBtn = isOperator
+        ? `<button class="ne-node-config-btn" title="Configure node">⚙</button>`
+        : '';
+
+    // ── Operator placeholder when idle/running and no data yet
+    let operatorPlaceholder = '';
+    if (isOperator && !collapsed && (execState === 'idle' || execState === 'running') && node.headers.length === 0) {
+        operatorPlaceholder = `<div class="ne-operator-placeholder">${execState === 'running' ? 'Running…' : 'Connect inputs and click ▶ Run'}</div>`;
+    }
+
     // ── Build element
     const el = document.createElement('div');
-    el.className      = 'ne-node' + (node.selected ? ' selected' : '') + (collapsed ? ' collapsed' : '');
-    el.dataset.nodeId = nodeId;
-    el.style.cssText  = `left:${node.x}px; top:${node.y}px; width:${node.width || 280}px;`;
+    el.className = [
+        'ne-node',
+        node.selected  ? 'selected'  : '',
+        collapsed      ? 'collapsed' : '',
+        isOperator     ? 'ne-operator' : '',
+        `ne-type-${nodeType}`,
+        execState !== 'idle' ? `ne-exec-${execState}` : ''
+    ].filter(Boolean).join(' ');
+
+    el.dataset.nodeId   = nodeId;
+    el.dataset.nodeType = nodeType;
+    el.style.cssText    = `left:${node.x}px; top:${node.y}px; width:${node.width || 280}px;`;
 
     el.innerHTML = `
         <div class="ne-node-header">
             <span class="ne-node-collapse-btn" title="${collapsed ? 'Expand' : 'Collapse'}">${collapsed ? '▶' : '▼'}</span>
+            ${typeBadge}
             <span class="ne-node-label" title="${_esc(node.label)}">${_esc(node.label)}</span>
+            ${execBadge}
             <span class="ne-node-meta">${node.headers.length} col${node.headers.length !== 1 ? 's' : ''}</span>
+            ${configBtn}
             <button class="ne-node-delete-btn" title="Remove node">✕</button>
         </div>
         <div class="ne-node-body${collapsed ? ' ne-hidden' : ''}">
             <div class="ne-node-col-rows">${headerRowsHtml}</div>
+            ${operatorPlaceholder}
             <div class="ne-node-data-rows">${dataRowsHtml}</div>
         </div>`;
 
-    // ── Inline edit on double-click
-    el.querySelectorAll('.ne-cell-value').forEach(cellEl => {
-        cellEl.addEventListener('dblclick', function (e) {
-            e.stopPropagation();
-            const cellId = this.dataset.cellId;
-            if (!cellId) return;
-            _startInlineEdit(this, cellId, nodeId);
+    // ── Inline edit on double-click (table nodes only)
+    if (!isOperator) {
+        el.querySelectorAll('.ne-cell-value').forEach(cellEl => {
+            cellEl.addEventListener('dblclick', function (e) {
+                e.stopPropagation();
+                const cellId = this.dataset.cellId;
+                if (!cellId) return;
+                _startInlineEdit(this, cellId, nodeId);
+            });
         });
-    });
+    }
 
     htmlLayer.appendChild(el);
 }
@@ -484,4 +533,9 @@ function initNodeEditor() {
     $('#neFitView').on('click',        fitNodeView);
     $('#neBuildTable').on('click',     buildTableFromSelectedNode);
     $('#neAddFromSheet').on('click',   addCurrentSheetAsNode);
+    $('#neRunGraph').on('click',       () => window.nodeExecutor.run());
+
+    // Palette + config panel
+    if (typeof window.nodePaletteInit === 'function') window.nodePaletteInit();
+    if (typeof window.nodeConfigPanel !== 'undefined') window.nodeConfigPanel.init();
 }

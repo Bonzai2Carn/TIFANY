@@ -15,7 +15,7 @@ class NodeGraphManager {
 
     // ── Nodes ──────────────────────────────────────────────────────────────────
 
-    addNode(label, x, y, headers = []) {
+    addNode(label, x, y, headers = [], nodeType = 'table', config = {}) {
         const id = 'node-' + crypto.randomUUID().slice(0, 8);
         this.graph.nodes[id] = {
             id,
@@ -25,8 +25,12 @@ class NodeGraphManager {
             width: 280,
             collapsed: false,
             selected: false,
-            headers,   // [{ portId, label, cellIds: [] }]
-            sourceSheetId: null
+            headers,   // [{ portId, label, cellIds: [], direction: 'inout'|'in'|'out' }]
+            sourceSheetId: null,
+            nodeType,
+            config,
+            execState: 'idle',   // 'idle' | 'running' | 'done' | 'error'
+            execError: null
         };
         return id;
     }

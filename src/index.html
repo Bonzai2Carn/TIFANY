@@ -107,6 +107,7 @@
     <script src="js/components/tableHistory.js"></script>
     <script src="js/components/cellStore.js"></script>
     <script src="js/components/nodeGraph.js"></script>
+    <script src="js/components/nodeTypes.js"></script>
     <!-- TIFANY Features -->
     <script src="js/features/applyClassID.js"></script>
     <script src="js/features/dragDrop.js"></script>
@@ -119,6 +120,10 @@
     <script src="js/features/sheetManager.js"></script>
     <script src="js/features/nodeRenderer.js"></script>
     <script src="js/features/nodeInteractions.js"></script>
+    <script src="js/features/nodeFormulaParser.js"></script>
+    <script src="js/features/nodePalette.js"></script>
+    <script src="js/features/nodeConfigPanel.js"></script>
+    <script src="js/features/nodeExecutor.js"></script>
     <script src="js/features/nodeEditor.js"></script>
 
     <!-- TIFANY CSS -->
@@ -396,9 +401,17 @@
             <div id="nodeEditorCanvas" class="node-editor-canvas">
                 <div class="node-editor-header">
                     <span><i class="fas fa-project-diagram"></i> Node Editor</span>
-                    <div class="node-editor-header-actions">
+                    <div class="node-editor-header-actions" style="position:relative;">
                         <button id="neAddFromSheet" class="btn btn-sm btn-outline-primary" title="Load current sheet as a node">
                             <i class="fas fa-plus"></i> Load Sheet
+                        </button>
+                        <button id="neAddNode" class="btn btn-sm btn-outline-secondary" title="Add operator node">
+                            <i class="fas fa-shapes"></i> Add Node ▾
+                        </button>
+                        <!-- Palette flyout -->
+                        <div id="nePalette" class="ne-palette" style="display:none;"></div>
+                        <button id="neRunGraph" class="btn btn-sm btn-primary" title="Run graph — execute all operator nodes">
+                            <i class="fas fa-play"></i> Run
                         </button>
                         <button id="neBuildTable" class="btn btn-sm btn-success" title="Build table from selected node">
                             <i class="fas fa-table"></i> Build Table
@@ -421,6 +434,8 @@
                     <div class="node-editor-minimap">
                         <canvas id="neMinimapCanvas" width="160" height="100"></canvas>
                     </div>
+                    <!-- Config panel (slides in from right) -->
+                    <div id="neConfigPanel" class="ne-config-panel" style="display:none;"></div>
                 </div>
             </div>
 

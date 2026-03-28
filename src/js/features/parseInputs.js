@@ -72,7 +72,7 @@ function handleFileLoad(file) {
         } else if (ext === 'tsv') {
             tableHtml = parseTextInput(text);
         } else {
-            // .txt and others — try tab-delimited first
+            // .txt and others; try tab-delimited first
             if (text.includes('\t')) {
                 tableHtml = parseTextInput(text);
             } else if (text.includes(',')) {

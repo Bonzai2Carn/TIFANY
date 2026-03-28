@@ -43,7 +43,7 @@ function generateTabs(tableHtml) {
 
 function generateCode() {
     const format = $('#exportFormat').val() || 'html';
-    console.group('Generate Code Process — format:', format);
+    console.group('Generate Code Process; format:', format);
 
     try {
         const $tables = $('#tableContainer table');

@@ -1,0 +1,285 @@
+// ===================================================================================
+// NODE CONFIG PANEL; Per-type configuration UI sliding in from the right
+// ===================================================================================
+
+window.nodeConfigPanel = (function () {
+
+    let _currentNodeId = null;
+
+    // ── Public ─────────────────────────────────────────────────────────────────
+
+    function open(nodeId) {
+        const node = window.NodeGraph.nodes[nodeId];
+        if (!node) return;
+
+        _currentNodeId = nodeId;
+        const panel = _getPanel();
+
+        _render(panel, node);
+        panel.style.display = 'flex';
+        requestAnimationFrame(() => panel.classList.add('ne-config-open'));
+    }
+
+    function close() {
+        _currentNodeId = null;
+        const panel = _getPanel();
+        panel.classList.remove('ne-config-open');
+        setTimeout(() => { panel.style.display = 'none'; }, 220);
+    }
+
+    function init() {
+        const panel = _getPanel();
+        // Close button
+        panel.addEventListener('click', function (e) {
+            if (e.target.closest('.ne-config-close')) close();
+        });
+        // Click outside closes
+        document.addEventListener('mousedown', function (e) {
+            if (_currentNodeId && panel.style.display !== 'none' && !panel.contains(e.target)) {
+                const nodeEl = e.target.closest('.ne-node');
+                const configBtn = e.target.closest('.ne-node-config-btn');
+                if (!nodeEl && !configBtn) close();
+            }
+        });
+    }
+
+    // ── Render ─────────────────────────────────────────────────────────────────
+
+    function _render(panel, node) {
+        const def = window.NodeTypes.get(node.nodeType);
+        panel.innerHTML = `
+            <div class="ne-config-header">
+                <span style="background:${def.color}" class="ne-config-type-icon">${def.icon}</span>
+                <strong>${def.label}: ${_esc(node.label)}</strong>
+                <button class="ne-config-close" title="Close">✕</button>
+            </div>
+            <div class="ne-config-body" id="neConfigBody"></div>
+            <div class="ne-config-footer">
+                <button class="btn btn-sm btn-primary" id="neConfigSave">Save</button>
+                <button class="btn btn-sm btn-outline-secondary ne-config-close">Cancel</button>
+            </div>`;
+
+        const body = panel.querySelector('#neConfigBody');
+        const renderers = { filter: _renderFilter, vlookup: _renderVlookup, formula: _renderFormula, api: _renderApi };
+        const renderer  = renderers[node.nodeType];
+        if (renderer) renderer(body, node);
+        else body.innerHTML = '<p style="color:var(--t-text-muted);padding:12px;">No configuration for this node type.</p>';
+
+        panel.querySelector('#neConfigSave').addEventListener('click', () => _save(node));
+    }
+
+    // ── Filter config ──────────────────────────────────────────────────────────
+
+    function _renderFilter(body, node) {
+        // Collect all input columns from wired source nodes
+        const portOptions = _getInputPortOptions(node);
+        const cfg = node.config || {};
+
+        body.innerHTML = `
+            <div class="ne-config-field">
+                <label>Column to filter</label>
+                <select id="cfgFilterColumn">
+                    <option value="">— select column —</option>
+                    ${portOptions.map(p => `<option value="${_esc(p.portId)}" ${cfg.column === p.portId ? 'selected' : ''}>${_esc(p.label)}</option>`).join('')}
+                </select>
+            </div>
+            <div class="ne-config-field">
+                <label>Operator</label>
+                <select id="cfgFilterOp">
+                    ${['eq','ne','gt','lt','gte','lte','contains','regex'].map(op =>
+                        `<option value="${op}" ${cfg.operator === op ? 'selected' : ''}>${_opLabel(op)}</option>`
+                    ).join('')}
+                </select>
+            </div>
+            <div class="ne-config-field">
+                <label>Value</label>
+                <input type="text" id="cfgFilterValue" value="${_esc(cfg.value || '')}" placeholder="e.g. 100  or  ^A">
+            </div>`;
+    }
+
+    // ── VLookup config ─────────────────────────────────────────────────────────
+
+    function _renderVlookup(body, node) {
+        const inPorts   = _getInputPortOptions(node);
+        const allNodes  = Object.values(window.NodeGraph.nodes).filter(n => n.id !== node.id);
+        const cfg = node.config || {};
+
+        body.innerHTML = `
+            <div class="ne-config-field">
+                <label>Key column (incoming)</label>
+                <select id="cfgVlKeyPort">
+                    <option value="">— select —</option>
+                    ${inPorts.map(p => `<option value="${_esc(p.portId)}" ${cfg.keyPort === p.portId ? 'selected':''}>${_esc(p.label)}</option>`).join('')}
+                </select>
+            </div>
+            <div class="ne-config-field">
+                <label>Reference node</label>
+                <select id="cfgVlRefNode">
+                    <option value="">— select node —</option>
+                    ${allNodes.map(n => `<option value="${n.id}" ${cfg.refNodeId === n.id ? 'selected':''}>${_esc(n.label)}</option>`).join('')}
+                </select>
+            </div>
+            <div class="ne-config-field">
+                <label>Ref key column</label>
+                <select id="cfgVlRefKey">
+                    <option value="">— select —</option>
+                    ${_portOptsForNode(cfg.refNodeId, cfg.refKeyPort)}
+                </select>
+            </div>
+            <div class="ne-config-field">
+                <label>Ref value column</label>
+                <select id="cfgVlRefVal">
+                    <option value="">— select —</option>
+                    ${_portOptsForNode(cfg.refNodeId, cfg.refValuePort)}
+                </select>
+            </div>
+            <div class="ne-config-field">
+                <label>Output column label</label>
+                <input type="text" id="cfgVlOutputLabel" value="${_esc(cfg.outputLabel || 'Lookup Result')}" placeholder="Lookup Result">
+            </div>`;
+
+        // Refresh ref columns when ref node changes
+        const refNodeSel = body.querySelector('#cfgVlRefNode');
+        if (refNodeSel) {
+            refNodeSel.addEventListener('change', function () {
+                body.querySelector('#cfgVlRefKey').innerHTML = '<option value="">— select —</option>' + _portOptsForNode(this.value, '');
+                body.querySelector('#cfgVlRefVal').innerHTML = '<option value="">— select —</option>' + _portOptsForNode(this.value, '');
+            });
+        }
+    }
+
+    // ── Formula config ─────────────────────────────────────────────────────────
+
+    function _renderFormula(body, node) {
+        const inPorts = _getInputPortOptions(node);
+        const cfg = node.config || {};
+        const colHints = inPorts.map(p => `<kbd>$${p.label}</kbd>`).join(' ');
+
+        body.innerHTML = `
+            <div class="ne-config-field">
+                <label>Expression</label>
+                <input type="text" id="cfgFormulaExpr" value="${_esc(cfg.expression || '')}"
+                    placeholder="e.g. $Price * $Qty" style="font-family:monospace;">
+                ${colHints ? `<div class="ne-config-hint">Available: ${colHints}</div>` : ''}
+                <div class="ne-config-error" id="cfgFormulaError" style="display:none;"></div>
+            </div>
+            <div class="ne-config-field">
+                <label>Output column label</label>
+                <input type="text" id="cfgFormulaOutputLabel" value="${_esc(cfg.outputLabel || 'Result')}" placeholder="Result">
+            </div>`;
+
+        body.querySelector('#cfgFormulaExpr').addEventListener('input', function () {
+            const err = window.nodeFormulaParser.validate(this.value);
+            const errEl = body.querySelector('#cfgFormulaError');
+            if (err) { errEl.textContent = err; errEl.style.display = 'block'; }
+            else     { errEl.style.display = 'none'; }
+        });
+    }
+
+    // ── API config ─────────────────────────────────────────────────────────────
+
+    function _renderApi(body, node) {
+        const cfg = node.config || {};
+        body.innerHTML = `
+            <div class="ne-config-field">
+                <label>URL</label>
+                <input type="url" id="cfgApiUrl" value="${_esc(cfg.url || '')}" placeholder="https://api.example.com/data">
+            </div>
+            <div class="ne-config-field">
+                <label>Method</label>
+                <select id="cfgApiMethod">
+                    ${['GET','POST'].map(m => `<option ${cfg.method === m ? 'selected' : ''}>${m}</option>`).join('')}
+                </select>
+            </div>
+            <div class="ne-config-field">
+                <label>JSON path <span class="ne-config-hint-inline">(e.g. data.items)</span></label>
+                <input type="text" id="cfgApiJsonPath" value="${_esc(cfg.jsonPath || '')}" placeholder="optional dot-path">
+            </div>
+            <div class="ne-config-field">
+                <label>Request headers <span class="ne-config-hint-inline">(JSON object)</span></label>
+                <textarea id="cfgApiHeaders" rows="3" style="font-family:monospace;font-size:11px;">${_esc(cfg.headers ? JSON.stringify(cfg.headers, null, 2) : '{}')}</textarea>
+            </div>`;
+    }
+
+    // ── Save ───────────────────────────────────────────────────────────────────
+
+    function _save(node) {
+        const panel = _getPanel();
+        const get   = id => { const el = panel.querySelector('#' + id); return el ? el.value : ''; };
+
+        switch (node.nodeType) {
+            case 'filter':
+                node.config = { column: get('cfgFilterColumn'), operator: get('cfgFilterOp'), value: get('cfgFilterValue') };
+                break;
+            case 'vlookup':
+                node.config = { keyPort: get('cfgVlKeyPort'), refNodeId: get('cfgVlRefNode'), refKeyPort: get('cfgVlRefKey'), refValuePort: get('cfgVlRefVal'), outputLabel: get('cfgVlOutputLabel') || 'Lookup Result' };
+                break;
+            case 'formula': {
+                const expr = get('cfgFormulaExpr');
+                const err  = window.nodeFormulaParser.validate(expr);
+                if (err) {
+                    $.toast({ heading: 'Formula Error', text: err, icon: 'error', loader: false, stack: false });
+                    return;
+                }
+                node.config = { expression: expr, outputLabel: get('cfgFormulaOutputLabel') || 'Result' };
+                break;
+            }
+            case 'api': {
+                let headers = {};
+                try { headers = JSON.parse(get('cfgApiHeaders') || '{}'); } catch (_) {}
+                node.config = { url: get('cfgApiUrl'), method: get('cfgApiMethod') || 'GET', jsonPath: get('cfgApiJsonPath'), headers };
+                break;
+            }
+        }
+
+        if (typeof renderNodeDom === 'function') renderNodeDom(node.id);
+        window.nodeCanvasRenderer.markStaticDirty();
+        if (typeof window.saveNodeEditorState === 'function') window.saveNodeEditorState();
+
+        close();
+        $.toast({ heading: 'Node Editor', text: 'Configuration saved', icon: 'success', loader: false, stack: false, hideAfter: 1800 });
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────────────────
+
+    function _getPanel() {
+        return document.getElementById('neConfigPanel');
+    }
+
+    // Collect portId+label pairs that arrive as inputs to this node via wires
+    function _getInputPortOptions(node) {
+        const wires = Object.values(window.NodeGraph.wires || {}).filter(w => w.targetNodeId === node.id);
+        const opts  = [];
+        wires.forEach(w => {
+            const src = window.NodeGraph.nodes[w.sourceNodeId];
+            if (!src) return;
+            const baseId = w.sourcePortId.replace(/-out$/, '');
+            const header = src.headers.find(h => h.portId === baseId);
+            if (header) opts.push({ portId: w.targetPortId, label: header.label });
+        });
+        // Also include the node's own headers if any were pre-populated
+        node.headers.forEach(h => {
+            if (!opts.find(o => o.portId === h.portId)) opts.push({ portId: h.portId, label: h.label });
+        });
+        return opts;
+    }
+
+    function _portOptsForNode(refNodeId, selectedPortId) {
+        if (!refNodeId) return '';
+        const refNode = window.NodeGraph.nodes[refNodeId];
+        if (!refNode) return '';
+        return refNode.headers.map(h =>
+            `<option value="${_esc(h.portId)}" ${selectedPortId === h.portId ? 'selected' : ''}>${_esc(h.label)}</option>`
+        ).join('');
+    }
+
+    function _opLabel(op) {
+        return { eq: '= equals', ne: '≠ not equals', gt: '> greater than', lt: '< less than', gte: '≥ ≥', lte: '≤ ≤', contains: 'contains', regex: 'matches regex' }[op] || op;
+    }
+
+    function _esc(s) {
+        return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    return { open, close, init };
+})();

@@ -253,7 +253,7 @@
             const rowData = mapper.grid[r];
             if (!rowData) continue;
 
-            // Skip the drag-handle row — we'll reorder its handles separately
+            // Skip the drag-handle row; we'll reorder its handles separately
             const rowEl = $table.find('tr').eq(r);
             if (rowEl.hasClass('tifany-drag-row')) continue;
 
@@ -273,7 +273,7 @@
                     // Insert immediately before the target origin cell
                     $(targetCellData.element).before($moving);
                 } else if (!targetCellData) {
-                    // Past the end of the row — append
+                    // Past the end of the row; append
                     $moving.closest('tr').append($moving);
                 } else {
                     // Target is inside a colspan that started before mapperTo
