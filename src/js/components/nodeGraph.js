@@ -115,28 +115,33 @@ class NodeGraphManager {
         );
     }
 
-    // ── Port World Position (reads from DOM after render) ─────────────────────
+    // ── Port World Position (canvas-space coordinates for wire rendering) ───────
 
     getPortWorldPosition(nodeId, portId) {
-        const el = document.querySelector(
+        const portEl = document.querySelector(
             `[data-node-id="${nodeId}"] [data-port-id="${portId}"]`
         );
-        if (!el) return null;
+        if (!portEl) return null;
 
-        const htmlLayer = document.getElementById('nodeHtmlLayer');
-        if (!htmlLayer) return null;
+        const nodeEl = document.querySelector(`[data-node-id="${nodeId}"]`);
+        if (!nodeEl) return null;
 
-        const portRect = el.getBoundingClientRect();
-        const layerRect = htmlLayer.getBoundingClientRect();
-        const vp = this.graph.viewport;
+        const node = this.graph.nodes[nodeId];
+        if (!node) return null;
 
-        // Convert screen-space port center to canvas-space
-        const screenX = portRect.left + portRect.width / 2 - layerRect.left;
-        const screenY = portRect.top + portRect.height / 2 - layerRect.top;
+        const vp       = this.graph.viewport;
+        const portRect = portEl.getBoundingClientRect();
+        const nodeRect = nodeEl.getBoundingClientRect();
+
+        // Both rects are in screen-space after the CSS transform, so their
+        // difference cancels the translate and leaves only the zoom scaling.
+        // Dividing by vp.zoom converts screen-space offset → canvas-space offset.
+        const relX = (portRect.left + portRect.width  / 2) - nodeRect.left;
+        const relY = (portRect.top  + portRect.height / 2) - nodeRect.top;
 
         return {
-            x: (screenX - vp.x) / vp.zoom,
-            y: (screenY - vp.y) / vp.zoom
+            x: node.x + relX / vp.zoom,
+            y: node.y + relY / vp.zoom
         };
     }
 
