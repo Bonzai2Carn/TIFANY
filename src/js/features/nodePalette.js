@@ -48,7 +48,7 @@ function _closePalette() {
 }
 
 function _buildPalette(palette) {
-    const operatorTypes = ['filter', 'vlookup', 'formula', 'api'];
+    const operatorTypes = ['filter', 'vlookup', 'formula', 'join', 'api'];
     palette.innerHTML = '';
 
     const heading = document.createElement('div');
@@ -86,9 +86,10 @@ function _placeOperatorNode(type) {
     // Offset slightly so multiple additions don't stack exactly
     const offset = Object.keys(window.NodeGraph.nodes).length * 20;
 
-    const label  = def.label + ' ' + (Object.values(window.NodeGraph.nodes).filter(n => n.nodeType === type).length + 1);
-    const config = window.NodeTypes.defaultConfig(type);
-    const nodeId = window.nodeGraphManager.addNode(label, canvasX + offset, canvasY + offset, [], type, config);
+    const label   = def.label + ' ' + (Object.values(window.NodeGraph.nodes).filter(n => n.nodeType === type).length + 1);
+    const config  = window.NodeTypes.defaultConfig(type);
+    const headers = window.NodeTypes.defaultHeaders(type) || [];
+    const nodeId  = window.nodeGraphManager.addNode(label, canvasX + offset, canvasY + offset, headers, type, config);
 
     if (typeof renderNodeDom === 'function') renderNodeDom(nodeId);
     window.nodeGraphManager.selectNode(nodeId);

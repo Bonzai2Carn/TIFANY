@@ -60,7 +60,7 @@ window.nodeConfigPanel = (function () {
             </div>`;
 
         const body = panel.querySelector('#neConfigBody');
-        const renderers = { filter: _renderFilter, vlookup: _renderVlookup, formula: _renderFormula, api: _renderApi };
+        const renderers = { filter: _renderFilter, vlookup: _renderVlookup, formula: _renderFormula, join: _renderJoin, api: _renderApi };
         const renderer  = renderers[node.nodeType];
         if (renderer) renderer(body, node);
         else body.innerHTML = '<p style="color:var(--t-text-muted);padding:12px;">No configuration for this node type.</p>';
@@ -176,6 +176,88 @@ window.nodeConfigPanel = (function () {
         });
     }
 
+    // ── Join config ────────────────────────────────────────────────────────────
+
+    function _renderJoin(body, node) {
+        const cfg       = node.config || {};
+        const mode      = cfg.mode || 'stack';
+        const leftCols  = _getJoinSourceCols(node, 'join-in-left');
+        const rightCols = _getJoinSourceCols(node, 'join-in-right');
+        const needsKey  = ['inner', 'left', 'right', 'outer'].includes(mode);
+
+        const leftLabel  = _getJoinSourceLabel(node, 'join-in-left');
+        const rightLabel = _getJoinSourceLabel(node, 'join-in-right');
+
+        const modeOptions = [
+            { value: 'stack',   label: 'Stack rows',           hint: 'Append all rows from Right below Left — columns matched by name' },
+            { value: 'lateral', label: 'Paste columns',        hint: 'Add Right columns alongside Left columns, aligned by row position' },
+            { value: 'inner',   label: 'Inner Join',           hint: 'Keep only rows where the key exists in both tables' },
+            { value: 'left',    label: 'Left Join',            hint: 'Keep all rows from Left; Right columns blank where no match' },
+            { value: 'right',   label: 'Right Join',           hint: 'Keep all rows from Right; Left columns blank where no match' },
+            { value: 'outer',   label: 'Full Outer Join',      hint: 'Keep all rows from both tables; blanks on either side where no match' }
+        ];
+
+        body.innerHTML = `
+            <div class="ne-config-field">
+                <label>Wired tables</label>
+                <div class="ne-join-wire-status">
+                    <span class="ne-join-side ${leftCols ? 'ne-join-connected' : 'ne-join-missing'}">◀ Left: ${leftLabel || 'not connected'}</span>
+                    <span class="ne-join-side ${rightCols ? 'ne-join-connected' : 'ne-join-missing'}">Right: ${rightLabel || 'not connected'} ▶</span>
+                </div>
+            </div>
+            <div class="ne-config-field">
+                <label>Join mode</label>
+                <select id="cfgJoinMode">
+                    ${modeOptions.map(o => `<option value="${o.value}" ${mode === o.value ? 'selected' : ''}>${o.label}</option>`).join('')}
+                </select>
+                <div class="ne-config-hint" id="cfgJoinModeHint">${modeOptions.find(o => o.value === mode)?.hint || ''}</div>
+            </div>
+            <div id="cfgJoinKeyFields" style="${needsKey ? '' : 'display:none;'}">
+                <div class="ne-config-field">
+                    <label>Left key column <span class="ne-config-hint-inline">(${leftLabel || 'Left Table'})</span></label>
+                    <select id="cfgJoinLeftKey">
+                        <option value="">— select —</option>
+                        ${(leftCols || []).map(c => `<option value="${_esc(c.portId)}" ${cfg.leftKey === c.portId ? 'selected' : ''}>${_esc(c.label)}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="ne-config-field">
+                    <label>Right key column <span class="ne-config-hint-inline">(${rightLabel || 'Right Table'})</span></label>
+                    <select id="cfgJoinRightKey">
+                        <option value="">— select —</option>
+                        ${(rightCols || []).map(c => `<option value="${_esc(c.portId)}" ${cfg.rightKey === c.portId ? 'selected' : ''}>${_esc(c.label)}</option>`).join('')}
+                    </select>
+                </div>
+            </div>`;
+
+        // Show/hide key fields and update hint when mode changes
+        body.querySelector('#cfgJoinMode').addEventListener('change', function () {
+            const isKey = ['inner', 'left', 'right', 'outer'].includes(this.value);
+            body.querySelector('#cfgJoinKeyFields').style.display = isKey ? '' : 'none';
+            const opt = modeOptions.find(o => o.value === this.value);
+            body.querySelector('#cfgJoinModeHint').textContent = opt ? opt.hint : '';
+        });
+    }
+
+    // Returns columns from the source node wired to the given fixed port (join-in-left / join-in-right)
+    function _getJoinSourceCols(node, fixedPortId) {
+        const wire = Object.values(window.NodeGraph.wires || {}).find(
+            w => w.targetNodeId === node.id && w.targetPortId === fixedPortId
+        );
+        if (!wire) return null;
+        const src = window.NodeGraph.nodes[wire.sourceNodeId];
+        if (!src) return null;
+        return src.headers.filter(h => h.direction !== 'in').map(h => ({ portId: h.portId, label: h.label }));
+    }
+
+    function _getJoinSourceLabel(node, fixedPortId) {
+        const wire = Object.values(window.NodeGraph.wires || {}).find(
+            w => w.targetNodeId === node.id && w.targetPortId === fixedPortId
+        );
+        if (!wire) return null;
+        const src = window.NodeGraph.nodes[wire.sourceNodeId];
+        return src ? src.label : null;
+    }
+
     // ── API config ─────────────────────────────────────────────────────────────
 
     function _renderApi(body, node) {
@@ -230,6 +312,9 @@ window.nodeConfigPanel = (function () {
                 node.config = { url: get('cfgApiUrl'), method: get('cfgApiMethod') || 'GET', jsonPath: get('cfgApiJsonPath'), headers };
                 break;
             }
+            case 'join':
+                node.config = { mode: get('cfgJoinMode') || 'stack', leftKey: get('cfgJoinLeftKey'), rightKey: get('cfgJoinRightKey') };
+                break;
         }
 
         if (typeof renderNodeDom === 'function') renderNodeDom(node.id);
@@ -246,20 +331,25 @@ window.nodeConfigPanel = (function () {
         return document.getElementById('neConfigPanel');
     }
 
-    // Collect portId+label pairs that arrive as inputs to this node via wires
+    // Collect { portId, label } pairs from every source node wired into this node.
+    // portId is the SOURCE column's portId — matching what nodeExecutor._buildInputMap keys by.
     function _getInputPortOptions(node) {
         const wires = Object.values(window.NodeGraph.wires || {}).filter(w => w.targetNodeId === node.id);
         const opts  = [];
+        const seen  = new Set();
+
         wires.forEach(w => {
+            if (seen.has(w.sourceNodeId)) return;
+            seen.add(w.sourceNodeId);
             const src = window.NodeGraph.nodes[w.sourceNodeId];
             if (!src) return;
-            const baseId = w.sourcePortId.replace(/-out$/, '');
-            const header = src.headers.find(h => h.portId === baseId);
-            if (header) opts.push({ portId: w.targetPortId, label: header.label });
-        });
-        // Also include the node's own headers if any were pre-populated
-        node.headers.forEach(h => {
-            if (!opts.find(o => o.portId === h.portId)) opts.push({ portId: h.portId, label: h.label });
+            src.headers
+                .filter(h => h.direction !== 'in')
+                .forEach(h => {
+                    if (!opts.find(o => o.portId === h.portId)) {
+                        opts.push({ portId: h.portId, label: h.label, sourceNodeId: w.sourceNodeId });
+                    }
+                });
         });
         return opts;
     }

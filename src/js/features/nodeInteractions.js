@@ -15,23 +15,23 @@ class NodeInteractionManager {
         this.selectionBox = null;
         this.spaceHeld    = false;
 
-        this._boundMouseDown = this._onMouseDown.bind(this);
-        this._boundMouseMove = this._onMouseMove.bind(this);
-        this._boundMouseUp   = this._onMouseUp.bind(this);
-        this._boundWheel     = this._onWheel.bind(this);
-        this._boundKeyDown   = this._onKeyDown.bind(this);
-        this._boundKeyUp     = this._onKeyUp.bind(this);
+        this._boundMouseDown   = this._onMouseDown.bind(this);
+        this._boundMouseMove   = this._onMouseMove.bind(this);
+        this._boundMouseUp     = this._onMouseUp.bind(this);
+        this._boundWheel       = this._onWheel.bind(this);
+        this._boundKeyDown     = this._onKeyDown.bind(this);
+        this._boundKeyUp       = this._onKeyUp.bind(this);
+        this._boundContextMenu = this._onContextMenu.bind(this);
+        this._portMenuEl       = null;   // active port context menu DOM element
     }
 
     // ── Lifecycle ──────────────────────────────────────────────────────────────
 
     init(containerEl) {
         this.container = containerEl;
-        // Wheel zoom stays on the viewport container (only fires when hovering it)
-        this.container.addEventListener('wheel',     this._boundWheel,     { passive: false });
-        // mousedown on container to start interactions
-        this.container.addEventListener('mousedown', this._boundMouseDown);
-        // mousemove + mouseup on document so drags/pans don't break when cursor leaves container
+        this.container.addEventListener('wheel',       this._boundWheel,       { passive: false });
+        this.container.addEventListener('mousedown',   this._boundMouseDown);
+        this.container.addEventListener('contextmenu', this._boundContextMenu);
         document.addEventListener('mousemove', this._boundMouseMove);
         document.addEventListener('mouseup',   this._boundMouseUp);
         document.addEventListener('keydown',   this._boundKeyDown);
@@ -40,12 +40,14 @@ class NodeInteractionManager {
 
     destroy() {
         if (!this.container) return;
-        this.container.removeEventListener('wheel',     this._boundWheel);
-        this.container.removeEventListener('mousedown', this._boundMouseDown);
+        this.container.removeEventListener('wheel',       this._boundWheel);
+        this.container.removeEventListener('mousedown',   this._boundMouseDown);
+        this.container.removeEventListener('contextmenu', this._boundContextMenu);
         document.removeEventListener('mousemove', this._boundMouseMove);
         document.removeEventListener('mouseup',   this._boundMouseUp);
         document.removeEventListener('keydown',   this._boundKeyDown);
         document.removeEventListener('keyup',     this._boundKeyUp);
+        this._dismissPortMenu();
         this.container      = null;
         this.isPanning      = false;
         this.draggedNode    = null;
@@ -368,6 +370,12 @@ class NodeInteractionManager {
             const srcLabel = (srcNode ? srcNode.label : '') + (srcHeader ? '.' + srcHeader.label : '');
             const tgtLabel = (tgtNode ? tgtNode.label : '') + (tgtHeader ? '.' + tgtHeader.label : '');
 
+            // Re-render both endpoints so ⚙ button state reflects new wire
+            if (typeof window.renderNodeDom === 'function') {
+                window.renderNodeDom(wp.sourceNodeId);
+                window.renderNodeDom(targetNodeId);
+            }
+
             $.toast({
                 heading:   'Node Editor',
                 text:      `Connected ${srcLabel} → ${tgtLabel}`,
@@ -448,6 +456,119 @@ class NodeInteractionManager {
         Object.values(window.NodeGraph.nodes).forEach(n => { n.selected = true; });
         this._updateSelectionVisuals();
         window.nodeCanvasRenderer.markStaticDirty();
+    }
+
+    // ── Port right-click context menu (Option E) ────────────────────────────────
+
+    _onContextMenu(e) {
+        // Only trigger on output ports of table/operator nodes
+        const portEl = e.target.closest('.ne-port-out, .ne-port[data-port-id$="-out"]');
+        if (!portEl) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const nodeEl   = portEl.closest('.ne-node');
+        if (!nodeEl) return;
+
+        const sourceNodeId = nodeEl.dataset.nodeId;
+        const sourcePortId = portEl.dataset.portId;
+
+        this._dismissPortMenu();
+        this._showPortMenu(e.clientX, e.clientY, sourceNodeId, sourcePortId);
+    }
+
+    _showPortMenu(clientX, clientY, sourceNodeId, sourcePortId) {
+        const operatorTypes = ['filter', 'vlookup', 'formula', 'join', 'api'];
+        const menu = document.createElement('div');
+        menu.className = 'ne-port-menu';
+        menu.setAttribute('role', 'menu');
+
+        const heading = document.createElement('div');
+        heading.className   = 'ne-port-menu-heading';
+        heading.textContent = 'Add connected node';
+        menu.appendChild(heading);
+
+        operatorTypes.forEach(type => {
+            const def  = window.NodeTypes.get(type);
+            const item = document.createElement('button');
+            item.className   = 'ne-port-menu-item';
+            item.setAttribute('role', 'menuitem');
+            item.innerHTML   = `<span class="ne-port-menu-icon" style="background:${def.color}">${def.icon}</span><span>${def.label}</span>`;
+            item.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                this._spawnConnectedNode(type, sourceNodeId, sourcePortId);
+                this._dismissPortMenu();
+            });
+            menu.appendChild(item);
+        });
+
+        // Position near cursor, keep inside viewport
+        document.body.appendChild(menu);
+        this._portMenuEl = menu;
+
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const mw = menu.offsetWidth  || 180;
+        const mh = menu.offsetHeight || 200;
+        menu.style.left = Math.min(clientX, vw - mw - 8) + 'px';
+        menu.style.top  = Math.min(clientY, vh - mh - 8) + 'px';
+
+        // Dismiss on outside click
+        const dismiss = (e) => {
+            if (!menu.contains(e.target)) {
+                this._dismissPortMenu();
+                document.removeEventListener('mousedown', dismiss);
+            }
+        };
+        setTimeout(() => document.addEventListener('mousedown', dismiss), 0);
+    }
+
+    _dismissPortMenu() {
+        if (this._portMenuEl) {
+            this._portMenuEl.remove();
+            this._portMenuEl = null;
+        }
+    }
+
+    _spawnConnectedNode(type, sourceNodeId, sourcePortId) {
+        if (!window.NodeTypes || !window.nodeGraphManager) return;
+
+        const def     = window.NodeTypes.get(type);
+        const srcNode = window.NodeGraph.nodes[sourceNodeId];
+        if (!srcNode) return;
+
+        // Place new node to the right of the source node
+        const x = srcNode.x + (srcNode.width || 280) + 80;
+        const y = srcNode.y;
+
+        const label   = def.label + ' ' + (Object.values(window.NodeGraph.nodes).filter(n => n.nodeType === type).length + 1);
+        const config  = window.NodeTypes.defaultConfig(type);
+        const headers = window.NodeTypes.defaultHeaders(type) || [];
+        const newId   = window.nodeGraphManager.addNode(label, x, y, headers, type, config);
+
+        // Determine the target port — the structural input port for this type
+        const newNode      = window.NodeGraph.nodes[newId];
+        const targetHeader = newNode.headers.find(h => h.direction === 'in');
+        const targetPortId = targetHeader ? targetHeader.portId : null;
+
+        if (targetPortId) {
+            window.nodeGraphManager.addWire(sourceNodeId, sourcePortId, newId, targetPortId);
+        }
+
+        if (typeof window.renderNodeDom === 'function') {
+            window.renderNodeDom(newId);
+            // Re-render source so its wire-state is current
+            window.renderNodeDom(sourceNodeId);
+        }
+
+        window.nodeCanvasRenderer.markStaticDirty();
+        if (typeof window.saveNodeEditorState === 'function') window.saveNodeEditorState();
+
+        $.toast({
+            heading: 'Node Editor',
+            text: `Added ${def.label} — configure ⚙ to continue`,
+            icon: 'success', loader: false, stack: false, hideAfter: 2500
+        });
     }
 }
 

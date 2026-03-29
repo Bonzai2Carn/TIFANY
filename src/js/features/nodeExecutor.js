@@ -42,29 +42,37 @@ window.nodeExecutor = (function () {
 
     // ── Input map builder ─────────────────────────────────────────────────────
     //
-    //   inputMap: { targetPortId → { label, values: string[] } }
-    //   Built from all wires pointing at the given node.
+    //   inputMap: { sourcePortId → { label, values: string[], sourceNodeId } }
+    //
+    //   For every wire pointing at nodeId, we walk the ENTIRE source node's
+    //   output headers — not just the wired column. This means wiring ANY
+    //   column from Table A to an operator gives the operator all of Table A's
+    //   columns. Keying by source portId means cfg.column / cfg.keyPort etc.
+    //   can reference source columns directly.
 
     function _buildInputMap(nodeId) {
-        const csm     = window.cellStoreManager;
+        const csm      = window.cellStoreManager;
         const inputMap = {};
+        const seen     = new Set(); // avoid duplicating columns from same source node
 
         Object.values(window.NodeGraph.wires).forEach(w => {
             if (w.targetNodeId !== nodeId) return;
+            if (seen.has(w.sourceNodeId)) return;
+            seen.add(w.sourceNodeId);
 
             const srcNode = window.NodeGraph.nodes[w.sourceNodeId];
             if (!srcNode) return;
 
-            const basePortId = w.sourcePortId.replace(/-out$/, '');
-            const srcHeader  = srcNode.headers.find(h => h.portId === basePortId);
-            if (!srcHeader) return;
-
-            const values = srcHeader.cellIds.map(id => {
-                const cell = csm.get(id);
-                return cell ? cell.value : '';
-            });
-
-            inputMap[w.targetPortId] = { label: srcHeader.label, values };
+            // Expand all output-capable columns from the source node
+            srcNode.headers
+                .filter(h => h.direction !== 'in')
+                .forEach(h => {
+                    const values = h.cellIds.map(id => {
+                        const cell = csm.get(id);
+                        return cell ? cell.value : '';
+                    });
+                    inputMap[h.portId] = { label: h.label, values, sourceNodeId: w.sourceNodeId };
+                });
         });
 
         return inputMap;
@@ -205,6 +213,211 @@ window.nodeExecutor = (function () {
         _writeOutput(node, outputCols);
     }
 
+    // join — combine two source tables in various ways
+    function _handleJoin(node) {
+        const cfg = node.config || {};
+        const mode = cfg.mode || 'stack';
+
+        // Resolve both source tables from the fixed structural ports
+        const leftData  = _getJoinSideData(node, 'join-in-left');
+        const rightData = _getJoinSideData(node, 'join-in-right');
+
+        if (!leftData && !rightData) {
+            throw new Error('Join: connect at least one table');
+        }
+
+        // Modes that don't need a key
+        if (mode === 'stack') {
+            _writeJoinOutput(node, _joinStack(leftData, rightData));
+            return;
+        }
+        if (mode === 'lateral') {
+            _writeJoinOutput(node, _joinLateral(leftData, rightData));
+            return;
+        }
+
+        // Key-based modes
+        if (!leftData)  throw new Error('Join: Left Table not connected');
+        if (!rightData) throw new Error('Join: Right Table not connected');
+        if (!cfg.leftKey)  throw new Error('Join: Left key column not configured');
+        if (!cfg.rightKey) throw new Error('Join: Right key column not configured');
+
+        const leftKeyCol  = leftData.find(c => c.portId === cfg.leftKey);
+        const rightKeyCol = rightData.find(c => c.portId === cfg.rightKey);
+
+        if (!leftKeyCol)  throw new Error('Join: Left key column not found in source');
+        if (!rightKeyCol) throw new Error('Join: Right key column not found in source');
+
+        switch (mode) {
+            case 'inner': _writeJoinOutput(node, _joinInner(leftData, rightData, leftKeyCol, rightKeyCol)); break;
+            case 'left':  _writeJoinOutput(node, _joinLeft (leftData, rightData, leftKeyCol, rightKeyCol)); break;
+            case 'right': _writeJoinOutput(node, _joinRight(leftData, rightData, leftKeyCol, rightKeyCol)); break;
+            case 'outer': _writeJoinOutput(node, _joinOuter(leftData, rightData, leftKeyCol, rightKeyCol)); break;
+            default: throw new Error('Join: unknown mode ' + mode);
+        }
+    }
+
+    // Get all columns from the source node wired to a fixed port (join-in-left or join-in-right)
+    function _getJoinSideData(node, fixedPortId) {
+        const csm  = window.cellStoreManager;
+        const wire = Object.values(window.NodeGraph.wires).find(
+            w => w.targetNodeId === node.id && w.targetPortId === fixedPortId
+        );
+        if (!wire) return null;
+        const src = window.NodeGraph.nodes[wire.sourceNodeId];
+        if (!src) return null;
+        // Return all non-in-only headers from the source
+        return src.headers
+            .filter(h => h.direction !== 'in')
+            .map(h => ({
+                portId: h.portId,
+                label:  h.label,
+                values: h.cellIds.map(id => { const c = csm.get(id); return c ? c.value : ''; })
+            }));
+    }
+
+    // ── Join mode implementations ──────────────────────────────────────────────
+
+    // Stack: append all rows, columns matched by name — mismatched columns get blanks
+    function _joinStack(left, right) {
+        left  = left  || [];
+        right = right || [];
+        const allLabels = [...new Set([...left.map(c => c.label), ...right.map(c => c.label)])];
+        return allLabels.map(label => {
+            const lCol = left.find(c => c.label === label);
+            const rCol = right.find(c => c.label === label);
+            return {
+                label,
+                values: [...(lCol ? lCol.values : Array(left[0]?.values.length || 0).fill('')),
+                         ...(rCol ? rCol.values : Array(right[0]?.values.length || 0).fill(''))]
+            };
+        });
+    }
+
+    // Lateral: put Right columns alongside Left columns, aligned by row index
+    function _joinLateral(left, right) {
+        left  = left  || [];
+        right = right || [];
+        const lLen = left[0]?.values.length  || 0;
+        const rLen = right[0]?.values.length || 0;
+        const maxRows = Math.max(lLen, rLen);
+        const _pad = (col, len) => ({ ...col, values: col.values.concat(Array(len - col.values.length).fill('')) });
+        return [
+            ...left.map(c  => _pad(c, maxRows)),
+            ...right.map(c => _pad(c, maxRows))
+        ];
+    }
+
+    // Inner: only rows where leftKey == rightKey
+    function _joinInner(left, right, leftKeyCol, rightKeyCol) {
+        const rightIdx = _buildIndex(rightKeyCol.values);
+        const outputCols = _initOutputCols(left, right);
+        leftKeyCol.values.forEach((lKey, lRow) => {
+            const rRows = rightIdx[lKey];
+            if (!rRows) return;
+            rRows.forEach(rRow => _appendRow(outputCols, left, right, lRow, rRow));
+        });
+        return outputCols;
+    }
+
+    // Left: all Left rows, Right columns blank where no match
+    function _joinLeft(left, right, leftKeyCol, rightKeyCol) {
+        const rightIdx   = _buildIndex(rightKeyCol.values);
+        const outputCols = _initOutputCols(left, right);
+        leftKeyCol.values.forEach((lKey, lRow) => {
+            const rRows = rightIdx[lKey];
+            if (rRows) rRows.forEach(rRow => _appendRow(outputCols, left, right, lRow, rRow));
+            else       _appendRow(outputCols, left, right, lRow, null);
+        });
+        return outputCols;
+    }
+
+    // Right: all Right rows, Left columns blank where no match
+    function _joinRight(left, right, leftKeyCol, rightKeyCol) {
+        const leftIdx    = _buildIndex(leftKeyCol.values);
+        const outputCols = _initOutputCols(left, right);
+        rightKeyCol.values.forEach((rKey, rRow) => {
+            const lRows = leftIdx[rKey];
+            if (lRows) lRows.forEach(lRow => _appendRow(outputCols, left, right, lRow, rRow));
+            else       _appendRow(outputCols, left, right, null, rRow);
+        });
+        return outputCols;
+    }
+
+    // Full Outer: all rows from both, blanks on whichever side has no match
+    function _joinOuter(left, right, leftKeyCol, rightKeyCol) {
+        const rightIdx      = _buildIndex(rightKeyCol.values);
+        const matchedRRight = new Set();
+        const outputCols    = _initOutputCols(left, right);
+
+        leftKeyCol.values.forEach((lKey, lRow) => {
+            const rRows = rightIdx[lKey];
+            if (rRows) {
+                rRows.forEach(rRow => { _appendRow(outputCols, left, right, lRow, rRow); matchedRRight.add(rRow); });
+            } else {
+                _appendRow(outputCols, left, right, lRow, null);
+            }
+        });
+        // Right rows with no Left match
+        rightKeyCol.values.forEach((_, rRow) => {
+            if (!matchedRRight.has(rRow)) _appendRow(outputCols, left, right, null, rRow);
+        });
+        return outputCols;
+    }
+
+    // Build value → [rowIndex, ...] index from a column's values array
+    function _buildIndex(values) {
+        const idx = {};
+        values.forEach((v, i) => { if (!idx[v]) idx[v] = []; idx[v].push(i); });
+        return idx;
+    }
+
+    // Create output column stubs — all Left columns then all Right columns
+    // Right columns are prefixed if a same-named column exists in Left (avoids clobbering)
+    function _initOutputCols(left, right) {
+        const leftLabels = new Set((left || []).map(c => c.label));
+        const out = [
+            ...(left  || []).map(c => ({ label: c.label, values: [] })),
+            ...(right || []).map(c => ({ label: leftLabels.has(c.label) ? c.label + ' (right)' : c.label, values: [] }))
+        ];
+        return out;
+    }
+
+    // Append one merged row — lRow or rRow can be null (means blank that side)
+    function _appendRow(outputCols, left, right, lRow, rRow) {
+        const lLen = (left  || []).length;
+        left = left || [];
+        right = right || [];
+        outputCols.forEach((col, colIdx) => {
+            if (colIdx < lLen) {
+                col.values.push(lRow !== null ? (left[colIdx].values[lRow]  ?? '') : '');
+            } else {
+                const rColIdx = colIdx - lLen;
+                col.values.push(rRow !== null ? (right[rColIdx].values[rRow] ?? '') : '');
+            }
+        });
+    }
+
+    // Write output — keeps structural 'in' ports, replaces previous 'out' columns
+    function _writeJoinOutput(node, outputCols) {
+        const csm = window.cellStoreManager;
+        // Release previous output-only cells
+        node.headers
+            .filter(h => h.direction === 'out')
+            .forEach(h => h.cellIds.forEach(id => csm.release(id)));
+        // Keep only structural 'in' ports
+        node.headers = node.headers.filter(h => h.direction === 'in');
+        // Append new output columns
+        outputCols.forEach(col => {
+            node.headers.push({
+                portId:    'port-' + crypto.randomUUID().slice(0, 8),
+                label:     col.label,
+                cellIds:   col.values.map(v => csm.create(String(v))),
+                direction: 'out'
+            });
+        });
+    }
+
     // api — fetch JSON, traverse jsonPath, expose fields as output columns
     async function _handleApi(node) {
         const cfg = node.config || {};
@@ -302,6 +515,7 @@ window.nodeExecutor = (function () {
                     case 'vlookup': _handleVlookup(node, inputMap);      break;
                     case 'formula': _handleFormula(node, inputMap);      break;
                     case 'api':     await _handleApi(node);              break;
+                    case 'join':    _handleJoin(node);                   break;
                     default: break;
                 }
 

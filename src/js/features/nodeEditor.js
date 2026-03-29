@@ -7,7 +7,8 @@
 //   — History integration
 // ===================================================================================
 
-window.nodeEditorEnabled = false;
+window.nodeEditorEnabled   = false;
+window._nodeEditorSnapshot = null;  // persists graph + cellStore across mode switches
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Enable / Disable
@@ -34,8 +35,12 @@ function enableNodeEditor() {
     $('#nodeEditorCanvas').css('display', 'flex');
     document.body.classList.add('node-editor-active');
 
-    // Build nodes from existing sheets
-    _loadSheetsAsNodes();
+    // Restore previous session if one exists; otherwise build fresh from sheets
+    if (window._nodeEditorSnapshot) {
+        _restoreSnapshot(window._nodeEditorSnapshot);
+    } else {
+        _loadSheetsAsNodes();
+    }
 
     // Boot canvas renderer
     window.nodeCanvasRenderer.init();
@@ -63,18 +68,27 @@ function disableNodeEditor() {
     $('#nodeEditorToggle').removeClass('active').attr('title', 'Node Editor: OFF');
     $('#selectToolToggle').addClass('active');
 
-    // Sync any edits back to sheets before leaving
+    // Sync table-type node edits back to sheets
     _syncNodesToSheets();
+
+    // Save full graph + cellStore so we can restore on re-entry
+    window._nodeEditorSnapshot = {
+        graph:     window.nodeGraphManager.snapshot(),
+        cellStore: window.cellStoreManager.snapshot()
+    };
 
     // Tear down canvas + interactions
     window.nodeCanvasRenderer.stop();
     window.nodeInteractionManager.destroy();
 
+    // Close config panel if open
+    if (typeof window.nodeConfigPanel !== 'undefined') window.nodeConfigPanel.close();
+
     // Clear HTML layer
     const htmlLayer = document.getElementById('nodeHtmlLayer');
     if (htmlLayer) htmlLayer.innerHTML = '';
 
-    // Reset graph state
+    // Clear live graph (snapshot is the source of truth now)
     window.NodeGraph.nodes = {};
     window.NodeGraph.wires = {};
     window.cellStoreManager.clear();
@@ -154,6 +168,28 @@ function _loadSheetsAsNodes() {
 
         renderNodeDom(nodeId);
         idx++;
+    });
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Snapshot restore  (re-entry after switching away from node editor)
+// ──────────────────────────────────────────────────────────────────────────────
+
+function _restoreSnapshot(snapshot) {
+    const htmlLayer = document.getElementById('nodeHtmlLayer');
+    if (!htmlLayer) return;
+
+    htmlLayer.innerHTML = '';
+
+    // Restore graph data model
+    window.nodeGraphManager.restore(snapshot.graph);
+
+    // Restore cell store
+    window.cellStoreManager.restore(snapshot.cellStore);
+
+    // Re-render every node card from restored state
+    Object.keys(window.NodeGraph.nodes).forEach(nodeId => {
+        renderNodeDom(nodeId);
     });
 }
 
@@ -273,15 +309,30 @@ function renderNodeDom(nodeId) {
         ? `<span class="ne-type-badge" style="background:${typeDef.color}" title="${_esc(typeDef.description)}">${typeDef.icon} ${typeDef.label}</span>`
         : '';
 
-    // ── Config button (operator nodes only)
-    const configBtn = isOperator
-        ? `<button class="ne-node-config-btn" title="Configure node">⚙</button>`
-        : '';
+    // ── Config button (operator nodes only) — disabled until at least one input wire exists
+    let configBtn = '';
+    if (isOperator) {
+        const hasInputWire = Object.values(window.NodeGraph.wires || {}).some(
+            w => w.targetNodeId === nodeId
+        );
+        if (hasInputWire) {
+            configBtn = `<button class="ne-node-config-btn" title="Configure node">⚙</button>`;
+        } else {
+            configBtn = `<button class="ne-node-config-btn ne-config-btn-disabled" title="Connect a source table first" disabled>⚙</button>`;
+        }
+    }
 
-    // ── Operator placeholder when idle/running and no data yet
+    // ── Operator placeholder when idle/running and no input wires yet
     let operatorPlaceholder = '';
-    if (isOperator && !collapsed && (execState === 'idle' || execState === 'running') && node.headers.length === 0) {
-        operatorPlaceholder = `<div class="ne-operator-placeholder">${execState === 'running' ? 'Running…' : 'Connect inputs and click ▶ Run'}</div>`;
+    if (isOperator && !collapsed && (execState === 'idle' || execState === 'running')) {
+        const hasInputWire = Object.values(window.NodeGraph.wires || {}).some(
+            w => w.targetNodeId === nodeId
+        );
+        if (!hasInputWire) {
+            operatorPlaceholder = `<div class="ne-operator-placeholder">Wire a table's output port here, then ⚙ configure</div>`;
+        } else if (node.headers.filter(h => h.direction === 'out').length === 0) {
+            operatorPlaceholder = `<div class="ne-operator-placeholder">${execState === 'running' ? 'Running…' : 'Configure ⚙ then click ▶ Run'}</div>`;
+        }
     }
 
     // ── Build element

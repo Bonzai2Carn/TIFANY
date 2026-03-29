@@ -36,7 +36,15 @@ class NodeGraphManager {
     }
 
     removeNode(nodeId) {
-        // Remove all wires connected to this node first
+        // Collect the other-end node IDs before deleting wires
+        const affectedNodes = new Set();
+        Object.keys(this.graph.wires).forEach(wireId => {
+            const wire = this.graph.wires[wireId];
+            if (wire.sourceNodeId === nodeId) affectedNodes.add(wire.targetNodeId);
+            if (wire.targetNodeId === nodeId) affectedNodes.add(wire.sourceNodeId);
+        });
+
+        // Remove all wires connected to this node
         Object.keys(this.graph.wires).forEach(wireId => {
             const wire = this.graph.wires[wireId];
             if (wire.sourceNodeId === nodeId || wire.targetNodeId === nodeId) {
@@ -53,6 +61,13 @@ class NodeGraphManager {
         }
 
         delete this.graph.nodes[nodeId];
+
+        // Re-render affected nodes so their ⚙ button state updates
+        affectedNodes.forEach(affectedId => {
+            if (this.graph.nodes[affectedId] && typeof window.renderNodeDom === 'function') {
+                window.renderNodeDom(affectedId);
+            }
+        });
     }
 
     moveNode(nodeId, x, y) {

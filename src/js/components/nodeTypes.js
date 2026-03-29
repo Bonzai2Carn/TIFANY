@@ -11,6 +11,7 @@ window.NodeTypes = {
     //  vlookup  — enrich rows by matching a key against another node's column
     //  formula  — add a computed column using an expression
     //  api      — fetch external JSON and expose fields as output columns
+    //  join     — combine two tables (stack, lateral paste, or key-based joins)
 
     types: {
         table: {
@@ -29,11 +30,14 @@ window.NodeTypes = {
             icon:        '⊟',
             description: 'Keep rows matching a condition',
             defaultConfig: {
-                column:   '',        // portId of column to test
+                column:   '',        // source portId of column to test
                 operator: 'eq',      // eq | ne | gt | lt | gte | lte | contains | regex
                 value:    ''
             },
-            defaultPorts: 'in'
+            defaultPorts: 'in',
+            defaultHeaders: [
+                { label: 'Input Table', portId: 'filter-input', direction: 'in', cellIds: [] }
+            ]
         },
         vlookup: {
             label:       'VLookup',
@@ -42,13 +46,16 @@ window.NodeTypes = {
             icon:        '⇄',
             description: 'Match keys and pull values from another node',
             defaultConfig: {
-                keyPort:      '',    // portId of key column in incoming data
+                keyPort:      '',    // source portId of key column in incoming data
                 refNodeId:    '',    // nodeId of reference table
                 refKeyPort:   '',    // portId of key column in reference table
                 refValuePort: '',    // portId of value column to pull
                 outputLabel:  'Lookup Result'
             },
-            defaultPorts: 'in'
+            defaultPorts: 'in',
+            defaultHeaders: [
+                { label: 'Input Table', portId: 'vlookup-input', direction: 'in', cellIds: [] }
+            ]
         },
         formula: {
             label:       'Formula',
@@ -60,7 +67,10 @@ window.NodeTypes = {
                 expression:  '',     // e.g. '$Price * $Qty'
                 outputLabel: 'Result'
             },
-            defaultPorts: 'in'
+            defaultPorts: 'in',
+            defaultHeaders: [
+                { label: 'Input Table', portId: 'formula-input', direction: 'in', cellIds: [] }
+            ]
         },
         api: {
             label:       'API',
@@ -75,6 +85,24 @@ window.NodeTypes = {
                 headers:  {}
             },
             defaultPorts: 'out'
+        },
+        join: {
+            label:       'Join',
+            color:       '#0ea5e9',
+            cssVar:      '--ne-type-join',
+            icon:        '⋈',
+            description: 'Combine two tables by key or position',
+            defaultConfig: {
+                mode:      'stack',  // stack | lateral | inner | left | right | outer
+                leftKey:   '',       // portId of key column in left source (key modes only)
+                rightKey:  ''        // portId of key column in right source (key modes only)
+            },
+            defaultPorts: 'in',
+            // These two ports are always present on a join node (permanent structure)
+            defaultHeaders: [
+                { label: 'Left Table',  portId: 'join-in-left',  direction: 'in' },
+                { label: 'Right Table', portId: 'join-in-right', direction: 'in' }
+            ]
         }
     },
 
@@ -95,6 +123,12 @@ window.NodeTypes = {
     defaultConfig(type) {
         const t = this.types[type];
         return t ? JSON.parse(JSON.stringify(t.defaultConfig)) : {};
+    },
+
+    // Returns a deep copy of defaultHeaders (if any) for types that need fixed structural ports
+    defaultHeaders(type) {
+        const t = this.types[type];
+        return t && t.defaultHeaders ? JSON.parse(JSON.stringify(t.defaultHeaders)) : null;
     },
 
     isOperator(type) {
