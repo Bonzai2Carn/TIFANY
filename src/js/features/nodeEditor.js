@@ -568,8 +568,15 @@ window.saveNodeEditorState = saveNodeEditorState;
 // Theme change listener
 // ──────────────────────────────────────────────────────────────────────────────
 
+// Legacy postMessage format (direct from os-shell.js fallback)
 window.addEventListener('message', function (ev) {
     if (ev.data && ev.data.type === 'cws:theme-change' && window.nodeEditorEnabled) {
+        window.nodeCanvasRenderer.onThemeChange();
+    }
+});
+// New bridge CustomEvent format (from CwsBridge)
+window.addEventListener('cws-theme-change', function () {
+    if (window.nodeEditorEnabled && window.nodeCanvasRenderer) {
         window.nodeCanvasRenderer.onThemeChange();
     }
 });
