@@ -209,12 +209,30 @@ body {
 .tifany-right-panel {
     width: 300px;
     min-width: 220px;
+    max-width: 600px;
     overflow-y: auto;
     border-left: 1px solid var(--t-border);
     background: var(--t-bg-surface);
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+.right-panel-resize-handle {
+    position: absolute;
+    top: 0;
+    left: -3px;
+    width: 6px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 10;
+}
+
+.right-panel-resize-handle:hover,
+.right-panel-resize-handle.dragging {
+    background: var(--t-accent, #4a90d9);
+    opacity: 0.5;
 }
 
 /* ===========================

@@ -548,6 +548,35 @@ $(function () {
         $(this).toggleClass('active', !isHidden);
     });
 
+    // =================== RIGHT PANEL RESIZE ===================
+    (function () {
+        var $handle = $('.right-panel-resize-handle');
+        var $panel = $('.tifany-right-panel');
+        if (!$handle.length || !$panel.length) return;
+
+        var startX, startWidth;
+
+        $handle.on('mousedown', function (e) {
+            e.preventDefault();
+            startX = e.clientX;
+            startWidth = $panel.outerWidth();
+            $handle.addClass('dragging');
+            $('body').css({ cursor: 'col-resize', 'user-select': 'none' });
+
+            $(document).on('mousemove.rightResize', function (e) {
+                var delta = startX - e.clientX;
+                var newWidth = Math.min(600, Math.max(220, startWidth + delta));
+                $panel.css('width', newWidth + 'px');
+            });
+
+            $(document).on('mouseup.rightResize', function () {
+                $handle.removeClass('dragging');
+                $('body').css({ cursor: '', 'user-select': '' });
+                $(document).off('mousemove.rightResize mouseup.rightResize');
+            });
+        });
+    })();
+
     // =================== DRAW MODE TOGGLE ===================
     $('#drawModeToggle').on('click', function () {
         if (typeof toggleDrawMode === 'function') toggleDrawMode();
