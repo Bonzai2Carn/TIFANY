@@ -303,7 +303,7 @@ tr.accordion-header.actives {
 }
 
 .selected-cell {
-    border: 4px solid rgba(7, 2, 77, 0.3) !important;
+    border: 4px solid rgba(28, 131, 90, 0.8) !important;
     /* opacity: 0.5; */
 }
 

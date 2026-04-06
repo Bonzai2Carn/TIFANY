@@ -7,30 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- ── Primary SEO ── -->
-    <title>Table Formatter (TIFANY); CANWORKSTUDIOS</title>
+    <title>Table Formatter (TIFANY) - GINEXYS</title>
     <meta name="description"
         content="TIFANY is a free, browser-based HTML table editor and formatter. Parse HTML, ASCII, CSV, or plain text into a visual table. Edit with drag-and-drop, cell merging, and export clean HTML.">
     <meta name="keywords"
-        content="HTML table editor, table formatter, CSV to HTML table, ASCII table, table manipulation, drag and drop table, TIFANY, CANWORKSTUDIOS, developer tool">
-    <meta name="author" content="CANWORKSTUDIOS">
+        content="HTML table editor, table formatter, CSV to HTML table, ASCII table, table manipulation, drag and drop table, TIFANY, GINEXYS, developer tool">
+    <meta name="author" content="GINEXYS">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://canworkstudios.com/tools/table-formatter/src/index.html">
+    <link rel="canonical" href="https://ginexys.com/tools/table-formatter/src/index.html">
 
     <!-- ── Open Graph ── -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="CANWORKSTUDIOS">
-    <meta property="og:title" content="Table Formatter (TIFANY); CANWORKSTUDIOS">
+    <meta property="og:site_name" content="GINEXYS">
+    <meta property="og:title" content="Table Formatter (TIFANY); GINEXYS">
     <meta property="og:description"
         content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually with drag-and-drop, and export clean HTML code.">
-    <meta property="og:url" content="https://canworkstudios.com/tools/table-formatter/src/index.html">
+    <meta property="og:url" content="https://ginexys.com/tools/table-formatter/src/index.html">
     <meta property="og:locale" content="en_US">
 
     <!-- ── Twitter / X Card ── -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Table Formatter (TIFANY); CANWORKSTUDIOS">
+    <meta name="twitter:title" content="Table Formatter (TIFANY); GINEXYS">
     <meta name="twitter:description"
         content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually, and export clean HTML.">
-    <meta name="twitter:site" content="@canworkstudios">
+    <meta name="twitter:site" content="@GINEXYS">
 
     <!-- ── Structured Data: SoftwareApplication ── -->
     <script type="application/ld+json">
@@ -39,7 +39,7 @@
       "@type": "SoftwareApplication",
       "name": "Table Formatter",
       "alternateName": "TIFANY",
-      "url": "https://canworkstudios.com/tools/table-formatter/src/index.html",
+      "url": "https://ginexys.com/tools/table-formatter/src/index.html",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Web Browser",
       "description": "Parse, edit, and format HTML tables visually. Supports HTML, ASCII, CSV, and plain text input with drag-and-drop, cell merging, transpose, text split, and clean HTML code output.",
@@ -55,8 +55,8 @@
       ],
       "author": {
         "@type": "Organization",
-        "name": "CANWORKSTUDIOS",
-        "url": "https://canworkstudios.com"
+        "name": "GINEXYS",
+        "url": "https://ginexys.com"
       },
       "offers": {
         "@type": "Offer",
@@ -65,8 +65,8 @@
       },
       "isPartOf": {
         "@type": "WebSite",
-        "name": "CANWORKSTUDIOS",
-        "url": "https://canworkstudios.com"
+        "name": "GINEXYS",
+        "url": "https://ginexys.com"
       }
     }
     </script>
@@ -150,7 +150,7 @@
         <div class="logo">
             <h1>
                 <a href="../../../index.html" style="text-decoration:none; color:inherit;">
-                    canwork<span class="logo-accent">studios</span>
+                    GINEXY<span class="logo-accent">OS</span>
                 </a>
             </h1>
         </div>
@@ -174,32 +174,32 @@
                 ☰
             </button>
             <!-- Load file -->
-                <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.html,.htm" style="display:none;">
-                <button id="loadFileBtn" class="theme-toggle-btn" title="Load file (.csv, .tsv, .txt, .html)">
-                    <i class="fas fa-folder-open"></i>
-                </button>
+            <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.html,.htm" style="display:none;">
+            <button id="loadFileBtn" class="theme-toggle-btn" title="Load file (.csv, .tsv, .txt, .html)">
+                <i class="fas fa-folder-open"></i>
+            </button>
 
-                <!-- Text input modal trigger -->
-                <button id="inputModalBtn" class="theme-toggle-btn" title="Open text input">
-                    <i class="fas fa-keyboard"></i>
-                </button>
+            <!-- Text input modal trigger -->
+            <button id="inputModalBtn" class="theme-toggle-btn" title="Open text input">
+                <i class="fas fa-file-import"></i>
+            </button>
 
-                <div class="input-toolbar-divider"></div>
+            <div class="input-toolbar-divider"></div>
 
-                <!-- Select Tool (default active; normal selection mode) -->
-                <button id="selectToolToggle" class="theme-toggle-btn active" title="Table Mode">
-                    <i class="fas fa-table"></i>
-                </button>
+            <!-- Select Tool (default active; normal selection mode) -->
+            <button id="selectToolToggle" class="theme-toggle-btn active" title="Table Mode">
+                <i class="fas fa-table"></i>
+            </button>
 
-                <!-- Draw Mode -->
-                <button id="drawModeToggle" class="theme-toggle-btn" title="Draw Mode: OFF">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
+            <!-- Draw Mode -->
+            <button id="drawModeToggle" class="theme-toggle-btn" title="Draw Mode: OFF">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
 
-                <!-- Node Editor -->
-                <button id="nodeEditorToggle" class="theme-toggle-btn" title="Node Editor: OFF">
-                    <i class="fas fa-project-diagram"></i>
-                </button>
+            <!-- Node Editor -->
+            <button id="nodeEditorToggle" class="theme-toggle-btn" title="Node Editor: OFF">
+                <i class="fas fa-project-diagram"></i>
+            </button>
         </div>
 
         <!-- ====== LEFT PANEL; Tools ====== -->
@@ -406,7 +406,8 @@
                 <div class="node-editor-header">
                     <span><i class="fas fa-project-diagram"></i> Node Editor</span>
                     <div class="node-editor-header-actions" style="position:relative;">
-                        <button id="neAddFromSheet" class="btn btn-sm btn-outline-primary" title="Load current sheet as a node">
+                        <button id="neAddFromSheet" class="btn btn-sm btn-outline-primary"
+                            title="Load current sheet as a node">
                             <i class="fas fa-plus"></i> Load Sheet
                         </button>
                         <button id="neAddNode" class="btn btn-sm btn-outline-secondary" title="Add operator node">
@@ -414,7 +415,8 @@
                         </button>
                         <!-- Palette flyout -->
                         <div id="nePalette" class="ne-palette" style="display:none;"></div>
-                        <button id="neRunGraph" class="btn btn-sm btn-primary" title="Run graph — execute all operator nodes">
+                        <button id="neRunGraph" class="btn btn-sm btn-primary"
+                            title="Run graph — execute all operator nodes">
                             <i class="fas fa-play"></i> Run
                         </button>
                         <button id="neBuildTable" class="btn btn-sm btn-success" title="Build table from selected node">
@@ -446,7 +448,8 @@
             <!-- Draw Canvas (shown when Draw Mode is active, covers table view) -->
             <div id="drawCanvas" class="draw-canvas">
                 <div class="draw-canvas-header">
-                    <span><i class="fas fa-pencil-alt"></i> Draw Mode; paste raw data, select text, mark as Header / Column / Row</span>
+                    <span><i class="fas fa-pencil-alt"></i> Draw Mode; paste raw data, select text, mark as Header /
+                        Column / Row</span>
                     <div class="draw-canvas-header-actions">
                         <button id="drawClearAll" class="btn btn-sm btn-outline-danger" title="Clear all">
                             <i class="fas fa-trash"></i> Clear
@@ -462,15 +465,21 @@
                         placeholder="Paste or type raw data here. Select text, then use the buttons below to mark headers, columns, and rows."></textarea>
                     <div class="draw-canvas-toolbar" style="flex-wrap: wrap; gap: 8px;">
                         <span class="draw-toolbar-hint">Grid Size:</span>
-                        <input type="number" id="drawGridCols" value="3" min="1" max="100" class="form-control form-control-sm" style="width:50px; height:24px; padding:2px 4px; font-size:11px;" title="Columns">
+                        <input type="number" id="drawGridCols" value="3" min="1" max="100"
+                            class="form-control form-control-sm"
+                            style="width:50px; height:24px; padding:2px 4px; font-size:11px;" title="Columns">
                         <span style="font-size:11px; color:var(--t-text-muted);">x</span>
-                        <input type="number" id="drawGridRows" value="3" min="1" max="1000" class="form-control form-control-sm" style="width:50px; height:24px; padding:2px 4px; font-size:11px;" title="Rows">
-                        <button id="drawApplySize" class="btn btn-sm btn-outline-secondary" style="height:24px; line-height:1; padding:2px 6px;">Set Grid</button>
+                        <input type="number" id="drawGridRows" value="3" min="1" max="1000"
+                            class="form-control form-control-sm"
+                            style="width:50px; height:24px; padding:2px 4px; font-size:11px;" title="Rows">
+                        <button id="drawApplySize" class="btn btn-sm btn-outline-secondary"
+                            style="height:24px; line-height:1; padding:2px 6px;">Set Grid</button>
 
                         <div class="input-toolbar-divider" style="height:16px;"></div>
 
                         <span class="draw-toolbar-hint">Auto-Advance:</span>
-                        <select id="drawAutoAdvance" class="form-control form-control-sm" style="width: auto; height:24px; padding:2px 4px; font-size:11px;">
+                        <select id="drawAutoAdvance" class="form-control form-control-sm"
+                            style="width: auto; height:24px; padding:2px 4px; font-size:11px;">
                             <option value="right">Right (Row)</option>
                             <option value="down">Down (Col)</option>
                             <option value="none">None</option>
@@ -478,16 +487,20 @@
 
                         <div class="input-toolbar-divider" style="height:16px;"></div>
 
-                        <button id="drawPaintModeToggle" class="btn btn-sm btn-outline-warning" title="Toggle Paint Brush Mode" style="height:24px; line-height:1; padding:2px 8px;">
+                        <button id="drawPaintModeToggle" class="btn btn-sm btn-outline-warning"
+                            title="Toggle Paint Brush Mode" style="height:24px; line-height:1; padding:2px 8px;">
                             <i class="fas fa-paint-brush"></i> Paint: OFF
                         </button>
 
-                        <button id="drawInsertSelected" class="btn btn-sm btn-primary" title="Insert selected text into grid starting at active cell" style="height:24px; line-height:1; padding:2px 8px;">
+                        <button id="drawInsertSelected" class="btn btn-sm btn-primary"
+                            title="Insert selected text into grid starting at active cell"
+                            style="height:24px; line-height:1; padding:2px 8px;">
                             <i class="fas fa-level-down-alt"></i> Insert Selected
                         </button>
 
                         <div style="flex:1;"></div>
-                        <button id="drawBuildTable" class="btn btn-sm btn-success" title="Generate the HTML table from the drawn structure">
+                        <button id="drawBuildTable" class="btn btn-sm btn-success"
+                            title="Generate the HTML table from the drawn structure">
                             <i class="fas fa-table"></i> Build Table
                         </button>
                     </div>
@@ -506,20 +519,20 @@
 
                 <div class="table-edit" style="display: flex; flex-direction: row; gap: 10px;">
                     <!-- Drag & Drop switch -->
-                <label class="toolbar-switch-label" title="Toggle Drag &amp; Drop">
-                    <input type="checkbox" id="dragDropSwitch">
-                    <span class="toolbar-switch-track"></span>
-                    <span class="toolbar-switch-text">DRAG-DROP</span>
-                </label>
+                    <label class="toolbar-switch-label" title="Toggle Drag &amp; Drop">
+                        <input type="checkbox" id="dragDropSwitch">
+                        <span class="toolbar-switch-track"></span>
+                        <span class="toolbar-switch-text">DRAG-DROP</span>
+                    </label>
 
-                <div class="input-toolbar-divider"></div>
+                    <div class="input-toolbar-divider"></div>
 
-                <!-- Tab count (decoupled; changes update tabs live) -->
-                <label class="toolbar-tab-label" title="Number of Tabs">
-                    <span style="font-size:10px; white-space:nowrap;">Tabs</span>
-                    <input type="number" id="buttonIndex" name="buttonIndex" min="1" max="100" placeholder="1"
-                        class="toolbar-tab-input" style="width:48px;">
-                </label>
+                    <!-- Tab count (decoupled; changes update tabs live) -->
+                    <label class="toolbar-tab-label" title="Number of Tabs">
+                        <span style="font-size:10px; white-space:nowrap;">Tabs</span>
+                        <input type="number" id="buttonIndex" name="buttonIndex" min="1" max="100" placeholder="1"
+                            class="toolbar-tab-input" style="width:48px;">
+                    </label>
                 </div>
 
                 <span class="center-pos" id="tablePosition">Pos · 1:1</span>
