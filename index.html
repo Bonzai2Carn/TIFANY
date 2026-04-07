@@ -6,6 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- ── Icons ── -->
+    <link rel="icon" type="image/png" href="/assets/images/Ginexys_Logo.png">
+
     <!-- ── Primary SEO ── -->
     <title>Table Formatter (TIFANY) - GINEXYS</title>
     <meta name="description"
@@ -14,7 +17,7 @@
         content="HTML table editor, table formatter, CSV to HTML table, ASCII table, table manipulation, drag and drop table, TIFANY, GINEXYS, developer tool">
     <meta name="author" content="GINEXYS">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://ginexys.com/tools/table-formatter/src/index.html">
+    <link rel="canonical" href="https://ginexys.com/tools/table-formatter/index.html">
 
     <!-- ── Open Graph ── -->
     <meta property="og:type" content="website">
@@ -22,7 +25,7 @@
     <meta property="og:title" content="Table Formatter (TIFANY); GINEXYS">
     <meta property="og:description"
         content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually with drag-and-drop, and export clean HTML code.">
-    <meta property="og:url" content="https://ginexys.com/tools/table-formatter/src/index.html">
+    <meta property="og:url" content="https://ginexys.com/tools/table-formatter/index.html">
     <meta property="og:locale" content="en_US">
 
     <!-- ── Twitter / X Card ── -->
@@ -39,7 +42,7 @@
       "@type": "SoftwareApplication",
       "name": "Table Formatter",
       "alternateName": "TIFANY",
-      "url": "https://ginexys.com/tools/table-formatter/src/index.html",
+      "url": "https://ginexys.com/tools/table-formatter/index.html",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Web Browser",
       "description": "Parse, edit, and format HTML tables visually. Supports HTML, ASCII, CSV, and plain text input with drag-and-drop, cell merging, transpose, text split, and clean HTML code output.",
@@ -105,37 +108,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
     <!-- TIFANY Core -->
-    <script src="js/core/tifany.js"></script>
+    <script src="src/js/core/tifany.js"></script>
     <!-- TIFANY Components -->
-    <script src="js/components/visualGridMapper.js"></script>
-    <script src="js/components/tableHistory.js"></script>
-    <script src="js/components/cellStore.js"></script>
-    <script src="js/components/nodeGraph.js"></script>
-    <script src="js/components/nodeTypes.js"></script>
+    <script src="src/js/components/visualGridMapper.js"></script>
+    <script src="src/js/components/tableHistory.js"></script>
+    <script src="src/js/components/cellStore.js"></script>
+    <script src="src/js/components/nodeGraph.js"></script>
+    <script src="src/js/components/nodeTypes.js"></script>
     <!-- TIFANY Features -->
-    <script src="js/features/applyClassID.js"></script>
-    <script src="js/features/dragDrop.js"></script>
-    <script src="js/features/generateFunctions.js"></script>
-    <script src="js/features/parseInputs.js"></script>
-    <script src="js/features/tableManipulation.js"></script>
-    <script src="js/features/tableOperations.js"></script>
-    <script src="js/features/tifanyTabs.js"></script>
-    <script src="js/features/drawMode.js"></script>
-    <script src="js/features/sheetManager.js"></script>
-    <script src="js/features/nodeRenderer.js"></script>
-    <script src="js/features/nodeInteractions.js"></script>
-    <script src="js/features/nodeFormulaParser.js"></script>
-    <script src="js/features/nodePalette.js"></script>
-    <script src="js/features/nodeConfigPanel.js"></script>
-    <script src="js/features/nodeExecutor.js"></script>
-    <script src="js/features/nodeEditor.js"></script>
+    <script src="src/js/features/applyClassID.js"></script>
+    <script src="src/js/features/dragDrop.js"></script>
+    <script src="src/js/features/generateFunctions.js"></script>
+    <script src="src/js/features/parseInputs.js"></script>
+    <script src="src/js/features/tableManipulation.js"></script>
+    <script src="src/js/features/tableOperations.js"></script>
+    <script src="src/js/features/tifanyTabs.js"></script>
+    <script src="src/js/features/drawMode.js"></script>
+    <script src="src/js/features/sheetManager.js"></script>
+    <script src="src/js/features/nodeRenderer.js"></script>
+    <script src="src/js/features/nodeInteractions.js"></script>
+    <script src="src/js/features/nodeFormulaParser.js"></script>
+    <script src="src/js/features/nodePalette.js"></script>
+    <script src="src/js/features/nodeConfigPanel.js"></script>
+    <script src="src/js/features/nodeExecutor.js"></script>
+    <script src="src/js/features/nodeEditor.js"></script>
 
     <!-- TIFANY CSS -->
-    <link rel="stylesheet" href="css/tableEditor.css">
-    <link rel="stylesheet" href="css/tifanyUI.css">
-    <link rel="stylesheet" href="css/nodeEditor.css">
+    <link rel="stylesheet" href="src/css/tableEditor.css">
+    <link rel="stylesheet" href="src/css/tifanyUI.css">
+    <link rel="stylesheet" href="src/css/nodeEditor.css">
     <!-- Shared portfolio CSS (header/logo styles) -->
-    <link rel="stylesheet" href="../../../assets/css/portfolio.css">
+    <link rel="stylesheet" href="../../assets/css/portfolio.css">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -149,13 +152,13 @@
     <header class="tifany-header">
         <div class="logo">
             <h1>
-                <a href="../../../index.html" style="text-decoration:none; color:inherit;">
+                <a href="../../index.html" style="text-decoration:none; color:inherit;">
                     GINEXY<span class="logo-accent">OS</span>
                 </a>
             </h1>
         </div>
         <nav class="nav" style="flex:1;">
-            <a href="https://github.com/Bonzai2Carn/TIFANY" target="_blank" class="nav-link">GitHub</a>
+            <a href="https://github.com/Bonzai2Carn/TIFANY" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
         </nav>
         <!-- Theme toggle -->
         <button id="themeToggle" class="theme-toggle-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
@@ -744,7 +747,7 @@
     </div>
 
     <!-- ==================== SIDEBAR NAV COMPONENT ==================== -->
-    <script src="../../../assets/components/sidebar-nav.js"></script>
+    <script src="../../assets/components/sidebar-nav.js"></script>
 
     <!-- ==================== MONACO EDITOR INIT ==================== -->
     <script>
