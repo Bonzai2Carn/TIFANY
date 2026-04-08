@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" href="/assets/images/Ginexys_Logo.png">
 
     <!-- ── Primary SEO ── -->
-    <title>Table Formatter (TIFANY) - GINEXYS</title>
+    <title>Table Formatter (TIFANY) · GINEXYS</title>
     <meta name="description"
         content="TIFANY is a free, browser-based HTML table editor and formatter. Parse HTML, ASCII, CSV, or plain text into a visual table. Edit with drag-and-drop, cell merging, and export clean HTML.">
     <meta name="keywords"
@@ -22,55 +22,79 @@
     <!-- ── Open Graph ── -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="GINEXYS">
-    <meta property="og:title" content="Table Formatter (TIFANY); GINEXYS">
+    <meta property="og:title" content="Table Formatter (TIFANY) · GINEXYS">
     <meta property="og:description"
         content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually with drag-and-drop, and export clean HTML code.">
     <meta property="og:url" content="https://ginexys.com/tools/table-formatter/index.html">
+    <meta property="og:image" content="https://ginexys.com/assets/images/og-image.png">
     <meta property="og:locale" content="en_US">
 
     <!-- ── Twitter / X Card ── -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Table Formatter (TIFANY); GINEXYS">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Table Formatter (TIFANY) · GINEXYS">
     <meta name="twitter:description"
         content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually, and export clean HTML.">
+    <meta name="twitter:image" content="https://ginexys.com/assets/images/og-image.png">
     <meta name="twitter:site" content="@GINEXYS">
 
-    <!-- ── Structured Data: SoftwareApplication ── -->
+    <!-- ── Structured Data ── -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Table Formatter",
-      "alternateName": "TIFANY",
-      "url": "https://ginexys.com/tools/table-formatter/index.html",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Web Browser",
-      "description": "Parse, edit, and format HTML tables visually. Supports HTML, ASCII, CSV, and plain text input with drag-and-drop, cell merging, transpose, text split, and clean HTML code output.",
-      "featureList": [
-        "Parse HTML, ASCII, CSV, and plain text tables",
-        "Visual table editing with drag-and-drop",
-        "Cell, row, and column operations",
-        "Merge cells, transpose table",
-        "Apply CSS classes and IDs",
-        "Monaco-powered HTML code output",
-        "Dark and light theme",
-        "Mobile-optimized interface"
-      ],
-      "author": {
-        "@type": "Organization",
-        "name": "GINEXYS",
-        "url": "https://ginexys.com"
-      },
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "isPartOf": {
-        "@type": "WebSite",
-        "name": "GINEXYS",
-        "url": "https://ginexys.com"
-      }
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://ginexys.com/tools/table-formatter/#software",
+          "name": "Table Formatter",
+          "alternateName": "TIFANY",
+          "url": "https://ginexys.com/tools/table-formatter/index.html",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Web Browser",
+          "description": "Parse, edit, and format HTML tables visually. Supports HTML, ASCII, CSV, and plain text input with drag-and-drop, cell merging, transpose, text split, and clean HTML code output.",
+          "featureList": [
+            "Parse HTML, ASCII, CSV, and plain text tables",
+            "Visual table editing with drag-and-drop",
+            "Cell, row, and column operations",
+            "Merge cells, transpose table",
+            "Apply CSS classes and IDs",
+            "Monaco-powered HTML code output",
+            "Dark and light theme",
+            "Mobile-optimized interface"
+          ],
+          "author": {
+            "@type": "Organization",
+            "name": "GINEXYS",
+            "url": "https://ginexys.com"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "isPartOf": {
+            "@type": "WebSite",
+            "name": "GINEXYS",
+            "url": "https://ginexys.com"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://ginexys.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Table Formatter",
+              "item": "https://ginexys.com/tools/table-formatter/index.html"
+            }
+          ]
+        }
+      ]
     }
     </script>
 
@@ -149,7 +173,7 @@
 <body>
 
     <!-- ==================== HEADER ==================== -->
-    <header class="tifany-header">
+    <!-- <header class="tifany-header">
         <div class="logo">
             <h1>
                 <a href="../../index.html" style="text-decoration:none; color:inherit;">
@@ -158,13 +182,11 @@
             </h1>
         </div>
         <nav class="nav" style="flex:1;">
-            <a href="https://github.com/Bonzai2Carn/TIFANY" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
+            <a href="https://github.com/Bonzai2Carn/TIFANY" target="_blank" rel="noopener noreferrer"
+                class="nav-link">GitHub</a>
         </nav>
-        <!-- Theme toggle -->
-        <button id="themeToggle" class="theme-toggle-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
-            <span class="theme-icon">☀</span>
-        </button>
-    </header>
+
+    </header> -->
 
     <!-- ==================== 3-PANEL APP ==================== -->
     <div class="tifany-app">
@@ -175,6 +197,10 @@
             <button id="toggleLeftPanel" class="theme-toggle-btn active" title="Hide Tools Panel"
                 aria-label="Toggle tools panel" style="font-size:16px;">
                 ☰
+            </button>
+            <!-- Theme toggle -->
+            <button id="themeToggle" class="theme-toggle-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
+                <span class="theme-icon">☀</span>
             </button>
             <!-- Load file -->
             <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.html,.htm" style="display:none;">
@@ -610,6 +636,7 @@
                         </select>
                         <button id="generateCode" class="btn btn-sm btn-success flex-grow-1">Generate</button>
                         <button id="copyInput" class="btn btn-sm btn-outline-secondary">Copy</button>
+                        <button id="downloadCode" class="btn btn-sm btn-outline-primary" title="Download file">↓</button>
                     </div>
                     <!-- Monaco Editor mounts here -->
                     <div id="monaco-editor-container"></div>
@@ -876,6 +903,54 @@
         if (window.SidebarNav) {
             SidebarNav.render('#sidebar-nav-mount', 'Table Formatter');
         }
+    </script>
+
+    <!-- ==================== DOWNLOAD + USAGE COUNTER ==================== -->
+    <script>
+    (function () {
+        // ── Download button ──
+        var dlBtn = document.getElementById('downloadCode');
+        if (dlBtn) {
+            dlBtn.addEventListener('click', function () {
+                var format = document.getElementById('exportFormat').value;
+                var extMap = { html: 'html', json: 'json', markdown: 'md', csv: 'csv', sql: 'sql' };
+                var ext = extMap[format] || 'txt';
+                var content = '';
+                if (window.tifanyMonaco) {
+                    content = window.tifanyMonaco.getValue();
+                } else {
+                    var fb = document.getElementById('tableOutput');
+                    content = fb ? fb.value : '';
+                }
+                if (!content.trim()) return;
+                var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'table.' + ext;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // ── Usage counter (localStorage + silent beacon) ──
+        function recordUsage() {
+            try {
+                var count = parseInt(localStorage.getItem('tifany_gen_count') || '0', 10) + 1;
+                localStorage.setItem('tifany_gen_count', String(count));
+            } catch (e) {}
+            try {
+                navigator.sendBeacon('/_api/usage', JSON.stringify({ tool: 'tifany', event: 'generate' }));
+            } catch (e) {}
+        }
+
+        var genBtn = document.getElementById('generateCode');
+        if (genBtn) {
+            genBtn.addEventListener('click', recordUsage);
+        }
+    })();
     </script>
 
 </body>
