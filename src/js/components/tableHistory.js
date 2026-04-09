@@ -66,7 +66,7 @@ class TableHistoryManager {
     }
 
     canRedo() {
-        return this.currentIndex <= this.history.length - 1;
+        return this.currentIndex < this.history.length - 1;
     }
 
     clear() {
