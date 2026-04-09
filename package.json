@@ -10,13 +10,13 @@
     "\"transpose\"",
     "\"crosshair\""
   ],
-  "homepage": "https://github.com/Bonzai2Carn/TIFANY#readme",
+  "homepage": "https://github.com/canworkstudios/TAFNE#readme",
   "bugs": {
-    "url": "https://github.com/Bonzai2Carn/TIFANY/issues"
+    "url": "https://github.com/canworkstudios/TAFNE/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bonzai2Carn/TIFANY.git"
+    "url": "git+https://github.com/canworkstudios/TAFNE.git"
   },
   "license": "MIT",
   "author": "Bonzai Carn",

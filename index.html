@@ -182,27 +182,31 @@
             </h1>
         </div>
         <nav class="nav" style="flex:1;">
-            <a href="https://github.com/Bonzai2Carn/TIFANY" target="_blank" rel="noopener noreferrer"
+            <a href="https://github.com/canworkstudios/TAFNE" target="_blank" rel="noopener noreferrer"
                 class="nav-link">GitHub</a>
-            <a href="docs/getting-started.html" target="_blank" rel="noopener noreferrer"
-                class="nav-link" title="Getting Started guide" style="margin-left:auto; border: 2px solid; border-radius: 50%;font-size: 0.6rem;">?</a>
+            <a href="docs/getting-started.html" target="_blank" rel="noopener noreferrer" class="nav-link"
+                title="Getting Started guide"
+                style="margin-left:auto; border: 2px solid; border-radius: 50%;font-size: 0.6rem;">?</a>
         </nav>
     </header>
-<!-- ==================== FIRST-VISIT BANNER ==================== -->
-    <div id="tafne-welcome-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--t-accent,#0d6efd);color:#fff;font-size:12px;padding:8px 16px;align-items:center;gap:12px;justify-content:center;">
-        First time? &rarr; <a href="docs/getting-started.html" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:600;text-decoration:underline;">Quick Start Guide</a>
-        <button onclick="document.getElementById('tafne-welcome-banner').style.display='none';" style="background:none;border:none;color:#fff;font-size:16px;line-height:1;cursor:pointer;padding:0 4px;">&times;</button>
+    <!-- ==================== FIRST-VISIT BANNER ==================== -->
+    <div id="tafne-welcome-banner"
+        style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--t-accent,#0d6efd);color:#fff;font-size:12px;padding:8px 16px;align-items:center;gap:12px;justify-content:center;">
+        First time? &rarr; <a href="docs/getting-started.html" target="_blank" rel="noopener noreferrer"
+            style="color:#fff;font-weight:600;text-decoration:underline;">Quick Start Guide</a>
+        <button onclick="document.getElementById('tafne-welcome-banner').style.display='none';"
+            style="background:none;border:none;color:#fff;font-size:16px;line-height:1;cursor:pointer;padding:0 4px;">&times;</button>
     </div>
-    <script>if(!localStorage.getItem('tafne_visited')){document.getElementById('tafne-welcome-banner').style.display='flex';localStorage.setItem('tafne_visited','1');}</script>
+    <script>if (!localStorage.getItem('tafne_visited')) { document.getElementById('tafne-welcome-banner').style.display = 'flex'; localStorage.setItem('tafne_visited', '1'); }</script>
     <!-- ==================== 3-PANEL APP ==================== -->
     <div class="tifany-app">
 
         <!-- Icon nav rail (injected by sidebar-nav.js) -->
         <div id="sidebar-nav-mount" style="display: flex; flex-direction: column; gap: 5px;">
             <!-- Left panel toggle -->
-            <button id="toggleLeftPanel" title="Hide Tools Panel"
-            aria-label="Toggle tools panel" style="font-size:16px;">
-            <!-- class="theme-toggle-btn active" -->
+            <button id="toggleLeftPanel" title="Hide Tools Panel" aria-label="Toggle tools panel"
+                style="font-size:16px;">
+                <!-- class="theme-toggle-btn active" -->
                 ☰
             </button>
             <!-- Theme toggle -->
@@ -216,24 +220,28 @@
             </button>
 
             <!-- Text input modal trigger -->
-            <button id="inputModalBtn" class="theme-toggle-btn" title="Import data — paste HTML, CSV, ASCII or plain text">
+            <button id="inputModalBtn" class="theme-toggle-btn"
+                title="Import data — paste HTML, CSV, ASCII or plain text">
                 <i class="fas fa-file-import"></i>
             </button>
 
             <div class="input-toolbar-divider"></div>
 
             <!-- Select Tool (default active; normal selection mode) -->
-            <button id="selectToolToggle" class="theme-toggle-btn active" title="Table Mode — visual cell editor (click, Shift+click, Ctrl+click to select)">
+            <button id="selectToolToggle" class="theme-toggle-btn active"
+                title="Table Mode — visual cell editor (click, Shift+click, Ctrl+click to select)">
                 <i class="fas fa-table"></i>
             </button>
 
             <!-- Draw Mode -->
-            <button id="drawModeToggle" class="theme-toggle-btn" title="Draw Mode — paste raw text and map it to table cells">
+            <button id="drawModeToggle" class="theme-toggle-btn"
+                title="Draw Mode — paste raw text and map it to table cells">
                 <i class="fas fa-pencil-alt"></i>
             </button>
 
             <!-- Node Editor -->
-            <button id="nodeEditorToggle" class="theme-toggle-btn" title="Node Editor — build data pipelines with joins, filters and transforms">
+            <button id="nodeEditorToggle" class="theme-toggle-btn"
+                title="Node Editor — build data pipelines with joins, filters and transforms">
                 <i class="fas fa-project-diagram"></i>
             </button>
         </div>
@@ -245,10 +253,12 @@
             <div class="left-section-header">History</div>
             <div class="left-section-body">
                 <div class="style-controls">
-                    <button class="undoHistory btn btn-sm btn-outline-secondary toolbar-btn" title="Undo last action (Ctrl+Z)">
+                    <button class="undoHistory btn btn-sm btn-outline-secondary toolbar-btn"
+                        title="Undo last action (Ctrl+Z)">
                         &#9100; Undo <span class="undoState"></span>
                     </button>
-                    <button class="redoHistory btn btn-sm btn-outline-secondary toolbar-btn" title="Redo last action (Ctrl+Y)">
+                    <button class="redoHistory btn btn-sm btn-outline-secondary toolbar-btn"
+                        title="Redo last action (Ctrl+Y)">
                         &#10227; Redo <span class="redoState"></span>
                     </button>
                 </div>
@@ -369,21 +379,27 @@
             <div class="panel left-section-body">
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px;">Add Operations</div>
                 <div class="button-controls mb-2" style="display: grid; grid-template-columns: repeat(2, 1fr);">
-                    <button id="addRow" class="addRow btn btn-sm btn-outline-secondary toolbar-btn" title="Add a row after the selected row">Add Row</button>
-                    <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary toolbar-btn" title="Add a column after the selected column">Add
+                    <button id="addRow" class="addRow btn btn-sm btn-outline-secondary toolbar-btn"
+                        title="Add a row after the selected row">Add Row</button>
+                    <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary toolbar-btn"
+                        title="Add a column after the selected column">Add
                         Column</button>
-                    <button id="addCell" class="addCell btn btn-sm btn-outline-secondary toolbar-btn" title="Add a single cell to the selected row">Add Cell</button>
-                    <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary toolbar-btn" title="Merge selected cells (Alt+Shift+W)">Merge
+                    <button id="addCell" class="addCell btn btn-sm btn-outline-secondary toolbar-btn"
+                        title="Add a single cell to the selected row">Add Cell</button>
+                    <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary toolbar-btn"
+                        title="Merge selected cells (Alt+Shift+W)">Merge
                         Cells</button>
                 </div>
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px; margin-top:8px;">Delete Operations</div>
                 <div class="button-controls">
-                    <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger toolbar-btn w-100" title="Delete selected cell(s) (Delete key)">Delete
+                    <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger toolbar-btn w-100"
+                        title="Delete selected cell(s) (Delete key)">Delete
                         Cell(s)</button>
-                    <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger toolbar-btn w-100" title="Delete selected row(s)">Delete
+                    <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger toolbar-btn w-100"
+                        title="Delete selected row(s)">Delete
                         Row(s)</button>
-                    <button id="deleteColumn"
-                        class="deleteColumn btn btn-sm btn-outline-danger toolbar-btn w-100" title="Delete selected column(s)">Delete
+                    <button id="deleteColumn" class="deleteColumn btn btn-sm btn-outline-danger toolbar-btn w-100"
+                        title="Delete selected column(s)">Delete
                         Col(s)</button>
                 </div>
                 <hr style="border-color:var(--t-border); margin:10px 0;">
@@ -420,7 +436,8 @@
                             Col</button>
                     </div>
                     <div class="toolbar-group" data-group="cell-ops">
-                        <button class="toolbar-btn mergeCells" title="Merge selected cells (Alt+Shift+W)"><i class="fas fa-compress"></i>
+                        <button class="toolbar-btn mergeCells" title="Merge selected cells (Alt+Shift+W)"><i
+                                class="fas fa-compress"></i>
                             Merge</button>
                         <button class="toolbar-btn addCell" title="Add Cell"><i class="fas fa-plus-circle"></i></button>
                         <button class="toolbar-btn deleteCell" title="Delete Cell"><i class="fas fa-trash"></i></button>
@@ -670,7 +687,8 @@
             <button id="addCell" class="addCell btn btn-sm btn-outline-secondary py-0 px-1">Add Cell</button>
             <button id="addRow" class="addRow btn btn-sm btn-outline-secondary py-0 px-1">Add Row</button>
             <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary py-0 px-1">Add Column</button>
-            <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary py-0 px-1">Merge Selected</button>
+            <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary py-0 px-1">Merge
+                Selected</button>
             <button class="textSplit btn btn-sm btn-outline-secondary py-0 px-1">Text Split</button>
         </div>
         <h6>Delete</h6>
@@ -924,7 +942,8 @@
 
     <!-- 3-tab bottom navigation: Tools | Table | Code -->
     <nav class="mobile-bottom-nav" id="mobileBottomNav" role="tablist" aria-label="Main navigation">
-        <button class="mobile-nav-tab" id="mobileTabTools" role="tab" aria-controls="mobileSheetTools" aria-selected="false">
+        <button class="mobile-nav-tab" id="mobileTabTools" role="tab" aria-controls="mobileSheetTools"
+            aria-selected="false">
             <i class="fas fa-wrench" aria-hidden="true"></i>
             Tools
         </button>
@@ -932,7 +951,8 @@
             <i class="fas fa-table" aria-hidden="true"></i>
             Table
         </button>
-        <button class="mobile-nav-tab" id="mobileTabCode" role="tab" aria-controls="mobileSheetCode" aria-selected="false">
+        <button class="mobile-nav-tab" id="mobileTabCode" role="tab" aria-controls="mobileSheetCode"
+            aria-selected="false">
             <i class="fas fa-code" aria-hidden="true"></i>
             Code
         </button>
@@ -942,17 +962,17 @@
     <script>
         (function () {
             var BREAKPOINT = 767;
-            var backdrop   = document.getElementById('mobileSheetBackdrop');
-            var leftPanel  = document.querySelector('.tifany-left-panel');
+            var backdrop = document.getElementById('mobileSheetBackdrop');
+            var leftPanel = document.querySelector('.tifany-left-panel');
             var rightPanel = document.querySelector('.tifany-right-panel');
-            var tabTools   = document.getElementById('mobileTabTools');
-            var tabTable   = document.getElementById('mobileTabTable');
-            var tabCode    = document.getElementById('mobileTabCode');
+            var tabTools = document.getElementById('mobileTabTools');
+            var tabTable = document.getElementById('mobileTabTable');
+            var tabCode = document.getElementById('mobileTabCode');
 
             function isMobile() { return window.innerWidth <= BREAKPOINT; }
 
             function closeAll() {
-                if (leftPanel)  leftPanel.classList.remove('mobile-open');
+                if (leftPanel) leftPanel.classList.remove('mobile-open');
                 if (rightPanel) rightPanel.classList.remove('mobile-open');
                 backdrop.classList.remove('visible');
                 [tabTools, tabTable, tabCode].forEach(function (t) { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
@@ -998,7 +1018,7 @@
             // Close sheets on resize to desktop
             window.addEventListener('resize', function () {
                 if (!isMobile()) {
-                    leftPanel  && leftPanel.classList.remove('mobile-open');
+                    leftPanel && leftPanel.classList.remove('mobile-open');
                     rightPanel && rightPanel.classList.remove('mobile-open');
                     backdrop.classList.remove('visible');
                 }

@@ -142,7 +142,7 @@ Deliberately framework-free. The core engine ships as a single file, self-hostab
 ## Self-hosting
 
 ```bash
-git clone https://github.com/Bonzai2Carn/TIFANY
+git clone https://github.com/canworkstudios/TAFNE
 cd TIFANY
 # Open index.html in any browser. No server required.
 ```
@@ -160,8 +160,8 @@ The AI extraction layer (PDF → structured data → TIFANY) is the commercial p
 ## Contributing
 
 Good first issues are labeled **`good first issue`** in the issues tab.  
-Suggestions, bug reports, and feature requests welcome via [GitHub Issues](https://github.com/Bonzai2Carn/TIFANY/issues).  
-Design discussions in [GitHub Discussions](https://github.com/Bonzai2Carn/TIFANY/discussions).
+Suggestions, bug reports, and feature requests welcome via [GitHub Issues](https://github.com/canworkstudios/TAFNE/issues).  
+Design discussions in [GitHub Discussions](https://github.com/canworkstudios/TAFNE/discussions).
 
 ---
 
