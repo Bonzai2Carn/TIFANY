@@ -1,6 +1,8 @@
-# Getting Started with TIFANY
+# Getting Started with TAFNE - Table Formatter and Node Editor
 
-TIFANY (Table Formatter and Editor) is a comprehensive tool designed for parsing, editing, and formatting HTML tables. Whether you are converting raw data into a structured grid or performing complex data transformations, TIFANY provides a visual interface to streamline the process.
+<img src="../tafne-demo.gif" alt="TAFNE demo" style="width:100%">
+
+TAFNE (Table Formatter and Node Editor) is a comprehensive tool designed for parsing, editing, and formatting HTML tables. Whether you are converting raw data into a structured grid or performing complex data transformations, TAFNE provides a visual interface to streamline the process.
 
 ## core Workflow
 
@@ -15,17 +17,17 @@ TIFANY (Table Formatter and Editor) is a comprehensive tool designed for parsing
 
 TIFANY supports multiple input formats:
 
-*   **File Upload**: Select the **Load File** icon (📂) in the sidebar to import `.csv`, `.tsv`, `.txt`, or `.html` files.
-*   **Text Input**: Select the **Import** icon (📥) to open a modal where you can paste HTML, ASCII, CSV, or plain text.
+*   **File Upload**: Select the **Load File** icon in the sidebar to import `.csv`, `.tsv`, `.txt`, or `.html` files.
+*   **Text Input**: Select the **Import** icon to open a modal where you can paste HTML, ASCII, CSV, or plain text.
 *   **Draw Mode**: For unstructured data, use **Draw Mode** to manually assign text to grid cells.
 
 ### Supported Formats
-| Format | Description |
-| :--- | :--- |
-| **HTML** | Parses standard `<table>`, `<tr>`, `<td>` structures. |
-| **CSV / TSV** | Standard spreadsheet exports (Comma or Tab separated). |
-| **ASCII** | Formatted text tables (e.g., from terminal outputs). |
-| **Plain Text** | Raw text processed via the **Text Split** function. |
+| Format         | Description                                            |
+| :------------- | :----------------------------------------------------- |
+| **HTML**       | Parses standard `<table>`, `<tr>`, `<td>` structures.  |
+| **CSV / TSV**  | Standard spreadsheet exports (Comma or Tab separated). |
+| **ASCII**      | Formatted text tables (e.g., from terminal outputs).   |
+| **Plain Text** | Raw text processed via the **Text Split** function.    |
 
 ---
 
@@ -61,11 +63,19 @@ The interface is divided into three primary regions:
 ### Modifying Content
 *   **Double-Click**: Activates the inline editor for a cell.
 *   **Context Menu**: Right-click to access operations like **Edit Content**, **Merge Selected**, and **Delete**.
-*   **Keyboard Shortcuts**:
-    *   `Insert`: Add a new cell.
-    *   `Delete`: Remove the selected cell(s).
-    *   `Alt + Shift + W`: Merge selected cells.
 
+## Keyboard shortcuts
+
+| Shortcut         | Action             |
+| ---------------- | ------------------ |
+| `Insert`         | Insert cell        |
+| `Delete`         | Delete cell        |
+| `Alt+Shift+W`    | Merge cells        |
+| `Alt+Shift+T`    | Text split         |
+| `Alt+Shift+X`    | Apply text split   |
+| `Ctrl/Cmd+click` | Multi-select cells |
+| `Shift+click`    | Range select       |
+| `Double-click`   | Edit cell content  |
 ### Structural Updates
 Use the **Table Manipulation Tool** in the left panel to:
 *   Add rows/columns before or after the selection.
@@ -82,5 +92,4 @@ Once your table is formatted:
 3.  Select **Generate** to populate the output editor.
 4.  Select **Copy** to retrieve the code for your project.
 
-> [!TIP]
-> Use the **Node Editor** for advanced data pipelines if you need to perform relational joins or complex filtering before exporting.
+> **Tip:** Use the **Node Editor** for advanced data pipelines if you need to perform relational joins or complex filtering before exporting.

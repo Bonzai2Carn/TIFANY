@@ -1,4 +1,4 @@
-<!-- Table Formatter and Editor; TIFANY -->
+<!-- Table Formatter and Node Editor; TAFNE -->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 
@@ -10,11 +10,11 @@
     <link rel="icon" type="image/png" href="/assets/images/Ginexys_Logo.png">
 
     <!-- ── Primary SEO ── -->
-    <title>Table Formatter (TIFANY) · GINEXYS</title>
+    <title>Table Formatter (TAFNE) · GINEXYS</title>
     <meta name="description"
-        content="TIFANY is a free, browser-based HTML table editor and formatter. Parse HTML, ASCII, CSV, or plain text into a visual table. Edit with drag-and-drop, cell merging, and export clean HTML.">
+        content="TAFNE is a free, browser-based HTML table editor and formatter. Parse HTML, ASCII, CSV, or plain text into a visual table. Edit with drag-and-drop, cell merging, and export clean HTML.">
     <meta name="keywords"
-        content="HTML table editor, table formatter, CSV to HTML table, ASCII table, table manipulation, drag and drop table, TIFANY, GINEXYS, developer tool">
+        content="HTML table editor, table formatter, CSV to HTML table, ASCII table, table manipulation, drag and drop table, TAFNE, GINEXYS, developer tool">
     <meta name="author" content="GINEXYS">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://ginexys.com/tools/table-formatter/index.html">
@@ -22,7 +22,7 @@
     <!-- ── Open Graph ── -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="GINEXYS">
-    <meta property="og:title" content="Table Formatter (TIFANY) · GINEXYS">
+    <meta property="og:title" content="Table Formatter (TAFNE) · GINEXYS">
     <meta property="og:description"
         content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually with drag-and-drop, and export clean HTML code.">
     <meta property="og:url" content="https://ginexys.com/tools/table-formatter/index.html">
@@ -31,7 +31,7 @@
 
     <!-- ── Twitter / X Card ── -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Table Formatter (TIFANY) · GINEXYS">
+    <meta name="twitter:title" content="Table Formatter (TAFNE) · GINEXYS">
     <meta name="twitter:description"
         content="Free browser-based HTML table editor. Parse HTML, CSV, ASCII or plain text, edit visually, and export clean HTML.">
     <meta name="twitter:image" content="https://ginexys.com/assets/images/og-image.png">
@@ -46,7 +46,7 @@
           "@type": "SoftwareApplication",
           "@id": "https://ginexys.com/tools/table-formatter/#software",
           "name": "Table Formatter",
-          "alternateName": "TIFANY",
+          "alternateName": "TAFNE",
           "url": "https://ginexys.com/tools/table-formatter/index.html",
           "applicationCategory": "DeveloperApplication",
           "operatingSystem": "Web Browser",
@@ -131,15 +131,15 @@
     <!-- GSAP (pinned 3.12.2 — same version as schema-editor; used by Node Editor renderer) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-    <!-- TIFANY Core -->
+    <!-- TAFNE Core -->
     <script src="src/js/core/tifany.js"></script>
-    <!-- TIFANY Components -->
+    <!-- TAFNE Components -->
     <script src="src/js/components/visualGridMapper.js"></script>
     <script src="src/js/components/tableHistory.js"></script>
     <script src="src/js/components/cellStore.js"></script>
     <script src="src/js/components/nodeGraph.js"></script>
     <script src="src/js/components/nodeTypes.js"></script>
-    <!-- TIFANY Features -->
+    <!-- TAFNE Features -->
     <script src="src/js/features/applyClassID.js"></script>
     <script src="src/js/features/dragDrop.js"></script>
     <script src="src/js/features/generateFunctions.js"></script>
@@ -157,7 +157,7 @@
     <script src="src/js/features/nodeExecutor.js"></script>
     <script src="src/js/features/nodeEditor.js"></script>
 
-    <!-- TIFANY CSS -->
+    <!-- TAFNE CSS -->
     <link rel="stylesheet" href="src/css/tableEditor.css">
     <link rel="stylesheet" href="src/css/tifanyUI.css">
     <link rel="stylesheet" href="src/css/nodeEditor.css">
@@ -173,7 +173,7 @@
 <body>
 
     <!-- ==================== HEADER ==================== -->
-    <!-- <header class="tifany-header">
+    <header class="tifany-header">
         <div class="logo">
             <h1>
                 <a href="../../index.html" style="text-decoration:none; color:inherit;">
@@ -184,10 +184,16 @@
         <nav class="nav" style="flex:1;">
             <a href="https://github.com/Bonzai2Carn/TIFANY" target="_blank" rel="noopener noreferrer"
                 class="nav-link">GitHub</a>
+            <a href="docs/getting-started.html" target="_blank" rel="noopener noreferrer"
+                class="nav-link" title="Getting Started guide" style="margin-left:auto; border: 2px solid; border-radius: 50%;font-size: 0.6rem;">?</a>
         </nav>
-
-    </header> -->
-
+    </header>
+<!-- ==================== FIRST-VISIT BANNER ==================== -->
+    <div id="tafne-welcome-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--t-accent,#0d6efd);color:#fff;font-size:12px;padding:8px 16px;align-items:center;gap:12px;justify-content:center;">
+        First time? &rarr; <a href="docs/getting-started.html" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:600;text-decoration:underline;">Quick Start Guide</a>
+        <button onclick="document.getElementById('tafne-welcome-banner').style.display='none';" style="background:none;border:none;color:#fff;font-size:16px;line-height:1;cursor:pointer;padding:0 4px;">&times;</button>
+    </div>
+    <script>if(!localStorage.getItem('tafne_visited')){document.getElementById('tafne-welcome-banner').style.display='flex';localStorage.setItem('tafne_visited','1');}</script>
     <!-- ==================== 3-PANEL APP ==================== -->
     <div class="tifany-app">
 
@@ -210,24 +216,24 @@
             </button>
 
             <!-- Text input modal trigger -->
-            <button id="inputModalBtn" class="theme-toggle-btn" title="Open text input">
+            <button id="inputModalBtn" class="theme-toggle-btn" title="Import data — paste HTML, CSV, ASCII or plain text">
                 <i class="fas fa-file-import"></i>
             </button>
 
             <div class="input-toolbar-divider"></div>
 
             <!-- Select Tool (default active; normal selection mode) -->
-            <button id="selectToolToggle" class="theme-toggle-btn active"title="Table Mode">
+            <button id="selectToolToggle" class="theme-toggle-btn active" title="Table Mode — visual cell editor (click, Shift+click, Ctrl+click to select)">
                 <i class="fas fa-table"></i>
             </button>
 
             <!-- Draw Mode -->
-            <button id="drawModeToggle" class="theme-toggle-btn" title="Draw Mode: OFF">
+            <button id="drawModeToggle" class="theme-toggle-btn" title="Draw Mode — paste raw text and map it to table cells">
                 <i class="fas fa-pencil-alt"></i>
             </button>
 
             <!-- Node Editor -->
-            <button id="nodeEditorToggle" class="theme-toggle-btn" title="Node Editor: OFF">
+            <button id="nodeEditorToggle" class="theme-toggle-btn" title="Node Editor — build data pipelines with joins, filters and transforms">
                 <i class="fas fa-project-diagram"></i>
             </button>
         </div>
@@ -239,10 +245,10 @@
             <div class="left-section-header">History</div>
             <div class="left-section-body">
                 <div class="style-controls">
-                    <button class="undoHistory btn btn-sm btn-outline-secondary toolbar-btn" title="Undo">
+                    <button class="undoHistory btn btn-sm btn-outline-secondary toolbar-btn" title="Undo last action (Ctrl+Z)">
                         &#9100; Undo <span class="undoState"></span>
                     </button>
-                    <button class="redoHistory btn btn-sm btn-outline-secondary toolbar-btn" title="Redo">
+                    <button class="redoHistory btn btn-sm btn-outline-secondary toolbar-btn" title="Redo last action (Ctrl+Y)">
                         &#10227; Redo <span class="redoState"></span>
                     </button>
                 </div>
@@ -363,21 +369,21 @@
             <div class="panel left-section-body">
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px;">Add Operations</div>
                 <div class="button-controls mb-2" style="display: grid; grid-template-columns: repeat(2, 1fr);">
-                    <button id="addRow" class="addRow btn btn-sm btn-outline-secondary toolbar-btn">Add Row</button>
-                    <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary toolbar-btn">Add
+                    <button id="addRow" class="addRow btn btn-sm btn-outline-secondary toolbar-btn" title="Add a row after the selected row">Add Row</button>
+                    <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary toolbar-btn" title="Add a column after the selected column">Add
                         Column</button>
-                    <button id="addCell" class="addCell btn btn-sm btn-outline-secondary toolbar-btn">Add Cell</button>
-                    <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary toolbar-btn">Merge
+                    <button id="addCell" class="addCell btn btn-sm btn-outline-secondary toolbar-btn" title="Add a single cell to the selected row">Add Cell</button>
+                    <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary toolbar-btn" title="Merge selected cells (Alt+Shift+W)">Merge
                         Cells</button>
                 </div>
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px; margin-top:8px;">Delete Operations</div>
                 <div class="button-controls">
-                    <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger toolbar-btn w-100">Delete
+                    <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger toolbar-btn w-100" title="Delete selected cell(s) (Delete key)">Delete
                         Cell(s)</button>
-                    <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger toolbar-btn w-100">Delete
+                    <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger toolbar-btn w-100" title="Delete selected row(s)">Delete
                         Row(s)</button>
                     <button id="deleteColumn"
-                        class="deleteColumn btn btn-sm btn-outline-danger toolbar-btn w-100">Delete
+                        class="deleteColumn btn btn-sm btn-outline-danger toolbar-btn w-100" title="Delete selected column(s)">Delete
                         Col(s)</button>
                 </div>
                 <hr style="border-color:var(--t-border); margin:10px 0;">
@@ -414,7 +420,7 @@
                             Col</button>
                     </div>
                     <div class="toolbar-group" data-group="cell-ops">
-                        <button class="toolbar-btn mergeCells" title="Merge"><i class="fas fa-compress"></i>
+                        <button class="toolbar-btn mergeCells" title="Merge selected cells (Alt+Shift+W)"><i class="fas fa-compress"></i>
                             Merge</button>
                         <button class="toolbar-btn addCell" title="Add Cell"><i class="fas fa-plus-circle"></i></button>
                         <button class="toolbar-btn deleteCell" title="Delete Cell"><i class="fas fa-trash"></i></button>
@@ -570,7 +576,7 @@
             <div class="table-wrapper">
                 <!-- contenteditable="true" -->
                 <p contenteditable="true" data-text="Table View" class="text-center"></p>
-                <div class="table-container" id="tableContainer"></div>
+                <div class="table-container" id="tableContainer" contenteditable="true"></div>
             </div>
 
             <!-- Sheet tab bar -->
@@ -659,19 +665,19 @@
     <!-- ==================== CONTEXT MENU ==================== -->
     <div id="cellContextMenu" class="cell-controls">
         <h6>Cell Options</h6>
-        <div class="cell-op" style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
-            <button id="editCell" class="editCell btn btn-sm btn-outline-primary">Edit Content</button>
-            <button id="addCell" class="addCell btn btn-sm btn-outline-secondary">Add Cell</button>
-            <button id="addRow" class="addRow btn btn-sm btn-outline-secondary">Add Row</button>
-            <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary">Add Column</button>
-            <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary">Merge Selected</button>
-            <button class="textSplit btn btn-sm btn-outline-secondary">Text Split</button>
+        <div class="cell-op">
+            <button id="editCell" class="editCell btn btn-sm btn-outline-primary py-0 px-1">Edit Content</button>
+            <button id="addCell" class="addCell btn btn-sm btn-outline-secondary py-0 px-1">Add Cell</button>
+            <button id="addRow" class="addRow btn btn-sm btn-outline-secondary py-0 px-1">Add Row</button>
+            <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary py-0 px-1">Add Column</button>
+            <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary py-0 px-1">Merge Selected</button>
+            <button class="textSplit btn btn-sm btn-outline-secondary py-0 px-1">Text Split</button>
         </div>
         <h6>Delete</h6>
-        <div class="cell-op" style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
-            <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger">Delete Cell</button>
-            <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger">Delete Row(s)</button>
-            <button id="deleteColumn" class="deleteColumn btn btn-sm btn-outline-danger">Delete Col(s)</button>
+        <div class="cell-op">
+            <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger w-100">Delete Cell</button>
+            <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger w-100">Delete Row(s)</button>
+            <button id="deleteColumn" class="deleteColumn btn btn-sm btn-outline-danger w-100">Delete Col(s)</button>
         </div>
     </div>
 

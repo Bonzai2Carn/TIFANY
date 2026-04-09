@@ -1,21 +1,28 @@
-# TIFANY: Table Formatter and Editor
+# TIFANY — Table Formatter Engine
 
-TIFANY (Table Formatter and Editor) is a powerful, browser-based application for parsing, editing, and formatting HTML tables. It provides a visual interface for complex data manipulation, structure building, and visual transformation without the need for external dependencies.
+**Browser-native table editor for engineers and developers.**  
+Parse, reshape, and export structured table data without installing anything.  
+Part of the [Ginexys](https://ginexys.com) engineering pipeline.
 
-## 🚀 Key Features
+---
 
-*   **Multi-Format Parsing**: Load data from HTML, CSV, TSV, ASCII, or plain text.
-*   **Visual Grid Editor**: Direct cell manipulation with drag-and-drop structural updates.
-*   **Advanced Modes**:
-    *   **Draw Mode**: Manually build table structures from raw text using interactive painting.
-    *   **Node Editor**: Build visual data pipelines for filtering, joining, and calculating table data.
-*   **Rich Styling**: Apply classes, IDs, colors, and spacing visually.
-*   **Built-in Interactivity**: Support for collapsible rows (accordions) and tabbed column switching.
-*   **Multi-Format Export**: Generate clean code in HTML, JSON, Markdown, CSV, or SQL.
+![TIFANY Table Formatter demo](./tafne-demo.gif)
+
+## What it does
+
+You got a table from a PDF scrape, a legacy export, or a broken copy-paste. It's mangled.
+
+TIFANY parses it — HTML, CSV, ASCII, or plain text — into a live visual editor. Drag columns, merge cells, split text, transpose rows, then export clean code in the format you actually need.
+
+No signup. No upload. Nothing leaves your browser.
+
+---
 
 ## 📚 Documentation
 
-Detailed guides are available to help you get the most out of TIFANY:
+**[→ Open the tool](https://ginexys.com/tools/table-formatter/index.html)** · **[→ Getting Started](https://ginexys.com/table-formatter/docs/getting-started.html)**
+
+Detailed guides are available to help you get the most out of TAFNE:
 
 *   **[Getting Started](docs/getting-started.md)**: A user-centric guide to importing data, basic editing, and the interface.
 *   **[Operation Modes](docs/modes.md)**: Explore the visual grid, Draw Mode, and the Node Editor pipeline.
@@ -23,33 +30,141 @@ Detailed guides are available to help you get the most out of TIFANY:
 *   **[Functions and Operations](docs/functions.md)**: Technical reference for structure manipulation, transformations, and exports.
 *   **[Node Editor Engine](docs/node-editor-engine.md)**: Advanced documentation for the visual execution engine.
 
-## 🛠️ Project Structure
+---
 
-```text
-tools/table-formatter/
-├── src/
-│   ├── js/             # Application logic (Core, Features, Components)
-│   ├── css/            # UI and Feature styling
-│   └── index.html      # Application entry point
-├── docs/               # User and Technical documentation
-├── examples/           # Implementation examples
-└── dist/               # Production builds
+## Input formats
+
+| Format | Example source |
+|---|---|
+| HTML | Scraped web tables, legacy CMS exports |
+| CSV / Spreadsheet | Excel, Google Sheets, instrument exports |
+| ASCII | Terminal output, scientific software, legacy systems |
+| Plain text | Anything tab or pipe delimited |
+
+---
+
+## Export formats
+
+| Format | Use case |
+|---|---|
+| **HTML** | Documentation, web publishing, Confluence |
+| **Markdown** | GitHub docs, Notion, GitBook, Docusaurus |
+| **CSV** | Data pipelines, Excel re-import |
+| **JSON** | API payloads, config files, test fixtures |
+| **SQL** | Database seed files, migration scripts — `INSERT INTO` ready |
+
+> **SQL export** is the differentiator. Paste a CSV, get INSERT statements. Most table tools don't do this.
+
+---
+
+## Key features
+
+- **Multi-format paste** — HTML, CSV, ASCII, or text. One input panel, auto-detected.
+- **Visual drag-and-drop** — reorder rows and columns by dragging, no code editing
+- **Cell merging** — colspan and rowspan via toolbar or keyboard shortcut
+- **Text split** — split a cell's content into rows or columns using custom delimiters
+- **Transpose** — flip rows and columns in one click
+- **Node editor** — build tables from scratch using a visual node graph
+- **Draw mode** — mark raw pasted data as header / column / row regions
+- **Multi-select** — Ctrl/Cmd+click, range drag, or Shift+click for bulk operations
+- **Full keyboard shortcuts** — see [shortcuts reference](https://ginexys.com/table-formatter/docs/getting-started.html)
+- **Undo / Redo** — full history stack
+- **Built-in CSS classes** — accordion rows, freeze panes, column toggles, mobile styles
+- **Zero dependencies on your end** — runs entirely in the browser
+
+---
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Insert` | Insert cell |
+| `Delete` | Delete cell |
+| `Alt+Shift+W` | Merge cells |
+| `Alt+Shift+T` | Text split |
+| `Alt+Shift+X` | Apply text split |
+| `Ctrl/Cmd+click` | Multi-select cells |
+| `Shift+click` | Range select |
+| `Double-click` | Edit cell content |
+
+---
+
+## Quick start
+
+1. Open **[the tool](https://ginexys.com/tools/table-formatter/index.html)**
+2. Click **Load Sheet** and paste your data (CSV, HTML, ASCII, or text)
+3. Edit visually — drag, merge, split, transpose
+4. Click **Generate Code**, choose your format, copy or download
+5. Done.
+
+Full walkthrough: **[Getting Started →](https://ginexys.com/table-formatter/docs/getting-started.html)**
+
+---
+
+## Who uses this
+
+**Technical writers** — clean HTML or Markdown tables for docs platforms (Confluence, GitBook, Docusaurus)  
+**Backend developers** — SQL INSERT statements from CSV exports, no scripting required  
+**Data analysts** — reshape legacy CSV/ASCII exports from ERP systems, lab instruments  
+**Researchers** — reformat ASCII tables from scientific software for LaTeX or Python import  
+**No-code builders** — complex HTML tables with colspan, rowspan, and accordion rows for Webflow / CMS
+
+---
+
+## Part of the Ginexys pipeline
+
+TIFANY is the **Transform** step of the Ginexys engineering document pipeline:
+
+```
+Extract (PDF/image → structured data)  ←  AI layer · in development
+    ↓
+Transform (reshape, edit, clean)        ←  TIFANY · live now
+    ↓
+Engineer (schematic / topology editor)  ←  in development
 ```
 
-## 🏁 Getting Started
+The extraction and schematic engines are in active development.  
+Follow this repo or **[join the community](https://ginexys.com)** to track progress.
 
-Requirements:
-*   A modern web browser (Chrome, Firefox, Edge, Safari).
+---
 
-Run Locally:
-1.  Open `src/index.html` directly in your browser.
-2.  Alternatively, serve the root directory using a static file server:
-    ```bash
-    npx http-server ./src
-    ```
+## Built with
 
-## 📜 License
+- Vanilla JavaScript
+- jQuery
+- HTML / CSS
+- Zero build step — open `index.html` and it runs
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+Deliberately framework-free. The core engine ships as a single file, self-hostable, embeddable anywhere.
 
-Copyright (c) 2026 CANWORKSTUDIOS
+---
+
+## Self-hosting
+
+```bash
+git clone https://github.com/Bonzai2Carn/TIFANY
+cd TIFANY
+# Open index.html in any browser. No server required.
+```
+
+---
+
+## Open source
+
+MIT licensed. Core engine is free forever.  
+The AI extraction layer (PDF → structured data → TIFANY) is the commercial product.  
+[Sponsor on GitHub](https://github.com/Bonzai2Carn) to support development.
+
+---
+
+## Contributing
+
+Good first issues are labeled **`good first issue`** in the issues tab.  
+Suggestions, bug reports, and feature requests welcome via [GitHub Issues](https://github.com/Bonzai2Carn/TIFANY/issues).  
+Design discussions in [GitHub Discussions](https://github.com/Bonzai2Carn/TIFANY/discussions).
+
+---
+
+## License
+
+MIT · © 2025 [Ginexys / Canworks LLC](https://ginexys.com)
