@@ -225,15 +225,15 @@ function copyInput() {
             : $('#tableOutput').val();
         if (!formatBoard || formatBoard.trim() === '') {
             // More descriptive error message
-            alert('The text area is empty. Please add content before copying.');
+            $.toast('The text area is empty. Please add content before copying.');
             return;
         }
         if (navigator.clipboard) {
             navigator.clipboard.writeText(formatBoard)
                 .then(() => {
-                    alert('HTML copied to clipboard!');
+                    $.toast('HTML copied to clipboard!');
                 })
         } else {
-            alert('Failed to coppy')
+            $.toast('Failed to coppy')
         }
     }

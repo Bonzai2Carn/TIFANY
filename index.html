@@ -194,8 +194,9 @@
         <!-- Icon nav rail (injected by sidebar-nav.js) -->
         <div id="sidebar-nav-mount" style="display: flex; flex-direction: column; gap: 5px;">
             <!-- Left panel toggle -->
-            <button id="toggleLeftPanel" class="theme-toggle-btn active" title="Hide Tools Panel"
-                aria-label="Toggle tools panel" style="font-size:16px;">
+            <button id="toggleLeftPanel" title="Hide Tools Panel"
+            aria-label="Toggle tools panel" style="font-size:16px;">
+            <!-- class="theme-toggle-btn active" -->
                 ☰
             </button>
             <!-- Theme toggle -->
@@ -216,7 +217,7 @@
             <div class="input-toolbar-divider"></div>
 
             <!-- Select Tool (default active; normal selection mode) -->
-            <button id="selectToolToggle" class="theme-toggle-btn active" title="Table Mode">
+            <button id="selectToolToggle" class="theme-toggle-btn active"title="Table Mode">
                 <i class="fas fa-table"></i>
             </button>
 
@@ -248,8 +249,7 @@
             </div>
 
             <!-- STYLES & ID -->
-            <button class="left-section-header"
-                style="display:block; position: sticky; top: 0; text-align:left; background:none; border:none; border-bottom:1px solid var(--t-border); width:100%; cursor:pointer; padding:10px 12px 6px; color:var(--t-section-header); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.8px;">
+            <button class="left-section-header">
                 Styles And ID
             </button>
             <div class="panel left-section-body">
@@ -338,8 +338,7 @@
             </div>
 
             <!-- FUNCTION (operations) -->
-            <button class="left-section-header"
-                style="display:block; position: sticky; top: 0; text-align:left; background:none; border:none; border-bottom:1px solid var(--t-border); width:100%; cursor:pointer; padding:10px 12px 6px; color:var(--t-section-header); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.8px;">
+            <button class="left-section-header">
                 Function
             </button>
             <div class="panel left-section-body">
@@ -358,13 +357,12 @@
             </div>
 
             <!-- TABLE MANIPULATION TOOL -->
-            <button class="left-section-header"
-                style="display:block; display:block; position: sticky; top: 0; text-align:left; background:none; border:none; border-bottom:1px solid var(--t-border); width:100%; cursor:pointer; padding:10px 12px 6px; color:var(--t-section-header); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:0.8px;">
+            <button class="left-section-header">
                 Table Manipulation Tool
             </button>
             <div class="panel left-section-body">
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px;">Add Operations</div>
-                <div class="button-controls mb-2">
+                <div class="button-controls mb-2" style="display: grid; grid-template-columns: repeat(2, 1fr);">
                     <button id="addRow" class="addRow btn btn-sm btn-outline-secondary toolbar-btn">Add Row</button>
                     <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary toolbar-btn">Add
                         Column</button>
@@ -374,11 +372,12 @@
                 </div>
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px; margin-top:8px;">Delete Operations</div>
                 <div class="button-controls">
-                    <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger toolbar-btn">Delete
+                    <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger toolbar-btn w-100">Delete
                         Cell(s)</button>
-                    <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger toolbar-btn">Delete
+                    <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger toolbar-btn w-100">Delete
                         Row(s)</button>
-                    <button id="deleteColumn" class="deleteColumn btn btn-sm btn-outline-danger toolbar-btn">Delete
+                    <button id="deleteColumn"
+                        class="deleteColumn btn btn-sm btn-outline-danger toolbar-btn w-100">Delete
                         Col(s)</button>
                 </div>
                 <hr style="border-color:var(--t-border); margin:10px 0;">
@@ -568,7 +567,8 @@
             </div>
 
             <!-- Table editing area -->
-            <div class="table-wrapper" contenteditable="true">
+            <div class="table-wrapper">
+                <!-- contenteditable="true" -->
                 <p contenteditable="true" data-text="Table View" class="text-center"></p>
                 <div class="table-container" id="tableContainer"></div>
             </div>
@@ -626,17 +626,20 @@
                     Generate Code <span class="right-section-chevron">▼</span>
                 </div>
                 <div class="right-section-body" id="right-generate">
+                    <select id="exportFormat" class="form-control form-control-sm"
+                        style="max-width:100%; margin-bottom:8px;">
+                        <option value="html">HTML</option>
+                        <option value="json">JSON</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="csv">CSV</option>
+                        <option value="sql">SQL</option>
+                    </select>
                     <div class="generate-actions">
-                        <select id="exportFormat" class="form-control form-control-sm" style="max-width:110px;">
-                            <option value="html">HTML</option>
-                            <option value="json">JSON</option>
-                            <option value="markdown">Markdown</option>
-                            <option value="csv">CSV</option>
-                            <option value="sql">SQL</option>
-                        </select>
                         <button id="generateCode" class="btn btn-sm btn-success flex-grow-1">Generate</button>
-                        <button id="copyInput" class="btn btn-sm btn-outline-secondary">Copy</button>
-                        <button id="downloadCode" class="btn btn-sm btn-outline-primary" title="Download file">↓</button>
+                        <button id="copyInput" class="btn btn-sm btn-outline-secondary" title="Copy to clipboard"><i
+                                class="fa-solid fa-copy"></i></button>
+                        <button id="downloadCode" class="btn btn-sm btn-outline-primary" title="Download file"><i
+                                class="fa-solid fa-download"></i></button>
                     </div>
                     <!-- Monaco Editor mounts here -->
                     <div id="monaco-editor-container"></div>
@@ -656,16 +659,20 @@
     <!-- ==================== CONTEXT MENU ==================== -->
     <div id="cellContextMenu" class="cell-controls">
         <h6>Cell Options</h6>
-        <button id="editCell" class="editCell btn btn-sm btn-outline-primary">Edit Content</button>
-        <button id="addCell" class="addCell btn btn-sm btn-outline-secondary">Add Cell</button>
-        <button id="addRow" class="addRow btn btn-sm btn-outline-secondary">Add Row</button>
-        <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary">Add Column</button>
-        <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary">Merge Selected</button>
-        <button class="textSplit btn btn-sm btn-outline-secondary">Text Split</button>
+        <div class="cell-op" style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
+            <button id="editCell" class="editCell btn btn-sm btn-outline-primary">Edit Content</button>
+            <button id="addCell" class="addCell btn btn-sm btn-outline-secondary">Add Cell</button>
+            <button id="addRow" class="addRow btn btn-sm btn-outline-secondary">Add Row</button>
+            <button id="addColumn" class="addColumn btn btn-sm btn-outline-secondary">Add Column</button>
+            <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary">Merge Selected</button>
+            <button class="textSplit btn btn-sm btn-outline-secondary">Text Split</button>
+        </div>
         <h6>Delete</h6>
-        <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger">Delete Cell</button>
-        <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger">Delete Row(s)</button>
-        <button id="deleteColumn" class="deleteColumn btn btn-sm btn-outline-danger">Delete Col(s)</button>
+        <div class="cell-op" style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
+            <button id="deleteCell" class="deleteCell btn btn-sm btn-outline-danger">Delete Cell</button>
+            <button id="deleteRow" class="deleteRow btn btn-sm btn-outline-danger">Delete Row(s)</button>
+            <button id="deleteColumn" class="deleteColumn btn btn-sm btn-outline-danger">Delete Col(s)</button>
+        </div>
     </div>
 
     <!-- Before/After cell options popup (outside context menu so Popper can position it freely) -->
@@ -724,7 +731,7 @@
                         <select class="form-control" id="splitDirection">
                             <option value="rows">Split into Columns</option>
                             <option value="columns">Split into Rows</option>
-                            <option value="both">Split into Rows and Columns</option>
+                            <!-- <option value="both">Split into Rows and Columns</option> -->
                         </select>
                     </div>
                 </div>
@@ -905,52 +912,140 @@
         }
     </script>
 
+    <!-- ==================== MOBILE BOTTOM NAV ==================== -->
+    <!-- Backdrop — closes any open sheet when tapped -->
+    <div class="mobile-sheet-backdrop" id="mobileSheetBackdrop"></div>
+
+    <!-- 3-tab bottom navigation: Tools | Table | Code -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav" role="tablist" aria-label="Main navigation">
+        <button class="mobile-nav-tab" id="mobileTabTools" role="tab" aria-controls="mobileSheetTools" aria-selected="false">
+            <i class="fas fa-wrench" aria-hidden="true"></i>
+            Tools
+        </button>
+        <button class="mobile-nav-tab active" id="mobileTabTable" role="tab" aria-selected="true">
+            <i class="fas fa-table" aria-hidden="true"></i>
+            Table
+        </button>
+        <button class="mobile-nav-tab" id="mobileTabCode" role="tab" aria-controls="mobileSheetCode" aria-selected="false">
+            <i class="fas fa-code" aria-hidden="true"></i>
+            Code
+        </button>
+    </nav>
+
+    <!-- ==================== MOBILE SHEET CONTROLLER ==================== -->
+    <script>
+        (function () {
+            var BREAKPOINT = 767;
+            var backdrop   = document.getElementById('mobileSheetBackdrop');
+            var leftPanel  = document.querySelector('.tifany-left-panel');
+            var rightPanel = document.querySelector('.tifany-right-panel');
+            var tabTools   = document.getElementById('mobileTabTools');
+            var tabTable   = document.getElementById('mobileTabTable');
+            var tabCode    = document.getElementById('mobileTabCode');
+
+            function isMobile() { return window.innerWidth <= BREAKPOINT; }
+
+            function closeAll() {
+                if (leftPanel)  leftPanel.classList.remove('mobile-open');
+                if (rightPanel) rightPanel.classList.remove('mobile-open');
+                backdrop.classList.remove('visible');
+                [tabTools, tabTable, tabCode].forEach(function (t) { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+                tabTable.classList.add('active');
+                tabTable.setAttribute('aria-selected', 'true');
+            }
+
+            function openSheet(panel, tab) {
+                closeAll();
+                panel.classList.add('mobile-open');
+                backdrop.classList.add('visible');
+                tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
+                tabTable.classList.remove('active');
+                tabTable.setAttribute('aria-selected', 'false');
+            }
+
+            if (tabTools) {
+                tabTools.addEventListener('click', function () {
+                    if (!isMobile()) return;
+                    if (leftPanel && leftPanel.classList.contains('mobile-open')) { closeAll(); return; }
+                    openSheet(leftPanel, tabTools);
+                });
+            }
+
+            if (tabTable) {
+                tabTable.addEventListener('click', function () {
+                    if (!isMobile()) return;
+                    closeAll();
+                });
+            }
+
+            if (tabCode) {
+                tabCode.addEventListener('click', function () {
+                    if (!isMobile()) return;
+                    if (rightPanel && rightPanel.classList.contains('mobile-open')) { closeAll(); return; }
+                    openSheet(rightPanel, tabCode);
+                });
+            }
+
+            backdrop.addEventListener('click', closeAll);
+
+            // Close sheets on resize to desktop
+            window.addEventListener('resize', function () {
+                if (!isMobile()) {
+                    leftPanel  && leftPanel.classList.remove('mobile-open');
+                    rightPanel && rightPanel.classList.remove('mobile-open');
+                    backdrop.classList.remove('visible');
+                }
+            });
+        })();
+    </script>
+
     <!-- ==================== DOWNLOAD + USAGE COUNTER ==================== -->
     <script>
-    (function () {
-        // ── Download button ──
-        var dlBtn = document.getElementById('downloadCode');
-        if (dlBtn) {
-            dlBtn.addEventListener('click', function () {
-                var format = document.getElementById('exportFormat').value;
-                var extMap = { html: 'html', json: 'json', markdown: 'md', csv: 'csv', sql: 'sql' };
-                var ext = extMap[format] || 'txt';
-                var content = '';
-                if (window.tifanyMonaco) {
-                    content = window.tifanyMonaco.getValue();
-                } else {
-                    var fb = document.getElementById('tableOutput');
-                    content = fb ? fb.value : '';
-                }
-                if (!content.trim()) return;
-                var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = 'table.' + ext;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
-        }
+        (function () {
+            // ── Download button ──
+            var dlBtn = document.getElementById('downloadCode');
+            if (dlBtn) {
+                dlBtn.addEventListener('click', function () {
+                    var format = document.getElementById('exportFormat').value;
+                    var extMap = { html: 'html', json: 'json', markdown: 'md', csv: 'csv', sql: 'sql' };
+                    var ext = extMap[format] || 'txt';
+                    var content = '';
+                    if (window.tifanyMonaco) {
+                        content = window.tifanyMonaco.getValue();
+                    } else {
+                        var fb = document.getElementById('tableOutput');
+                        content = fb ? fb.value : '';
+                    }
+                    if (!content.trim()) return;
+                    var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'table.' + ext;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+            }
 
-        // ── Usage counter (localStorage + silent beacon) ──
-        function recordUsage() {
-            try {
-                var count = parseInt(localStorage.getItem('tifany_gen_count') || '0', 10) + 1;
-                localStorage.setItem('tifany_gen_count', String(count));
-            } catch (e) {}
-            try {
-                navigator.sendBeacon('/_api/usage', JSON.stringify({ tool: 'tifany', event: 'generate' }));
-            } catch (e) {}
-        }
+            // ── Usage counter (localStorage + silent beacon) ──
+            function recordUsage() {
+                try {
+                    var count = parseInt(localStorage.getItem('tifany_gen_count') || '0', 10) + 1;
+                    localStorage.setItem('tifany_gen_count', String(count));
+                } catch (e) { }
+                try {
+                    navigator.sendBeacon('/_api/usage', JSON.stringify({ tool: 'tifany', event: 'generate' }));
+                } catch (e) { }
+            }
 
-        var genBtn = document.getElementById('generateCode');
-        if (genBtn) {
-            genBtn.addEventListener('click', recordUsage);
-        }
-    })();
+            var genBtn = document.getElementById('generateCode');
+            if (genBtn) {
+                genBtn.addEventListener('click', recordUsage);
+            }
+        })();
     </script>
 
 </body>

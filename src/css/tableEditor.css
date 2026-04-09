@@ -316,7 +316,7 @@ tr.accordion-header.actives {
     padding: 10px;
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    width: 230.8px;
+    width: 240.8px;
 }
 
 .cell-options {
@@ -331,9 +331,10 @@ tr.accordion-header.actives {
 
 .beforeCell,
 .afterCell {
-    width: 42.5px;
+    /* width: 42.5px; */
     /* max-width: 90vw; */
     max-height: 30px;
+    padding: 10px;
     overflow: auto;
     background: white;
     border: 1px solid #ccc;

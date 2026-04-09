@@ -45,7 +45,8 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     height: 100%;
     overflow-x: hidden;
 }
@@ -120,6 +121,12 @@ body {
     font-size: 14px;
     transition: all 150ms ease;
     flex-shrink: 0;
+}
+
+.theme-toggle-btn.active {
+    background: var(--t-primary);
+    border-color: var(--t-primary);
+    color: #fff;
 }
 
 .theme-toggle-btn:hover {
@@ -239,14 +246,31 @@ body {
    LEFT PANEL SECTIONS
    =========================== */
 .left-section-header {
-    color: var(--t-section-header);
+    /* color: var(--t-section-header);
     font-weight: 600;
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.8px;
     padding: 10px 12px 6px;
     border-bottom: 1px solid var(--t-border);
-    user-select: none;
+    user-select: none; */
+
+    display: block;
+    position: sticky;
+    z-index: 100;
+    top: 0;
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid var(--t-border);
+    width: 100%;
+    cursor: pointer;
+    padding: 10px 12px 6px;
+    color: var(--t-section-header);
+    background: var(--t-bg-input);
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
 }
 
 .left-section-body {
@@ -309,6 +333,7 @@ body {
     display: flex;
     gap: 8px;
     margin-bottom: 8px;
+    overflow: auto;
 }
 
 /* ===========================
@@ -455,7 +480,8 @@ body {
 }
 
 .sidebar-container {
-    display: none; /* hidden on desktop; replaced by .tifany-left-panel */
+    display: none;
+    /* hidden on desktop; replaced by .tifany-left-panel */
 }
 
 .sidebar {
@@ -507,7 +533,7 @@ body {
 .button-controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 2px;
     justify-content: space-between;
     min-width: 100%;
 }
@@ -695,11 +721,11 @@ body {
     transition: transform 200ms ease;
 }
 
-.toolbar-switch-label input:checked + .toolbar-switch-track {
+.toolbar-switch-label input:checked+.toolbar-switch-track {
     background: var(--t-primary);
 }
 
-.toolbar-switch-label input:checked + .toolbar-switch-track::after {
+.toolbar-switch-label input:checked+.toolbar-switch-track::after {
     transform: translateX(13px);
 }
 
@@ -826,8 +852,14 @@ body {
    BOOTSTRAP MODAL; z-index safety
    Ensures modals always render above sticky header (z-200) and all panels.
    =========================== */
-.modal { z-index: 1055 !important; }
-.modal-backdrop { z-index: 1050 !important; }
+.modal {
+    z-index: 1055 !important;
+}
+
+.modal-backdrop {
+    z-index: 1050 !important;
+}
+
 /* Ensure the modal dialog is properly centered even with our CSS reset */
 .modal-dialog {
     margin: 1.75rem auto !important;
@@ -846,8 +878,10 @@ body.draw-mode-active .tifany-center-panel {
     display: none;
     flex-direction: column;
     background: var(--t-bg-surface);
-    flex: 1;           /* fill the center panel */
-    min-height: 0;     /* allow flex child to shrink */
+    flex: 1;
+    /* fill the center panel */
+    min-height: 0;
+    /* allow flex child to shrink */
     overflow: hidden;
 }
 
@@ -969,7 +1003,8 @@ body.draw-mode-active .tifany-center-panel {
 .draw-preview-grid td.active-cell {
     border: 2px solid var(--t-primary);
     background: var(--t-active-bg);
-    padding: 1px 5px; /* Offset for 2px border */
+    padding: 1px 5px;
+    /* Offset for 2px border */
 }
 
 /* Header cells show with a distinct tint */
@@ -1044,69 +1079,221 @@ body.node-editor-active #sheetTabBar {
 }
 
 /* ===========================
-   MOBILE LAYOUT
-   Mobile stack order (top → bottom):
-   1. Text Input
-   2. Instruction
-   3. Toolbar + Table Viewer
-   4. Generate Code
+   MOBILE BOTTOM NAV (hidden on desktop)
    =========================== */
-@media (max-width: 768px) {
+.mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: var(--t-bg-surface);
+    border-top: 1px solid var(--t-border);
+    z-index: 600;
+    align-items: stretch;
+    justify-content: space-around;
+}
+
+.mobile-nav-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    color: var(--t-text-muted);
+    font-size: 10px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 150ms ease, background 150ms ease;
+    letter-spacing: 0.3px;
+}
+
+.mobile-nav-tab i {
+    font-size: 17px;
+    line-height: 1;
+}
+
+.mobile-nav-tab.active {
+    color: var(--t-primary);
+    background: var(--t-active-bg);
+}
+
+.mobile-nav-tab:not(.active):hover {
+    color: var(--t-text);
+    background: var(--t-hover-bg);
+}
+
+/* Sheet backdrop (hidden on desktop) */
+.mobile-sheet-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 490;
+    opacity: 0;
+    transition: opacity 250ms ease;
+}
+
+.mobile-sheet-backdrop.visible {
+    display: block;
+    opacity: 1;
+}
+
+/* ===========================
+   MOBILE LAYOUT (≤767px)
+   =========================== */
+@media (max-width: 767px) {
+
+    /* Icon rail: vertical → horizontal strip at top of app */
+    #sidebar-nav-mount {
+        flex-direction: row !important;
+        width: 100%;
+        height: auto;
+        min-height: 44px;
+        border-right: none !important;
+        border-bottom: 1px solid var(--t-border);
+        background: var(--t-bg-surface);
+        padding: 4px 8px !important;
+        overflow-x: auto;
+        gap: 4px !important;
+        flex-shrink: 0;
+    }
+
+    /* App becomes a column; bottom 56px reserved for nav */
     .tifany-app {
         flex-direction: column;
-        height: auto;
-        min-height: calc(100vh - var(--t-header-height));
-        overflow: visible;
+        height: calc(100dvh - 56px);
+        overflow: hidden;
     }
 
-    /* Hide desktop-only elements on mobile */
-    #sidebar-nav-mount,
-    .tifany-left-panel {
-        display: none;
-    }
-
-    /* Right panel: show stacked at top on mobile */
-    .tifany-right-panel {
-        width: 100%;
-        border-left: none;
-        border-bottom: 1px solid var(--t-border);
-        order: 1;
-    }
-
-    /* Move Text Input section to top */
-    .right-section[data-mobile-order="1"] { order: 1; }
-    /* Move Instruction section second */
-    .right-section[data-mobile-order="2"] { order: 2; }
-    /* Move Generate Code section last */
-    .right-section[data-mobile-order="3"] { order: 3; }
-
-    /* Center (toolbar + table) in the middle */
+    /* Center fills all remaining height */
     .tifany-center-panel {
-        width: 100%;
-        order: 2;
-        height: auto;
-        overflow: visible;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
     }
 
-    /* Show mobile toolbar */
+    .table-wrapper {
+        padding: 8px;
+    }
+
+    /* Show the existing horizontal mobile toolbar */
     #tableViewer-mb {
         display: block;
+        flex-shrink: 0;
     }
 
-    /* Table wrapper takes natural height on mobile */
-    .table-wrapper {
+    /* Left panel: always in DOM but translated off-screen; slides up on .mobile-open */
+    .tifany-left-panel,
+    .tifany-left-panel.panel-hidden {
+        display: block !important;
+        position: fixed !important;
+        bottom: 56px;
+        left: 0;
+        right: 0;
+        top: auto !important;
         height: auto;
-        min-height: 300px;
+        max-height: 72vh;
+        min-width: 0;
+        width: 100% !important;
+        border-right: none;
+        border-top: 1px solid var(--t-border);
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+        z-index: 500;
+        overflow-y: auto;
+        transform: translateY(102%);
+        transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
     }
 
-    /* Monaco editor smaller on mobile */
+    /* Drag handle via pseudo on panel top */
+    .tifany-left-panel::before {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--t-border);
+        margin: 10px auto 6px;
+    }
+
+    .tifany-left-panel.mobile-open {
+        transform: translateY(0);
+    }
+
+    /* Right panel: same treatment */
+    .tifany-right-panel {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 56px;
+        left: 0;
+        right: 0;
+        top: auto !important;
+        height: auto;
+        max-height: 72vh;
+        min-width: 0;
+        max-width: 100%;
+        width: 100% !important;
+        border-left: none;
+        border-top: 1px solid var(--t-border);
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+        z-index: 500;
+        overflow-y: auto;
+        transform: translateY(102%);
+        transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+        flex-direction: column;
+    }
+
+    .tifany-right-panel::before {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 4px;
+        border-radius: 2px;
+        background: var(--t-border);
+        margin: 10px auto 6px;
+        flex-shrink: 0;
+    }
+
+    .tifany-right-panel.mobile-open {
+        transform: translateY(0);
+    }
+
+    /* Monaco editor: compact height on mobile */
     #monaco-editor-container {
-        height: 200px;
+        height: 260px;
+        min-height: 160px;
     }
-}
 
-@media (max-width: 480px) {
-    .tifany-header .nav {
+    /* Show mobile bottom nav */
+    .mobile-bottom-nav {
+        display: flex;
+    }
+
+    /* Right panel resize handle: disable on mobile */
+    .right-panel-resize-handle {
         display: none;
     }
+
+    /* Sheet tab bar: add bottom padding so last tab isn't clipped */
+    .sheet-tab-bar {
+        padding-bottom: 6px;
+    }
 }
+
+[data-theme="dark"] .mobile-bottom-nav {
+    background: var(--t-bg-surface);
+    border-color: var(--t-border);
+}
+
+[data-theme="dark"] .mobile-sheet-backdrop {
+    background: rgba(0, 0, 0, 0.65);
+}
+

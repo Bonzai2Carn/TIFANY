@@ -170,10 +170,38 @@ $(function () {
         $container.on('contextmenu.cell', 'td, th', function (e) {
             e.preventDefault();
             const $menu = $('#cellContextMenu');
-            $menu.css({
-                top: e.pageY + 'px',
-                left: e.pageX + 'px'
-            }).show();
+            // $menu.css({
+            //     top: e.pageY + 'px',
+            //     left: e.pageX + 'px',
+            //     display: 'grid'
+            // }).show();
+            // Show first so outerWidth/Height are accurate
+            $menu.show();
+
+            const menuW = $menu.outerWidth();
+            const menuH = $menu.outerHeight();
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const pad = 8; // viewport edge clearance
+
+            // On mobile the CSS bottom-sheet takes over; skip JS positioning
+            if (vw <= 767) {
+                window.cellBeingEdited = this;
+                return;
+            }
+
+            // Start at cursor position (viewport-relative for position:fixed)
+            let x = e.clientX;
+            let y = e.clientY;
+
+            // Flip left if overflows right edge
+            if (x + menuW + pad > vw) x = Math.max(pad, x - menuW);
+            // Flip up if overflows bottom edge
+            if (y + menuH + pad > vh) y = Math.max(pad, vh - menuH - pad);
+            // Never clip top
+            if (y < pad) y = pad;
+
+            $menu.css({ top: y + 'px', left: x + 'px', display: 'grid' });
             window.cellBeingEdited = this;
         });
 
