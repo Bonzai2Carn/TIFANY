@@ -1,7 +1,7 @@
-# TIFANY — Table Formatter Engine
+# TAFNE — Table Formatter and Node Editor
 
-**Browser-native table editor for engineers and developers.**  
-Parse, reshape, and export structured table data without installing anything.  
+**Browser-native table editor for engineers, developers, and data analysts.**  
+Parse, reshape, and export structured table data, PDF tables, scraped HTML, legacy exports, and more without installing anything.  
 Part of the [Ginexys](https://ginexys.com) engineering pipeline.
 
 ## Table of Contents
@@ -22,14 +22,14 @@ Part of the [Ginexys](https://ginexys.com) engineering pipeline.
 
 ---
 
-![TIFANY Table Formatter demo](./tafne-demo.gif)
+![TAFNE Table Formatter demo](./tafne-demo.gif)
 
 ## What it does
 
 You got a table from a PDF scrape, a legacy export, 
 or a broken copy-paste. It's mangled.
 
-TIFANY parses it into a live visual editor. Reshape it 
+TAFNE parses it into a live visual editor. Reshape it 
 visually — drag columns, merge cells, split text, transpose. 
 Then generate clean code into a Monaco editor instance where 
 you can refine it directly before copying. HTML, Markdown, 
@@ -132,12 +132,12 @@ Full walkthrough: **[Getting Started →](https://ginexys.com/table-formatter/do
 
 ## Part of the Ginexys pipeline
 
-TIFANY is the **Transform** step of the Ginexys engineering document pipeline:
+TAFNE is the **Transform** step of the Ginexys engineering document pipeline:
 
 ```
 Extract (PDF/image → structured data)  ←  AI layer · in development
     ↓
-Transform (reshape, edit, clean)        ←  TIFANY · live now
+Transform (reshape, edit, clean)        ←  TAFNE · live now
     ↓
 Engineer (schematic / topology editor)  ←  in development
 ```
@@ -162,7 +162,7 @@ Deliberately framework-free. The core engine ships as a single file, self-hostab
 
 ```bash
 git clone https://github.com/canworkstudios/TAFNE
-cd TIFANY
+cd TAFNE
 # Open index.html in any browser. No server required.
 ```
 
@@ -171,7 +171,7 @@ cd TIFANY
 ## Open source
 
 MIT licensed. Core engine is free forever.  
-The AI extraction layer (PDF → structured data → TIFANY) is the commercial product.  
+The AI extraction layer (PDF → structured data → TAFNE) is the commercial product.  
 [Sponsor on GitHub](https://github.com/carnworkstudios) to support development.
 
 ---

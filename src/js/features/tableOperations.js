@@ -138,7 +138,7 @@ function deleteColumns() {
     const $table = $(window.currentTable);
     const mapper = new VisualGridMapper($table);
 
-    // Get unique columns from selected cells
+    // Get unique visual columns from selected cells
     const columns = new Set();
     window.selectedCells.forEach(cell => {
         const position = mapper.getVisualPosition(cell);
@@ -147,17 +147,13 @@ function deleteColumns() {
         }
     });
 
-    // Convert to array and sort in descending order to remove from right to left
+    // Sort descending so removing right-to-left doesn't shift indices
     const colsArray = Array.from(columns).sort((a, b) => b - a);
 
-    // Remove each column
+    // Use getCellsInColumn to get the real DOM elements — safe with colspan/rowspan
     colsArray.forEach(colIndex => {
-        $table.find('tr').each(function () {
-            const cells = $(this).find('td, th');
-            if (cells[colIndex]) {
-                $(cells[colIndex]).remove();
-            }
-        });
+        const cellsToRemove = mapper.getCellsInColumn(colIndex);
+        cellsToRemove.forEach(cell => $(cell).remove());
     });
 
     // Clear selection
@@ -185,9 +181,10 @@ function addRow() {
     const $table = $(window.currentTable);
     const selectedCell = window.selectedCells[0];
     const $selectedRow = $(selectedCell).closest('tr');
-    const colCount = $table.find('tr:first').find('td, th').length;
+    // Use VisualGridMapper so colspan/rowspan is accounted for in the visual column count
+    const colCount = new VisualGridMapper($table).maxCols;
 
-    let newRowHtml = '<tr id="test">';
+    let newRowHtml = '<tr>';
     for (let i = 0; i < colCount; i++) {
         newRowHtml += '<td></td>';
     }
@@ -216,9 +213,10 @@ function addRowBefore() {
     const $table = $(window.currentTable);
     const selectedCell = window.selectedCells[0];
     const $selectedRow = $(selectedCell).closest('tr');
-    const colCount = $table.find('tr:first').find('td, th').length;
+    // Use VisualGridMapper so colspan/rowspan is accounted for in the visual column count
+    const colCount = new VisualGridMapper($table).maxCols;
 
-    let newRowHtml = '<tr id="test">';
+    let newRowHtml = '<tr>';
     for (let i = 0; i < colCount; i++) {
         newRowHtml += '<td></td>';
     }
@@ -246,16 +244,26 @@ function addColumn() {
 
     const $table = $(window.currentTable);
     const selectedCell = window.selectedCells[0];
-    const cellIndex = $(selectedCell).index();
+    const mapper = new VisualGridMapper($table);
 
-    $table.find('tr').each(function () {
-        const $cells = $(this).find('td, th');
-        const $selectedCell = $cells.eq(cellIndex);
-        const tagName = $selectedCell.prop('tagName');
+    // Use visual position — raw .index() breaks when colspan/rowspan shift physical positions
+    const position = mapper.getVisualPosition(selectedCell);
+    if (!position) return;
+    // Insert after the last visual column this cell occupies
+    const targetVisualCol = position.startCol + position.colspan - 1;
 
-        // Insert new column after the selected cell
-        $selectedCell.after(`<${tagName}></${tagName}>`);
-    });
+    // For each visual row, find the last physical cell that occupies targetVisualCol and insert after it
+    for (let rowIdx = 0; rowIdx < mapper.maxRows; rowIdx++) {
+        const rowGrid = mapper.grid[rowIdx];
+        if (!rowGrid) continue;
+        const gridCell = rowGrid[targetVisualCol];
+        if (!gridCell) continue;
+        // Only insert once per origin cell (avoid duplicates for rowspan)
+        if (!gridCell.isOrigin) continue;
+        const $cell = $(gridCell.element);
+        const tagName = $cell.prop('tagName').toLowerCase();
+        $cell.after(`<${tagName}></${tagName}>`);
+    }
 
     $.toast({
         heading: 'Success',
@@ -276,16 +284,25 @@ function addColumnBefore() {
 
     const $table = $(window.currentTable);
     const selectedCell = window.selectedCells[0];
-    const cellIndex = $(selectedCell).index();
+    const mapper = new VisualGridMapper($table);
 
-    $table.find('tr').each(function () {
-        const $cells = $(this).find('td, th');
-        const $selectedCell = $cells.eq(cellIndex);
-        const tagName = $selectedCell.prop('tagName');
+    // Use visual position — raw .index() breaks when colspan/rowspan shift physical positions
+    const position = mapper.getVisualPosition(selectedCell);
+    if (!position) return;
+    const targetVisualCol = position.startCol;
 
-        // Insert new column before the selected cell
-        $selectedCell.before(`<${tagName}></${tagName}>`);
-    });
+    // For each visual row, find the physical cell at targetVisualCol and insert before its origin
+    for (let rowIdx = 0; rowIdx < mapper.maxRows; rowIdx++) {
+        const rowGrid = mapper.grid[rowIdx];
+        if (!rowGrid) continue;
+        const gridCell = rowGrid[targetVisualCol];
+        if (!gridCell) continue;
+        // Only insert once per origin cell (avoid duplicates for rowspan)
+        if (!gridCell.isOrigin) continue;
+        const $cell = $(gridCell.element);
+        const tagName = $cell.prop('tagName').toLowerCase();
+        $cell.before(`<${tagName}></${tagName}>`);
+    }
 
     $.toast({
         heading: 'Success',
