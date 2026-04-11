@@ -4,17 +4,36 @@
 Parse, reshape, and export structured table data without installing anything.  
 Part of the [Ginexys](https://ginexys.com) engineering pipeline.
 
+## Table of Contents
+- [What it does](#what-it-does)
+- [Documentation](#-documentation)
+- [Input formats](#input-formats)
+- [Export formats](#export-formats)
+- [Key features](#key-features)
+- [Keyboard shortcuts](#keyboard-shortcuts)
+- [Quick start](#quick-start)
+- [Who uses this](#who-uses-this)
+- [Part of the Ginexys pipeline](#part-of-the-ginexys-pipeline)
+- [Built with](#built-with)
+- [Self-hosting](#self-hosting)
+- [Open source](#open-source)
+- [Contributing](#contributing)
+- [License](#license)
+
 ---
 
 ![TIFANY Table Formatter demo](./tafne-demo.gif)
 
 ## What it does
 
-You got a table from a PDF scrape, a legacy export, or a broken copy-paste. It's mangled.
+You got a table from a PDF scrape, a legacy export, 
+or a broken copy-paste. It's mangled.
 
-TIFANY parses it — HTML, CSV, ASCII, or plain text — into a live visual editor. Drag columns, merge cells, split text, transpose rows, then export clean code in the format you actually need.
-
-No signup. No upload. Nothing leaves your browser.
+TIFANY parses it into a live visual editor. Reshape it 
+visually — drag columns, merge cells, split text, transpose. 
+Then generate clean code into a Monaco editor instance where 
+you can refine it directly before copying. HTML, Markdown, 
+JSON, CSV, or SQL INSERT statements.
 
 ---
 
@@ -153,7 +172,7 @@ cd TIFANY
 
 MIT licensed. Core engine is free forever.  
 The AI extraction layer (PDF → structured data → TIFANY) is the commercial product.  
-[Sponsor on GitHub](https://github.com/Bonzai2Carn) to support development.
+[Sponsor on GitHub](https://github.com/carnworkstudios) to support development.
 
 ---
 
