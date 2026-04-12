@@ -28,6 +28,15 @@ function parseInput() {
         case 'text':
             tableHtml = parseTextInput(inputData);
             break;
+        case 'markdown':
+            tableHtml = parseMarkdownInput(inputData);
+            break;
+        case 'json':
+            tableHtml = parseJsonInput(inputData);
+            break;
+        case 'sql':
+            tableHtml = parseSqlInput(inputData);
+            break;
         default:
             alert('Unknown input type');
             return;
@@ -71,6 +80,12 @@ function handleFileLoad(file) {
             tableHtml = parseCsvInput(text);
         } else if (ext === 'tsv') {
             tableHtml = parseTextInput(text);
+        } else if (ext === 'md') {
+            tableHtml = parseMarkdownInput(text);
+        } else if (ext === 'json') {
+            tableHtml = parseJsonInput(text);
+        } else if (ext === 'sql') {
+            tableHtml = parseSqlInput(text);
         } else {
             // .txt and others; try tab-delimited first
             if (text.includes('\t')) {
@@ -203,6 +218,105 @@ function parseTextInput(text) {
         }
     });
 
+    tableHtml += '</table>';
+    return tableHtml;
+}
+
+/** Parse GitHub-Flavoured Markdown table:
+ *  | H1 | H2 |
+ *  | -- | -- |
+ *  | v1 | v2 |
+ */
+function parseMarkdownInput(md) {
+    const lines = md.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length === 0) return '';
+
+    let tableHtml = '<table class="tablecoil crosshair-table">';
+    let headerDone = false;
+
+    lines.forEach(line => {
+        // Skip separator line (| --- | --- |)
+        if (/^\|?[\s|:\-]+\|?$/.test(line)) return;
+
+        const cells = line.split('|').map(c => c.trim()).filter((_, i, a) => {
+            // strip empty first/last cells from leading/trailing |
+            return !(i === 0 && c === '') && !(i === a.length - 1 && c === '');
+        });
+        if (cells.length === 0) return;
+
+        tableHtml += '<tr id="test">';
+        cells.forEach(cell => {
+            tableHtml += headerDone ? `<td>${cell}</td>` : `<th>${cell}</th>`;
+        });
+        tableHtml += '</tr>';
+        headerDone = true;
+    });
+
+    tableHtml += '</table>';
+    return tableHtml;
+}
+
+/** Parse JSON: array of objects → table */
+function parseJsonInput(json) {
+    let data;
+    try { data = JSON.parse(json); } catch (e) {
+        alert('Invalid JSON: ' + e.message);
+        return '';
+    }
+
+    // Support: array of objects, or { table: [...] }, or { table_1: [...], ... }
+    if (!Array.isArray(data)) {
+        const firstKey = Object.keys(data)[0];
+        data = firstKey ? data[firstKey] : [];
+    }
+    if (!Array.isArray(data) || data.length === 0) {
+        alert('JSON must be an array of objects.');
+        return '';
+    }
+
+    const headers = Object.keys(data[0]);
+    let tableHtml = '<table class="tablecoil crosshair-table"><tr id="test">';
+    headers.forEach(h => { tableHtml += `<th>${h}</th>`; });
+    tableHtml += '</tr>';
+    data.forEach(row => {
+        tableHtml += '<tr id="test">';
+        headers.forEach(h => { tableHtml += `<td>${row[h] !== undefined ? row[h] : ''}</td>`; });
+        tableHtml += '</tr>';
+    });
+    tableHtml += '</table>';
+    return tableHtml;
+}
+
+/** Parse SQL INSERT statements → table.
+ *  Handles: INSERT INTO tbl (col1,col2) VALUES (v1,v2);
+ */
+function parseSqlInput(sql) {
+    const insertRe = /INSERT\s+INTO\s+\S+\s*\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)/gi;
+    let match;
+    let headers = null;
+    const rows = [];
+
+    while ((match = insertRe.exec(sql)) !== null) {
+        if (!headers) {
+            headers = match[1].split(',').map(c => c.trim().replace(/[`"']/g, ''));
+        }
+        const vals = match[2].split(',').map(v => v.trim().replace(/^'|'$/g, '').replace(/''/g, "'"));
+        rows.push(vals);
+    }
+
+    if (!headers || rows.length === 0) {
+        alert('No INSERT statements found in SQL input.');
+        return '';
+    }
+
+    let tableHtml = '<table class="tablecoil crosshair-table"><tr id="test">';
+    headers.forEach(h => { tableHtml += `<th>${h}</th>`; });
+    tableHtml += '</tr>';
+    rows.forEach(row => {
+        tableHtml += '<tr id="test">';
+        headers.forEach((_, i) => { tableHtml += `<td>${row[i] !== undefined ? row[i] : ''}</td>`; });
+        tableHtml += '</tr>';
+    });
     tableHtml += '</table>';
     return tableHtml;
 }

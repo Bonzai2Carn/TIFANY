@@ -214,7 +214,7 @@
                 <span class="theme-icon">☀</span>
             </button>
             <!-- Load file -->
-            <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.html,.htm" style="display:none;">
+            <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.html,.htm,.md,.json,.sql" style="display:none;">
             <button id="loadFileBtn" class="theme-toggle-btn" title="Load file (.csv, .tsv, .txt, .html)">
                 <i class="fas fa-folder-open"></i>
             </button>
@@ -656,6 +656,7 @@
                         <option value="markdown">Markdown</option>
                         <option value="csv">CSV</option>
                         <option value="sql">SQL</option>
+                        <option value="ascii">ASCII / Plain Text</option>
                     </select>
                     <div class="generate-actions">
                         <button id="generateCode" class="btn btn-sm btn-success flex-grow-1">Generate</button>
@@ -784,7 +785,10 @@
                             <option value="html">HTML</option>
                             <option value="ascii">ASCII</option>
                             <option value="csv">CSV / Spreadsheet</option>
-                            <option value="text">Text</option>
+                            <option value="text">Text (Tab-delimited)</option>
+                            <option value="markdown">Markdown</option>
+                            <option value="json">JSON</option>
+                            <option value="sql">SQL (INSERT statements)</option>
                         </select>
                     </div>
                     <div class="form-group mb-2">
@@ -809,7 +813,15 @@
 
     <!-- ==================== MONACO EDITOR INIT ==================== -->
     <script>
-        var INPUT_LANG_MAP = { html: 'html', ascii: 'plaintext', csv: 'plaintext', text: 'plaintext' };
+        var INPUT_LANG_MAP = {
+            html: 'html',
+            ascii: 'plaintext',
+            csv: 'plaintext',
+            text: 'plaintext',
+            markdown: 'markdown',
+            json: 'json',
+            sql: 'sql'
+        };
 
         // Guard: only proceed if the Monaco AMD loader was loaded successfully
         if (typeof require === 'function' && typeof require.config === 'function') {
@@ -1034,7 +1046,7 @@
             if (dlBtn) {
                 dlBtn.addEventListener('click', function () {
                     var format = document.getElementById('exportFormat').value;
-                    var extMap = { html: 'html', json: 'json', markdown: 'md', csv: 'csv', sql: 'sql' };
+                    var extMap = { html: 'html', json: 'json', markdown: 'md', csv: 'csv', sql: 'sql', ascii: 'txt' };
                     var ext = extMap[format] || 'txt';
                     var content = '';
                     if (window.tifanyMonaco) {

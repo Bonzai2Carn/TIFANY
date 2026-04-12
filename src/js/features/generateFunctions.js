@@ -75,6 +75,8 @@ function generateCode() {
             output = csvContent; // Also show in editor
         } else if (format === 'sql') {
             output = exportAsSql($tables);
+        } else if (format === 'ascii') {
+            output = exportAsAscii($tables);
         }
 
         if (window.tifanyMonaco) {
@@ -217,6 +219,48 @@ function exportAsSql($tables) {
     });
 
     return parts.join('\n');
+}
+
+/**
+ * Export table(s) as an ASCII box-drawing table.
+ * Example:
+ *   +------+-------+
+ *   | Name | Score |
+ *   +======+=======+
+ *   | Bob  |    42 |
+ *   +------+-------+
+ */
+function exportAsAscii($tables) {
+    const parts = [];
+
+    $tables.each(function () {
+        const { headers, rows } = getTableData(this);
+        const allRows = headers.length > 0 ? [headers, ...rows] : rows;
+        if (allRows.length === 0) return;
+
+        // Compute column widths
+        const cols = allRows[0].length;
+        const widths = Array.from({ length: cols }, (_, c) =>
+            Math.max(...allRows.map(row => String(row[c] !== undefined ? row[c] : '').length))
+        );
+
+        const sep  = (ch) => '+' + widths.map(w => ch.repeat(w + 2)).join('+') + '+';
+        const row  = (cells) => '| ' + cells.map((c, i) => String(c !== undefined ? c : '').padEnd(widths[i])).join(' | ') + ' |';
+
+        const lines = [];
+        lines.push(sep('-'));
+        if (headers.length > 0) {
+            lines.push(row(headers));
+            lines.push(sep('='));
+            rows.forEach(r => lines.push(row(r)));
+        } else {
+            allRows.forEach(r => lines.push(row(r)));
+        }
+        lines.push(sep('-'));
+        parts.push(lines.join('\n'));
+    });
+
+    return parts.join('\n\n');
 }
 
 function copyInput() {
