@@ -916,8 +916,53 @@ body.draw-mode-active .tifany-center-panel {
 .draw-monaco-container {
     flex: 1;
     min-height: 0;
-    border-bottom: 1px solid var(--t-border);
+    border-bottom: none; /* border replaced by the resize handle */
 }
+
+/* ── Vertical drag-resize handle ── */
+.draw-resize-handle {
+    flex-shrink: 0;
+    height: 6px;
+    background: var(--t-border);
+    cursor: ns-resize;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 120ms ease;
+    z-index: 2;
+}
+
+/* Three-dot grip indicator */
+.draw-resize-handle::after {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--t-text-muted);
+    opacity: 0.35;
+    transition: opacity 120ms ease, background 120ms ease;
+    /* Dotted grip pattern via box-shadow */
+    box-shadow:
+        -8px 0 0 var(--t-text-muted),
+         8px 0 0 var(--t-text-muted);
+}
+
+.draw-resize-handle:hover,
+.draw-resize-handle.dragging {
+    background: color-mix(in srgb, var(--t-primary) 20%, transparent);
+}
+
+.draw-resize-handle:hover::after,
+.draw-resize-handle.dragging::after {
+    background: var(--t-primary);
+    opacity: 0.8;
+    box-shadow:
+        -8px 0 0 var(--t-primary),
+         8px 0 0 var(--t-primary);
+}
+
 
 .draw-input {
     flex: 1;
@@ -1019,6 +1064,45 @@ body.draw-mode-active #drawModeToggle {
     background: var(--t-active-bg);
     color: var(--t-primary);
     border-color: var(--t-primary);
+}
+
+/* Inline cell editor (double-click to edit) */
+.draw-cell-input {
+    width: 100%;
+    min-width: 56px;
+    box-sizing: border-box;
+    border: none;
+    background: transparent;
+    outline: none;
+    font: inherit;
+    font-size: 11px;
+    color: var(--t-text);
+    padding: 0;
+    margin: 0;
+    /* Remove default input chrome */
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.draw-cell-input:focus {
+    outline: 2px solid var(--t-primary);
+    outline-offset: -2px;
+    border-radius: 2px;
+}
+
+/* Allow text selection inside editing cells */
+.draw-preview-grid td:has(.draw-cell-input) {
+    user-select: text;
+    overflow: visible;
+}
+
+/* Empty cell placeholder */
+.draw-cell-empty {
+    color: var(--t-text-muted);
+    font-style: italic;
+    opacity: 0.55;
+    font-size: 10px;
+    pointer-events: none;
 }
 
 /* ===========================

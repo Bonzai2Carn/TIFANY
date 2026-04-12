@@ -514,6 +514,8 @@
                     <!-- Fallback textarea when Monaco is unavailable -->
                     <textarea id="drawInput" class="draw-input" style="display:none;"
                         placeholder="Paste or type raw data here. Select text, then use the buttons below to mark headers, columns, and rows."></textarea>
+                    <!-- Drag-resize splitter -->
+                    <div id="drawResizeHandle" class="draw-resize-handle" title="Drag to resize editor"></div>
                     <div class="draw-canvas-toolbar" style="flex-wrap: wrap; gap: 8px;">
                         <span class="draw-toolbar-hint">Grid Size:</span>
                         <input type="number" id="drawGridCols" value="3" min="1" max="100"
@@ -861,7 +863,7 @@
                         lineNumbers: 'on',
                         wordWrap: 'on',
                         placeholder: 'Paste or type raw data here. Select text, then click Header / Column / New Row to build your table structure.',
-                        columnSelection: true
+                        columnSelection: false
                     }));
                 }
 
