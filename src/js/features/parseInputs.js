@@ -238,9 +238,9 @@ function parseMarkdownInput(md) {
         // Skip separator line (| --- | --- |)
         if (/^\|?[\s|:\-]+\|?$/.test(line)) return;
 
-        const cells = line.split('|').map(c => c.trim()).filter((_, i, a) => {
-            // strip empty first/last cells from leading/trailing |
-            return !(i === 0 && c === '') && !(i === a.length - 1 && c === '');
+        const cells = line.split('|').map(c => c.trim()).filter((cell, i, a) => {
+            // strip empty first/last cells produced by leading/trailing |
+            return !(i === 0 && cell === '') && !(i === a.length - 1 && cell === '');
         });
         if (cells.length === 0) return;
 
