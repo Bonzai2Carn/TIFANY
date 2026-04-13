@@ -216,6 +216,58 @@ $(function () {
         $(document).off('keydown').on('keydown', function (e) {
             if (e.repeat) return;
 
+            // Arrow-key table navigation (keyboard-first fallback included).
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+                // Don't hijack arrows while typing in editors/inputs.
+                const typingTarget = $(e.target).is('input, textarea, select, [contenteditable="true"]');
+                if (typingTarget || $('.inline-cell-editor').length) return;
+
+                // Resolve active table if needed.
+                if (!window.currentTable) {
+                    window.currentTable = $('#tableContainer table')[0] || null;
+                }
+                if (!window.currentTable) return;
+
+                const $table = $(window.currentTable);
+                const mapper = new VisualGridMapper($table);
+                const grid = mapper.grid || [];
+                if (!grid.length) return;
+
+                let currentCell = window.selectedCells[window.selectedCells.length - 1];
+                if (!currentCell) {
+                    // Keyboard-only start: focus first available visual cell.
+                    const firstVisual = grid[0] && grid[0][0] ? grid[0][0].element : null;
+                    if (!firstVisual) return;
+                    $table.find('.selected-cell').removeClass('selected-cell');
+                    window.selectedCells = [firstVisual];
+                    $(firstVisual).addClass('selected-cell');
+                    currentCell = firstVisual;
+                }
+
+                const currentPos = mapper.getVisualPosition(currentCell);
+                if (!currentPos) return;
+
+                let targetRow = currentPos.startRow;
+                let targetCol = currentPos.startCol;
+
+                if (e.key === "ArrowUp") targetRow--;
+                if (e.key === "ArrowDown") targetRow++;
+                if (e.key === "ArrowLeft") targetCol--;
+                if (e.key === "ArrowRight") targetCol++;
+
+                const rowData = grid[targetRow];
+                const targetData = rowData ? rowData[targetCol] : null;
+                if (!targetData || !targetData.element) return;
+
+                e.preventDefault();
+                const targetCell = targetData.element;
+                $table.find('.selected-cell').removeClass('selected-cell');
+                window.selectedCells = [targetCell];
+                $(targetCell).addClass('selected-cell');
+                targetCell.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                return;
+            }
+
             if ((e.key === 'Delete') && !e.altKey && !e.shiftKey) {
                 e.preventDefault();
                 if (typeof deleteCell === 'function') deleteCell();
