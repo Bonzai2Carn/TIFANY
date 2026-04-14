@@ -4,6 +4,11 @@ $(function () {
     // =================== GLOBAL VARIABLES ===================
     window.selectedCells = [];
     window.currentTable = null;
+    // Selection lifecycle for keyboard+mouse range selection.
+    // - anchor: fixed start of a range (first click/selection)
+    // - head: moving end of a range (mouse drag end or arrow-nav target)
+    window.selectionAnchorCell = null;
+    window.selectionHeadCell = null;
     window.crosshairEnabled = false;
     window.cellBeingEdited = null;
     window.originalContent = null;
@@ -65,6 +70,8 @@ $(function () {
                 }
                 window.currentTable = clickedTable;
                 window.selectedCells = [];
+                window.selectionAnchorCell = null;
+                window.selectionHeadCell = null;
             }
 
             const $table = $(window.currentTable);
@@ -81,15 +88,33 @@ $(function () {
                         window.selectedCells = window.selectedCells.filter(cell => cell !== this);
                     }
                     lastSelectedCell = this;
+                    // Keep keyboard "active cell" aligned with latest mouse action.
+                    if (window.selectedCells.length === 0) {
+                        window.selectionAnchorCell = null;
+                        window.selectionHeadCell = null;
+                    } else {
+                        window.selectionHeadCell = this;
+                        // If we don't have an anchor yet, establish one.
+                        if (!window.selectionAnchorCell) {
+                            window.selectionAnchorCell = this;
+                        }
+                    }
                 } else if (e.shiftKey && lastSelectedCell) {
                     // Shift+Click for range selection
                     endCell = this;
-                    selectRange(lastSelectedCell, endCell);
+                    if (!window.selectionAnchorCell) {
+                        window.selectionAnchorCell = lastSelectedCell;
+                    }
+                    window.selectionHeadCell = endCell;
+                    selectRange(window.selectionAnchorCell, window.selectionHeadCell);
+                    lastSelectedCell = endCell;
                 } else {
                     // Start new selection
                     isSelecting = true;
                     startCell = this;
                     endCell = this;
+                    window.selectionAnchorCell = startCell;
+                    window.selectionHeadCell = startCell;
 
                     // Clear previous selection
                     $table.find('.selected-cell').removeClass('selected-cell');
@@ -107,7 +132,8 @@ $(function () {
         $container.on('mousemove.cell', 'td, th', function (e) {
             if (isSelecting) {
                 endCell = this;
-                selectRange(startCell, endCell);
+                window.selectionHeadCell = endCell;
+                selectRange(window.selectionAnchorCell || startCell, window.selectionHeadCell);
             }
         });
 
@@ -117,6 +143,7 @@ $(function () {
                 isSelecting = false;
                 if (endCell) {
                     lastSelectedCell = endCell;
+                    window.selectionHeadCell = endCell;
                 }
                 // (Draw mode operates via the Draw Canvas panel, not via cell selection)
             }
@@ -233,7 +260,7 @@ $(function () {
                 const grid = mapper.grid || [];
                 if (!grid.length) return;
 
-                let currentCell = window.selectedCells[window.selectedCells.length - 1];
+                let currentCell = window.selectionHeadCell || window.selectedCells[window.selectedCells.length - 1];
                 if (!currentCell) {
                     // Keyboard-only start: focus first available visual cell.
                     const firstVisual = grid[0] && grid[0][0] ? grid[0][0].element : null;
@@ -242,6 +269,8 @@ $(function () {
                     window.selectedCells = [firstVisual];
                     $(firstVisual).addClass('selected-cell');
                     currentCell = firstVisual;
+                    window.selectionAnchorCell = firstVisual;
+                    window.selectionHeadCell = firstVisual;
                 }
 
                 const currentPos = mapper.getVisualPosition(currentCell);
@@ -261,9 +290,21 @@ $(function () {
 
                 e.preventDefault();
                 const targetCell = targetData.element;
-                $table.find('.selected-cell').removeClass('selected-cell');
-                window.selectedCells = [targetCell];
-                $(targetCell).addClass('selected-cell');
+                if (e.shiftKey) {
+                    // Expand selection from an anchor to the moving head.
+                    if (!window.selectionAnchorCell) {
+                        window.selectionAnchorCell = currentCell;
+                    }
+                    window.selectionHeadCell = targetCell;
+                    selectRange(window.selectionAnchorCell, window.selectionHeadCell);
+                } else {
+                    // Move selection as a single active cell.
+                    $table.find('.selected-cell').removeClass('selected-cell');
+                    window.selectedCells = [targetCell];
+                    $(targetCell).addClass('selected-cell');
+                    window.selectionAnchorCell = targetCell;
+                    window.selectionHeadCell = targetCell;
+                }
                 targetCell.scrollIntoView({ block: 'nearest', inline: 'nearest' });
                 return;
             }
