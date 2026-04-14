@@ -349,7 +349,7 @@ $(function () {
     window.setupTableInteraction = setupTableInteraction;
 
     // =================== BEFORE/AFTER CELL OPTIONS (FIXED FOR POPPER V1) ===================
-    const toolboxButtons = ['.addCell', '.addRow', '.addColumn'];
+    const toolboxButtons = ['.addCell', '.addRow', '.addColumn', '.pasteCell'];
 
     toolboxButtons.forEach(selector => {
         const buttons = document.querySelectorAll(selector);
@@ -439,6 +439,17 @@ $(function () {
                         if (typeof addColumn === 'function') addColumn();
                         hideCellOptions();
                     };
+                } else if (selector === '.pasteCell') {
+                    finalBeforeCell.onclick = (e) => {
+                        e.stopPropagation();
+                        if (typeof pasteBefore === 'function') pasteBefore();
+                        hideCellOptions();
+                    };
+                    finalAfterCell.onclick = (e) => {
+                        e.stopPropagation();
+                        if (typeof pasteAfter === 'function') pasteAfter();
+                        hideCellOptions();
+                    };
                 }
             };
 
@@ -521,6 +532,14 @@ $(function () {
 
     $('.applyStyle').on('click', function () {
         if (typeof applyStyle === 'function') applyStyle();
+    });
+
+    $('.duplicateElement').on('click', function () {
+        if (typeof duplicateElement === 'function') duplicateElement();
+    });
+
+    $('.copyCell').on('click', function () {
+        if (typeof copySelected === 'function') copySelected();
     });
 
     // Table Operations - Delete Operations

@@ -2,6 +2,119 @@
 
 // ====================================== ADD & DELETE FUNCTIONALITY ================================================
 
+// Global clipboard for copy/paste
+window.tafneClipboard = [];
+
+function duplicateElement() {
+    if (window.selectedCells.length === 0) {
+        alert('Please select a cell.');
+        return;
+    }
+    const type = $('#elementType').val();
+    if (!type || !['cell', 'row', 'column'].includes(type)) {
+        alert('Please select Cell, Row, or Column in the element type dropdown first.');
+        return;
+    }
+
+    window.saveCurrentState();
+
+    if (type === 'cell') {
+        window.selectedCells.forEach(cell => {
+            $(cell).after($(cell).clone());
+        });
+    } else if (type === 'row') {
+        const uniqueRows = new Set();
+        window.selectedCells.forEach(cell => uniqueRows.add($(cell).parent()[0]));
+        uniqueRows.forEach(row => {
+            $(row).after($(row).clone());
+        });
+    } else if (type === 'column') {
+        const uniqueCols = new Set();
+        const mapper = new window.VisualGridMapper(currentTable);
+        
+        window.selectedCells.forEach(cell => {
+            const pos = mapper.getVisualPosition(cell);
+            if (pos) uniqueCols.add(pos.startCol);
+        });
+        
+        uniqueCols.forEach(colIndex => {
+            for (let r = 0; r < mapper.maxRows; r++) {
+                if (mapper.grid[r] && mapper.grid[r][colIndex]) {
+                    const cellData = mapper.grid[r][colIndex];
+                    if (cellData.isOrigin) {
+                        $(cellData.element).after($(cellData.element).clone());
+                    }
+                }
+            }
+        });
+    }
+
+    $.toast({
+        heading: 'Success',
+        text: 'Duplicated ' + type + '(s)',
+        icon: 'success',
+        loader: false,
+        stack: false
+    });
+    window.setupTableInteraction();
+}
+
+function copySelected() {
+    if (window.selectedCells.length === 0) {
+        alert('Please select a cell.');
+        return;
+    }
+    window.tafneClipboard = window.selectedCells.map(cell => $(cell).clone());
+    $.toast({
+        heading: 'Success',
+        text: window.selectedCells.length + ' item(s) copied',
+        icon: 'info',
+        loader: false,
+        stack: false
+    });
+}
+
+function pasteBefore() {
+    if (window.selectedCells.length === 0 || window.tafneClipboard.length === 0) return;
+    window.saveCurrentState();
+    
+    // Reverse iterating clipboard maintains original sequence when inserting backwards onto a fixed point
+    window.selectedCells.forEach(target => {
+        for (let i = window.tafneClipboard.length - 1; i >= 0; i--) {
+            $(target).before(window.tafneClipboard[i].clone());
+        }
+    });
+
+    $.toast({
+        heading: 'Success',
+        text: 'Pasted before cell(s)',
+        icon: 'success',
+        loader: false,
+        stack: false
+    });
+    window.setupTableInteraction();
+}
+
+function pasteAfter() {
+    if (window.selectedCells.length === 0 || window.tafneClipboard.length === 0) return;
+    window.saveCurrentState();
+    
+    window.selectedCells.forEach(target => {
+        for (let i = window.tafneClipboard.length - 1; i >= 0; i--) {
+            $(target).after(window.tafneClipboard[i].clone());
+        }
+    });
+
+    $.toast({
+        heading: 'Success',
+        text: 'Pasted after cell(s)',
+        icon: 'success',
+        loader: false,
+        stack: false
+    });
+    window.setupTableInteraction();
+}
+
 // Add Cell functionality
 function addCell() {
     if (window.selectedCells.length === 0) {

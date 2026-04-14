@@ -350,6 +350,7 @@
                     <input type="number" class="form-control form-control-sm text-center" id="attributeValue" min="0"
                         max="20" step="1" value="1">
                 </div>
+                <button id="duplicateElement" class="duplicateElement btn btn-sm btn-outline-primary w-100 mb-2">Duplicate</button>
                 <button id="applyClassId" class="btn btn-sm btn-outline-secondary w-100">Apply to Selected</button>
             </div>
 
@@ -389,6 +390,10 @@
                     <button id="mergeCells" class="mergeCells btn btn-sm btn-outline-secondary toolbar-btn"
                         title="Merge selected cells (Alt+Shift+W)">Merge
                         Cells</button>
+                    <button class="copyCell btn btn-sm btn-outline-secondary toolbar-btn"
+                        title="Copy selected cell(s)">Copy Cell</button>
+                    <button class="pasteCell btn btn-sm btn-outline-secondary toolbar-btn"
+                        title="Paste copied cell(s)">Paste Cell</button>
                 </div>
                 <div style="font-size:11px; font-weight:600; margin-bottom:6px; margin-top:8px;">Delete Operations</div>
                 <div class="button-controls">
@@ -427,27 +432,34 @@
                     </div>
                     <div class="toolbar-group" data-group="table-ops">
                         <button class="toolbar-btn addRow" title="Add Row"><i class="fas fa-plus-square"></i>
-                            Row</button>
+                            Add Row</button>
                         <button class="toolbar-btn addColumn" title="Add Column"><i class="fas fa-columns"></i>
-                            Col</button>
+                            Add Col</button>
                         <button class="toolbar-btn deleteRow" title="Delete Row"><i class="fas fa-minus-square"></i>
-                            Row</button>
+                            Delete Row</button>
                         <button class="toolbar-btn deleteColumn" title="Delete Column"><i class="fas fa-ban"></i>
-                            Col</button>
+                            Delete Col</button>
                     </div>
                     <div class="toolbar-group" data-group="cell-ops">
                         <button class="toolbar-btn mergeCells" title="Merge selected cells (Alt+Shift+W)"><i
                                 class="fas fa-compress"></i>
-                            Merge</button>
-                        <button class="toolbar-btn addCell" title="Add Cell"><i class="fas fa-plus-circle"></i></button>
-                        <button class="toolbar-btn deleteCell" title="Delete Cell"><i class="fas fa-trash"></i></button>
+                            Merge Cells</button>
+                        <button class="toolbar-btn addCell" title="Add Cell"><i class="fas fa-plus-circle"></i>
+                            Add Cell</button>
+                        <button class="toolbar-btn copyCell" title="Copy Cell"><i class="fas fa-copy"></i>
+                            Copy Cell</button>
+                        <button class="toolbar-btn pasteCell" title="Paste Cell"><i class="fas fa-paste"></i>
+                            Paste Cell</button>
+                        <button class="toolbar-btn deleteCell" title="Delete Cell"><i class="fas fa-trash"></i>
+                            Delete Cell</button>
                     </div>
                     <div class="toolbar-group" data-group="tools">
-                        <button class="toolbar-btn transposeTable" title="Transpose"><i
-                                class="fas fa-exchange-alt"></i></button>
-                        <button class="toolbar-btn toggleCrosshair" title="Crosshair"><i
-                                class="fas fa-crosshairs"></i></button>
-                        <button class="toolbar-btn textSplit" title="Text Split"><i class="fas fa-cut"></i></button>
+                        <button class="toolbar-btn transposeTable" title="Transpose"><i class="fas fa-exchange-alt"></i>
+                            Transpose</button>
+                        <button class="toolbar-btn toggleCrosshair" title="Crosshair"><i class="fas fa-crosshairs"></i>
+                            Crosshair</button>
+                        <button class="toolbar-btn textSplit" title="Text Split"><i class="fas fa-cut"></i>
+                            Text Split</button>
                     </div>
                 </div>
             </section>
@@ -686,6 +698,8 @@
     <div id="cellContextMenu" class="cell-controls">
         <h6>Cell Options</h6>
         <div class="cell-op">
+            <button class="copyCell btn btn-sm btn-outline-primary py-0 px-1">Copy</button>
+            <button class="pasteCell btn btn-sm btn-outline-primary py-0 px-1">Paste</button>
             <button id="editCell" class="editCell btn btn-sm btn-outline-primary py-0 px-1">Edit Content</button>
             <button id="addCell" class="addCell btn btn-sm btn-outline-secondary py-0 px-1">Add Cell</button>
             <button id="addRow" class="addRow btn btn-sm btn-outline-secondary py-0 px-1">Add Row</button>
