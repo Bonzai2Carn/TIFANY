@@ -61,11 +61,21 @@ window.nodeFormulaParser = (function () {
                 continue;
             }
 
-            // Column ref $Name
+            // Column ref $Name or ${Complex Name}
             if (src[i] === '$') {
                 i++;
                 let name = '';
-                while (i < src.length && /[\w]/.test(src[i])) name += src[i++];
+                if (src[i] === '{') {
+                    i++; // skip {
+                    while (i < src.length && src[i] !== '}') {
+                        // Allow escaped closing brace if it becomes necessary, though rare in header names
+                        if (src[i] === '\\' && src[i + 1] === '}') { i++; name += src[i++]; }
+                        else name += src[i++];
+                    }
+                    i++; // skip }
+                } else {
+                    while (i < src.length && /[\w]/.test(src[i])) name += src[i++];
+                }
                 tokens.push({ t: TT.COL, v: '$' + name });
                 continue;
             }

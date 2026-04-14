@@ -11,26 +11,23 @@ function addCell() {
     // SAVE STATE BEFORE OPERATION
     window.saveCurrentState();
 
-    const selectedCell = window.selectedCells[0];
-    const $selectedCell = $(selectedCell);
-    const $row = $selectedCell.parent();
-    const cellIndex = $selectedCell.index();
+    // Insert a new cell after each selected cell
+    window.selectedCells.forEach(cell => {
+        const $selectedCell = $(cell);
+        const tagName = $selectedCell.prop('tagName').toLowerCase();
+        const $newCell = $(`<${tagName}></${tagName}>`);
+        $selectedCell.after($newCell);
+    });
 
-    // Create a new cell
-    const $newCell = $('<td></td>');
-
-    // Insert the new cell after the selected cell
-    $selectedCell.after($newCell);
     $.toast({
         heading: 'Success',
-        text: 'Cell(s) added',
+        text: window.selectedCells.length > 1 ? `${window.selectedCells.length} cells added` : 'Cell added',
         icon: 'success',
         loader: false,
         stack: false
     });
     
     // Reinitialize features
-    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
 
@@ -42,28 +39,26 @@ function addCellBefore() {
     // SAVE STATE BEFORE OPERATION
     window.saveCurrentState();
 
-    const selectedCell = window.selectedCells[0];
-    const $selectedCell = $(selectedCell);
-    const $row = $selectedCell.parent();
-    const cellIndex = $selectedCell.index();
+    // Insert a new cell before each selected cell
+    window.selectedCells.forEach(cell => {
+        const $selectedCell = $(cell);
+        const tagName = $selectedCell.prop('tagName').toLowerCase();
+        const $newCell = $(`<${tagName}></${tagName}>`);
+        $selectedCell.before($newCell);
+    });
 
-    // Create a new cell
-    const $newCell = $('<td></td>');
-
-    // Insert the new cell before the selected cell
-    $selectedCell.before($newCell);
     $.toast({
         heading: 'Success',
-        text: 'Cell(s) added',
+        text: window.selectedCells.length > 1 ? `${window.selectedCells.length} cells added` : 'Cell added',
         icon: 'success',
         loader: false,
         stack: false
     });
     
     // Reinitialize features
-    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
+
 
 function deleteCell() {
     if (window.selectedCells.length === 0) {

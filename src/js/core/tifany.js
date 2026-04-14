@@ -166,15 +166,32 @@ $(function () {
             }
         }
 
+        // Mobile long-press support
+        let pressTimer;
+        $container.on('touchstart.cell', 'td, th', function (e) {
+            const self = this;
+            const touch = e.originalEvent.touches[0];
+            // Store touch position for context menu
+            const touchX = touch.clientX;
+            const touchY = touch.clientY;
+
+            pressTimer = window.setTimeout(function () {
+                const event = $.Event('contextmenu', {
+                    clientX: touchX,
+                    clientY: touchY,
+                    originalEvent: e.originalEvent
+                });
+                $(self).trigger(event);
+            }, 600); // 600ms for long press
+        }).on('touchend.cell touchmove.cell', function () {
+            clearTimeout(pressTimer);
+        });
+
         // Context menu for cells
         $container.on('contextmenu.cell', 'td, th', function (e) {
             e.preventDefault();
             const $menu = $('#cellContextMenu');
-            // $menu.css({
-            //     top: e.pageY + 'px',
-            //     left: e.pageX + 'px',
-            //     display: 'grid'
-            // }).show();
+            
             // Show first so outerWidth/Height are accurate
             $menu.show();
 
@@ -184,26 +201,37 @@ $(function () {
             const vh = window.innerHeight;
             const pad = 8; // viewport edge clearance
 
-            // On mobile the CSS bottom-sheet takes over; skip JS positioning
-            if (vw <= 767) {
-                window.cellBeingEdited = this;
-                return;
-            }
-
-            // Start at cursor position (viewport-relative for position:fixed)
+            // Viewport-relative for position:fixed
             let x = e.clientX;
             let y = e.clientY;
 
-            // Flip left if overflows right edge
-            if (x + menuW + pad > vw) x = Math.max(pad, x - menuW);
-            // Flip up if overflows bottom edge
-            if (y + menuH + pad > vh) y = Math.max(pad, vh - menuH - pad);
-            // Never clip top
-            if (y < pad) y = pad;
+            // On mobile, if it's very narrow, we might want it centered or bottom-aligned
+            // but for now let's just ensure it's within bounds.
+            if (vw <= 767) {
+                // If it's a mobile touch, we might want to center it a bit better or show as bottom sheet
+                // The user said: "contextMenu cannot be opened and edited"
+                // Let's position it near the touch but ensure it doesn't overflow
+                if (x + menuW > vw) x = vw - menuW - pad;
+                if (y + menuH > vh) y = vh - menuH - pad;
+                if (x < pad) x = pad;
+                if (y < pad) y = pad;
+            } else {
+                // Desktop flip logic
+                if (x + menuW + pad > vw) x = Math.max(pad, x - menuW);
+                if (y + menuH + pad > vh) y = Math.max(pad, vh - menuH - pad);
+                if (y < pad) y = pad;
+            }
 
-            $menu.css({ top: y + 'px', left: x + 'px', display: 'grid' });
+            $menu.css({ 
+                top: y + 'px', 
+                left: x + 'px', 
+                display: 'grid',
+                position: 'fixed' // Ensure it's relative to viewport
+            });
+
             window.cellBeingEdited = this;
         });
+
 
         // Hide context menu when clicking elsewhere
         $(document).on('click.hideMenu', function () {

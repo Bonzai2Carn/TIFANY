@@ -84,7 +84,10 @@ window.NodeTypes = {
                 jsonPath: '',        // dot-path into response e.g. 'data.items'
                 headers:  {}
             },
-            defaultPorts: 'out'
+            defaultPorts: 'out',
+            defaultHeaders: [
+                { label: 'Input Table', portId: 'api-input', direction: 'in', cellIds: [] }
+            ]
         },
         join: {
             label:       'Join',
