@@ -23,6 +23,7 @@
   "type": "module",
   "main": "./tifany.html",
   "scripts": {
+    "start": "npx serve .",
     "test": "jest"
   }
 }

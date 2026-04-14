@@ -167,35 +167,77 @@ $(function () {
             $('#cellContextMenu').hide();
         });
 
-        // ===================================================================================
-        // 4. KEYBOARD SHORTCUTS
-        // ===================================================================================
-        $(document).off('keydown').on('keydown', function (e) {
-            if (e.repeat) return;
+    
+    
+       // ===================================================================================
+// 4. KEYBOARD SHORTCUTS
+// ===================================================================================
+$(document).off('keydown').on('keydown', function (e) {
+    if (e.repeat) return;
 
-            if ((e.key === 'Delete') && !e.altKey && !e.shiftKey) {
-                e.preventDefault();
-                if (typeof deleteCell === 'function') deleteCell();
-            } else if (e.key === 'Insert' && !e.repeat) {
-                e.preventDefault();
-                if (typeof addCell === 'function') addCell();
-            } else if (e.altKey && e.shiftKey && e.key === 'W') {
-                e.preventDefault();
-                if (typeof mergeCells === 'function') mergeCells();
-            } else if (e.altKey && e.shiftKey && e.key === 'T') {
-                e.preventDefault();
-                $('#textSplitModal').modal('show');
-            } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
-                e.preventDefault();
-                performUndo();
-            }
-            // Ctrl+Y or Ctrl+Shift+Z for redo
-            else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
-                e.preventDefault();
-                performRedo();
-            }
-        });
+    if (window.cellBeingEdited) return;
 
+    // Arrow Key Navigation
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault();
+
+        if (!window.currentTable || window.selectedCells.length === 0) return;
+
+        const currentCell = window.selectedCells[window.selectedCells.length - 1];
+        const $current = $(currentCell);
+
+        const $row = $current.closest('tr');
+        const rowIndex = $row.index();
+        const colIndex = $current.index();
+
+        let newRow = rowIndex;
+        let newCol = colIndex;
+
+        if (e.key === "ArrowUp") newRow--;
+        if (e.key === "ArrowDown") newRow++;
+        if (e.key === "ArrowLeft") newCol--;
+        if (e.key === "ArrowRight") newCol++;
+
+        const $rows = $(window.currentTable).find('tr');
+
+        if (newRow < 0 || newRow >= $rows.length) return;
+
+        const $targetRow = $rows.eq(newRow);
+        const $cells = $targetRow.find('td, th');
+
+        if (newCol < 0 || newCol >= $cells.length) return;
+
+        const targetCell = $cells.eq(newCol)[0];
+        if (!targetCell) return;
+
+        $(window.currentTable).find('.selected-cell').removeClass('selected-cell');
+        window.selectedCells = [];
+
+        $(targetCell).addClass('selected-cell');
+        window.selectedCells.push(targetCell);
+        return;
+    }
+
+    if ((e.key === 'Delete') && !e.altKey && !e.shiftKey) {
+        e.preventDefault();
+        if (typeof deleteCell === 'function') deleteCell();
+    } else if (e.key === 'Insert' && !e.repeat) {
+        e.preventDefault();
+        if (typeof addCell === 'function') addCell();
+    } else if (e.altKey && e.shiftKey && e.key === 'W') {
+        e.preventDefault();
+        if (typeof mergeCells === 'function') mergeCells();
+    } else if (e.altKey && e.shiftKey && e.key === 'T') {
+        e.preventDefault();
+        $('#textSplitModal').modal('show');
+    } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        performUndo();
+    } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault();
+        performRedo();
+    }
+});
         // Double click to edit cell
         $table.off('dblclick.cell').on('dblclick.cell', 'td, th', function (e) {
             window.cellBeingEdited = this;
@@ -268,7 +310,6 @@ $(function () {
             }
         });
     }
-
     // Make setupTableInteraction globally accessible
     window.setupTableInteraction = setupTableInteraction;
 
