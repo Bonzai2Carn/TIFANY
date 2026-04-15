@@ -23,7 +23,7 @@ Part of the [Ginexys](https://ginexys.com) engineering pipeline.
 ---
 
 ![TAFNE Table Formatter demo](./tafne-demo.gif)
-
+Try it now -> [TAFNE](https://ginexys.com/tools/table-formatter/index.html)
 ## What it does
 
 You got a table from a PDF scrape, a legacy export, 
@@ -161,7 +161,7 @@ Deliberately framework-free. The core engine ships as a single file, self-hostab
 ## Self-hosting
 
 ```bash
-git clone https://github.com/canworkstudios/TAFNE
+git clone https://github.com/carnworkstudios/TAFNE
 cd TAFNE
 # Open index.html in any browser. No server required.
 ```
