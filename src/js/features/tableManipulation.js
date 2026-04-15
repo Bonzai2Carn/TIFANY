@@ -54,7 +54,7 @@ function transposeTable() {
             }
 
             const $originalCell = $(gridCell.element);
-            const cellInfo = mapper.cellMap.get(gridCell.element);
+            const cellInfo = mapper.getVisualPosition(gridCell.element);
             const newRowspan = cellInfo.colspan;
             const newColspan = cellInfo.rowspan;
 

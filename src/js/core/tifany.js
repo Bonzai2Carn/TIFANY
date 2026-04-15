@@ -340,9 +340,44 @@ $(function () {
             if ((e.key === 'Delete') && !e.altKey && !e.shiftKey) {
                 e.preventDefault();
                 if (typeof deleteCell === 'function') deleteCell();
-            } else if (e.key === 'Insert' && !e.repeat) {
+            } else if (e.key === 'Insert' && !e.shiftKey && !e.repeat) {
                 e.preventDefault();
                 if (typeof addCell === 'function') addCell();
+            } else if (e.key === 'Insert' && e.shiftKey && !e.repeat) {
+                // Shift+Insert → Add Cell Before
+                e.preventDefault();
+                if (typeof addCellBefore === 'function') addCellBefore();
+            } else if (e.key === 'Delete' && e.shiftKey && !e.altKey) {
+                // Shift+Delete → Delete Cell Before (same as Delete, kept symmetric)
+                e.preventDefault();
+                if (typeof deleteCell === 'function') deleteCell();
+            } else if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+                // Ctrl+A → Select all cells in the current table
+                if (!window.currentTable) return;
+                e.preventDefault();
+                const $table = $(window.currentTable);
+                const mapper = new VisualGridMapper($table);
+                $table.find('.selected-cell').removeClass('selected-cell');
+                window.selectedCells = [];
+                mapper.cellMap.forEach((info, cell) => {
+                    $(cell).addClass('selected-cell');
+                    window.selectedCells.push(cell);
+                });
+                window.selectionAnchorCell = window.selectedCells[0] || null;
+                window.selectionHeadCell   = window.selectedCells[window.selectedCells.length - 1] || null;
+            } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'c') {
+                // Ctrl+C → Copy selected cells
+                if (window.selectedCells.length === 0) return;
+                e.preventDefault();
+                if (typeof copySelected === 'function') copySelected();
+            } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'v') {
+                // Ctrl+Shift+V → Paste Before
+                e.preventDefault();
+                if (typeof pasteBefore === 'function') pasteBefore();
+            } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'v') {
+                // Ctrl+V → Paste After
+                e.preventDefault();
+                if (typeof pasteAfter === 'function') pasteAfter();
             } else if (e.altKey && e.shiftKey && e.key === 'W') {
                 e.preventDefault();
                 if (typeof mergeCells === 'function') mergeCells();
