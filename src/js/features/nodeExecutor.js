@@ -53,7 +53,7 @@ window.nodeExecutor = (function () {
     function _buildInputMap(nodeId) {
         const csm      = window.cellStoreManager;
         const inputMap = {};
-        const seen     = new Set(); // avoid duplicating columns from same source node
+        const seen     = new Set();
 
         Object.values(window.NodeGraph.wires).forEach(w => {
             if (w.targetNodeId !== nodeId) return;
@@ -63,14 +63,17 @@ window.nodeExecutor = (function () {
             const srcNode = window.NodeGraph.nodes[w.sourceNodeId];
             if (!srcNode) return;
 
-            // Expand all output-capable columns from the source node
             srcNode.headers
                 .filter(h => h.direction !== 'in')
                 .forEach(h => {
-                    const values = h.cellIds.map(id => {
-                        const cell = csm.get(id);
-                        return cell ? cell.value : '';
-                    });
+                    // Columnar path: operator output stored as h.values (no CellStore lookup)
+                    // CellStore path: source/table node data stored via h.cellIds
+                    const values = h.values
+                        ? h.values
+                        : (h.cellIds || []).map(id => {
+                            const cell = csm.get(id);
+                            return cell ? cell.value : '';
+                        });
                     inputMap[h.portId] = { label: h.label, values, sourceNodeId: w.sourceNodeId };
                 });
         });
@@ -85,21 +88,21 @@ window.nodeExecutor = (function () {
     function _writeOutput(node, outputCols) {
         const csm = window.cellStoreManager;
 
-        // Release all old cell references from existing headers
+        // Release any old CellStore refs (only source/table headers use cellIds)
         node.headers.forEach(h => {
-            h.cellIds.forEach(id => csm.release(id));
+            if (h.cellIds && h.cellIds.length > 0) {
+                h.cellIds.forEach(id => csm.release(id));
+            }
         });
 
-        // Build new headers with fresh CellStore entries
-        node.headers = outputCols.map(col => {
-            const cellIds = col.values.map(v => csm.create(String(v)));
-            return {
-                portId:    'port-' + crypto.randomUUID().slice(0, 8),
-                label:     col.label,
-                cellIds,
-                direction: col.direction || 'out'
-            };
-        });
+        // Write operator output as columnar string arrays — zero CellStore allocation
+        node.headers = outputCols.map(col => ({
+            portId:    'port-' + crypto.randomUUID().slice(0, 8),
+            label:     col.label,
+            values:    col.values.map(v => String(v)),  // plain array, no CellStore
+            cellIds:   [],                               // kept for structural compat
+            direction: col.direction || 'out'
+        }));
     }
 
     // ── Handlers ──────────────────────────────────────────────────────────────
@@ -266,13 +269,15 @@ window.nodeExecutor = (function () {
         if (!wire) return null;
         const src = window.NodeGraph.nodes[wire.sourceNodeId];
         if (!src) return null;
-        // Return all non-in-only headers from the source
         return src.headers
             .filter(h => h.direction !== 'in')
             .map(h => ({
                 portId: h.portId,
                 label:  h.label,
-                values: h.cellIds.map(id => { const c = csm.get(id); return c ? c.value : ''; })
+                // Columnar path: operator outputs; CellStore path: source table headers
+                values: h.values
+                    ? h.values
+                    : (h.cellIds || []).map(id => { const c = csm.get(id); return c ? c.value : ''; })
             }));
     }
 
@@ -398,21 +403,22 @@ window.nodeExecutor = (function () {
         });
     }
 
-    // Write output — keeps structural 'in' ports, replaces previous 'out' columns
+    // Write join output — keeps structural 'in' ports, replaces previous 'out' columns
     function _writeJoinOutput(node, outputCols) {
         const csm = window.cellStoreManager;
-        // Release previous output-only cells
+        // Release any previous output-only CellStore refs
         node.headers
             .filter(h => h.direction === 'out')
-            .forEach(h => h.cellIds.forEach(id => csm.release(id)));
+            .forEach(h => { if (h.cellIds && h.cellIds.length > 0) h.cellIds.forEach(id => csm.release(id)); });
         // Keep only structural 'in' ports
         node.headers = node.headers.filter(h => h.direction === 'in');
-        // Append new output columns
+        // Append new output columns as columnar arrays — zero CellStore allocation
         outputCols.forEach(col => {
             node.headers.push({
                 portId:    'port-' + crypto.randomUUID().slice(0, 8),
                 label:     col.label,
-                cellIds:   col.values.map(v => csm.create(String(v))),
+                values:    col.values.map(v => String(v)),  // plain array, no CellStore
+                cellIds:   [],
                 direction: 'out'
             });
         });
@@ -487,7 +493,7 @@ window.nodeExecutor = (function () {
         const nodes = window.NodeGraph.nodes;
         const wires = window.NodeGraph.wires;
 
-        // Mark all operator nodes as running
+        // Mark all operator nodes as 'running' and flush a repaint before heavy work
         Object.values(nodes).forEach(n => {
             if (window.NodeTypes.isOperator(n.nodeType)) {
                 n.execState = 'running';
@@ -497,14 +503,16 @@ window.nodeExecutor = (function () {
         });
         window.nodeCanvasRenderer.markStaticDirty();
 
+        // Yield once so the browser can paint the 'running' badges before we block
+        await new Promise(r => setTimeout(r, 0));
+
         let doneCount  = 0;
         let errorCount = 0;
 
         try {
-            // Topo sort
             const { ordered, cycleNodes } = _topoSort(nodes, wires);
 
-            // Mark cycle nodes as errored immediately
+            // Mark cycle nodes immediately
             cycleNodes.forEach(id => {
                 const n = nodes[id];
                 if (!n) return;
@@ -514,7 +522,9 @@ window.nodeExecutor = (function () {
             });
             errorCount += cycleNodes.length;
 
-            // Execute in topological order
+            // ── Yielded execution loop ─────────────────────────────────────────
+            // Between each operator node we yield (setTimeout 0) so the browser
+            // event loop can repaint, handle input, and avoid "frozen" appearance.
             for (const nodeId of ordered) {
                 const node = nodes[nodeId];
                 if (!node) continue;
@@ -522,16 +532,14 @@ window.nodeExecutor = (function () {
 
                 try {
                     const inputMap = _buildInputMap(nodeId);
-
                     switch (node.nodeType) {
-                        case 'filter':  _handleFilter(node, inputMap);       break;
-                        case 'vlookup': _handleVlookup(node, inputMap);      break;
-                        case 'formula': _handleFormula(node, inputMap);      break;
-                        case 'api':     await _handleApi(node);              break;
-                        case 'join':    _handleJoin(node);                   break;
+                        case 'filter':  _handleFilter(node, inputMap);  break;
+                        case 'vlookup': _handleVlookup(node, inputMap); break;
+                        case 'formula': _handleFormula(node, inputMap); break;
+                        case 'api':     await _handleApi(node);         break;
+                        case 'join':    _handleJoin(node);              break;
                         default: break;
                     }
-
                     node.execState = 'done';
                     doneCount++;
                 } catch (err) {
@@ -540,10 +548,12 @@ window.nodeExecutor = (function () {
                     errorCount++;
                 }
 
+                // Re-render this node's card to show done/error badge…
                 if (typeof renderNodeDom === 'function') renderNodeDom(nodeId);
+                // …then yield to the browser so the repaint actually happens
+                await new Promise(r => setTimeout(r, 0));
             }
         } catch (fatalErr) {
-            // Top-level failure (e.g. topo sort crash) — reset any still-running nodes
             Object.values(nodes).forEach(n => {
                 if (n.execState === 'running') {
                     n.execState = 'error';
@@ -554,6 +564,7 @@ window.nodeExecutor = (function () {
             });
         }
 
+        // Single canvas redraw + state save after the whole loop
         window.nodeCanvasRenderer.markStaticDirty();
         if (typeof window.saveNodeEditorState === 'function') window.saveNodeEditorState();
 

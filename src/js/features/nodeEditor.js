@@ -280,16 +280,25 @@ function renderNodeDom(nodeId) {
     // ── Data rows (up to MAX_VISIBLE_ROWS, only for table nodes or done operator nodes)
     let dataRowsHtml = '';
     if (!collapsed && node.headers.length > 0) {
-        const rowCount    = node.headers.reduce((m, h) => Math.max(m, (h.cellIds || []).length), 0);
+        // rowCount: check h.values (columnar/operator headers) or h.cellIds (source/table headers)
+        const rowCount    = node.headers.reduce((m, h) => Math.max(m, (h.values || h.cellIds || []).length), 0);
         const displayRows = Math.min(rowCount, MAX_VISIBLE_ROWS);
 
         for (let r = 0; r < displayRows; r++) {
             dataRowsHtml += '<div class="ne-node-data-row">';
             node.headers.forEach(h => {
-                const cellId = h.cellIds[r];
-                const cell   = cellId ? csm.get(cellId) : null;
-                const val    = cell ? _esc(cell.value) : '';
-                dataRowsHtml += `<span class="ne-cell-value" data-cell-id="${cellId || ''}" title="${val}">${val || '<em class="ne-cell-empty">—</em>'}</span>`;
+                let val    = '';
+                let cellId = '';
+                if (h.values) {
+                    // Columnar path — operator output, read directly from array
+                    val = _esc(String(h.values[r] ?? ''));
+                } else {
+                    // CellStore path — source/table node
+                    cellId = (h.cellIds || [])[r] || '';
+                    const cell = cellId ? csm.get(cellId) : null;
+                    val = cell ? _esc(cell.value) : '';
+                }
+                dataRowsHtml += `<span class="ne-cell-value" data-cell-id="${cellId}" title="${val}">${val || '<em class="ne-cell-empty">—</em>'}</span>`;
             });
             dataRowsHtml += '</div>';
         }

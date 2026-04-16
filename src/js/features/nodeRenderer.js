@@ -19,6 +19,8 @@ class NodeCanvasRenderer {
         this.isRunning    = false;
         this._bgDirty     = true;
         this._staticDirty = true;
+        this._bgDirtyPending     = false;
+        this._staticDirtyPending = false;
         this._boundFrame  = this._renderFrame.bind(this);
 
         this._colors = {
@@ -80,8 +82,23 @@ class NodeCanvasRenderer {
         // rAF loop self-terminates via this.isRunning check
     }
 
-    markBgDirty()     { this._bgDirty = true; }
-    markStaticDirty() { this._staticDirty = true; }
+    markBgDirty() {
+        if (this._bgDirtyPending) return;
+        this._bgDirtyPending = true;
+        requestAnimationFrame(() => {
+            this._bgDirty = true;
+            this._bgDirtyPending = false;
+        });
+    }
+
+    markStaticDirty() {
+        if (this._staticDirtyPending) return;
+        this._staticDirtyPending = true;
+        requestAnimationFrame(() => {
+            this._staticDirty = true;
+            this._staticDirtyPending = false;
+        });
+    }
 
     onThemeChange() {
         this._readColors();
