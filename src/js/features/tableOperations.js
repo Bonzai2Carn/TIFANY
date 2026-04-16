@@ -7,16 +7,14 @@ window.tafneClipboard = [];
 
 function duplicateElement() {
     if (window.selectedCells.length === 0) {
-        alert('Please select a cell.');
+        $.toast({ heading: 'Info', text: 'Please select a cell.', icon: 'warning', loader: false, stack: false });
         return;
     }
     const type = $('#elementType').val();
     if (!type || !['cell', 'row', 'column'].includes(type)) {
-        alert('Please select Cell, Row, or Column in the element type dropdown first.');
+        $.toast({ heading: 'Info', text: 'Please select Cell, Row, or Column in the element type dropdown first.', icon: 'warning', loader: false, stack: false });
         return;
     }
-
-    window.saveCurrentState();
 
     if (type === 'cell') {
         window.selectedCells.forEach(cell => {
@@ -31,12 +29,12 @@ function duplicateElement() {
     } else if (type === 'column') {
         const uniqueCols = new Set();
         const mapper = new window.VisualGridMapper(currentTable);
-        
+
         window.selectedCells.forEach(cell => {
             const pos = mapper.getVisualPosition(cell);
             if (pos) uniqueCols.add(pos.startCol);
         });
-        
+
         uniqueCols.forEach(colIndex => {
             for (let r = 0; r < mapper.maxRows; r++) {
                 if (mapper.grid[r] && mapper.grid[r][colIndex]) {
@@ -49,6 +47,7 @@ function duplicateElement() {
         });
     }
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Duplicated ' + type + '(s)',
@@ -61,7 +60,7 @@ function duplicateElement() {
 
 function copySelected() {
     if (window.selectedCells.length === 0) {
-        alert('Please select a cell.');
+        $.toast({ heading: 'Info', text: 'Please select a cell.', icon: 'warning', loader: false, stack: false });
         return;
     }
     // Store the outer HTML string of each selected cell so the clipboard
@@ -78,7 +77,6 @@ function copySelected() {
 
 function pasteBefore() {
     if (window.selectedCells.length === 0 || window.tafneClipboard.length === 0) return;
-    window.saveCurrentState();
 
     // Reverse-iterate the clipboard when inserting before so the first copied
     // cell ends up directly before the target (each insert shifts subsequent ones right).
@@ -88,6 +86,7 @@ function pasteBefore() {
         }
     });
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Pasted before cell(s)',
@@ -100,7 +99,6 @@ function pasteBefore() {
 
 function pasteAfter() {
     if (window.selectedCells.length === 0 || window.tafneClipboard.length === 0) return;
-    window.saveCurrentState();
 
     // Forward-iterate: insert each clipboard item after the previous insertion point
     // so items appear in the same order as they were copied.
@@ -113,6 +111,7 @@ function pasteAfter() {
         }
     });
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Pasted after cell(s)',
@@ -126,11 +125,9 @@ function pasteAfter() {
 // Add Cell functionality
 function addCell() {
     if (window.selectedCells.length === 0) {
-        alert('Please select a cell.');
+        $.toast({ heading: 'Info', text: 'Please select a cell.', icon: 'warning', loader: false, stack: false });
         return;
     }
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
 
     // Insert a new cell after each selected cell
     window.selectedCells.forEach(cell => {
@@ -140,6 +137,7 @@ function addCell() {
         $selectedCell.after($newCell);
     });
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: window.selectedCells.length > 1 ? `${window.selectedCells.length} cells added` : 'Cell added',
@@ -147,18 +145,16 @@ function addCell() {
         loader: false,
         stack: false
     });
-    
+
     // Reinitialize features
     window.setupTableInteraction();
 }
 
 function addCellBefore() {
     if (window.selectedCells.length === 0) {
-        alert('Please select a cell.');
+        $.toast({ heading: 'Info', text: 'Please select a cell.', icon: 'warning', loader: false, stack: false });
         return;
     }
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
 
     // Insert a new cell before each selected cell
     window.selectedCells.forEach(cell => {
@@ -168,6 +164,7 @@ function addCellBefore() {
         $selectedCell.before($newCell);
     });
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: window.selectedCells.length > 1 ? `${window.selectedCells.length} cells added` : 'Cell added',
@@ -175,7 +172,7 @@ function addCellBefore() {
         loader: false,
         stack: false
     });
-    
+
     // Reinitialize features
     window.setupTableInteraction();
 }
@@ -183,12 +180,10 @@ function addCellBefore() {
 
 function deleteCell() {
     if (window.selectedCells.length === 0) {
-        alert('Please select a cell.');
+        $.toast({ heading: 'Info', text: 'Please select a cell.', icon: 'warning', loader: false, stack: false });
         return;
     }
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
-    
+
     // Remove each selected cell
     window.selectedCells.forEach(cell => {
         $(cell).remove();
@@ -197,6 +192,7 @@ function deleteCell() {
     // Clear selection
     window.selectedCells = [];
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Cell Deleted',
@@ -206,17 +202,14 @@ function deleteCell() {
     });
 
     // Reinitialize features
-    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
 
 function deleteRows() {
     if (window.selectedCells.length === 0) {
-        alert('Please select a row.');
+        $.toast({ heading: 'Info', text: 'Please select a row.', icon: 'warning', loader: false, stack: false });
         return;
     }
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
 
     // Get unique rows from selected cells
     const rows = new Set();
@@ -232,6 +225,7 @@ function deleteRows() {
     // Clear selection
     window.selectedCells = [];
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Row(s) deleted',
@@ -241,15 +235,11 @@ function deleteRows() {
     });
 
     // Reinitialize features
-    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
 
 function deleteColumns() {
     if (!window.currentTable) return;
-
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
 
     const $table = $(window.currentTable);
     const mapper = new VisualGridMapper($table);
@@ -275,6 +265,7 @@ function deleteColumns() {
     // Clear selection
     window.selectedCells = [];
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Column(s) deleted',
@@ -282,17 +273,13 @@ function deleteColumns() {
         loader: false,
         stack: false
     });
-    
+
     // Reinitialize features
-    // window.initializeAllFeatures();
     window.setupTableInteraction();
 }
 
 function addRow() {
     if (!window.currentTable || window.selectedCells.length === 0) return;
-
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
 
     const $table = $(window.currentTable);
     const selectedCell = window.selectedCells[0];
@@ -308,7 +295,8 @@ function addRow() {
 
     // Insert the new row after the selected row
     $selectedRow.after(newRowHtml);
-    
+
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Row added',
@@ -316,15 +304,12 @@ function addRow() {
         loader: false,
         stack: false
     });
-    
+
     window.setupTableInteraction();
 }
 
 function addRowBefore() {
     if (!window.currentTable || window.selectedCells.length === 0) return;
-
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
 
     const $table = $(window.currentTable);
     const selectedCell = window.selectedCells[0];
@@ -340,7 +325,8 @@ function addRowBefore() {
 
     // Insert the new row before the selected row
     $selectedRow.before(newRowHtml);
-    
+
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Row added',
@@ -348,15 +334,12 @@ function addRowBefore() {
         loader: false,
         stack: false
     });
-    
+
     window.setupTableInteraction();
 }
 
 function addColumn() {
     if (!window.currentTable || window.selectedCells.length === 0) return;
-
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
 
     const $table = $(window.currentTable);
     const selectedCell = window.selectedCells[0];
@@ -381,6 +364,7 @@ function addColumn() {
         $cell.after(`<${tagName}></${tagName}>`);
     }
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Column added',
@@ -394,9 +378,6 @@ function addColumn() {
 
 function addColumnBefore() {
     if (!window.currentTable || window.selectedCells.length === 0) return;
-
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
 
     const $table = $(window.currentTable);
     const selectedCell = window.selectedCells[0];
@@ -420,6 +401,7 @@ function addColumnBefore() {
         $cell.before(`<${tagName}></${tagName}>`);
     }
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Column added',
@@ -433,12 +415,9 @@ function addColumnBefore() {
 
 function mergeCells() {
     if (window.selectedCells.length < 2) {
-        alert('Please select at least two adjacent cells to merge.');
+        $.toast({ heading: 'Info', text: 'Please select at least two adjacent cells to merge.', icon: 'warning', loader: false, stack: false });
         return;
     }
-
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
 
     // Use the VisualGridMapper to understand the table's structure
     const mapper = new VisualGridMapper(window.currentTable);
@@ -450,7 +429,7 @@ function mergeCells() {
     })).filter(info => info.pos); // Ensure the cell was found in the map
 
     if (selectionInfo.length < 2) {
-        alert('Could not determine cell positions for merging. Try a simpler selection.');
+        $.toast({ heading: 'Info', text: 'Could not determine cell positions for merging. Try a simpler selection.', icon: 'warning', loader: false, stack: false });
         return;
     }
 
@@ -473,7 +452,7 @@ function mergeCells() {
     let isVerticalMerge = uniqueCols.size === 1 && uniqueRows.size > 1;
 
     if (!isHorizontalMerge && !isVerticalMerge) {
-        alert('Merging is only supported for cells in a single continuous row or column.');
+        $.toast({ heading: 'Info', text: 'Merging is only supported for cells in a single continuous row or column.', icon: 'warning', loader: false, stack: false });
         return;
     }
 
@@ -512,6 +491,7 @@ function mergeCells() {
     $(window.currentTable).find('.selected-cell').removeClass('selected-cell');
     $firstCell.addClass('selected-cell');
 
+    window.saveCurrentState();
     $.toast({
         heading: 'Success',
         text: 'Cells merged',

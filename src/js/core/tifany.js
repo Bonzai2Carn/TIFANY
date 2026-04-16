@@ -645,7 +645,7 @@ $(function () {
         if ($('#tableContainer table').length > 0) {
             if (typeof generateTabs === 'function') generateTabs();
         } else {
-            alert('Please parse a table first');
+            $.toast({ heading: 'Info', text: 'Please parse a table first', icon: 'warning', loader: false, stack: false });
         }
     });
 
@@ -653,14 +653,14 @@ $(function () {
         if ($('#tableContainer table').length > 0) {
             performUndo();
         } else {
-            alert('Please parse input');
+            $.toast({ heading: 'Info', text: 'Please parse input', icon: 'warning', loader: false, stack: false });
         }
     });
     $('.redoHistory').on('click', function () {
         if ($('#tableContainer table').length > 0) {
             performRedo();
         } else {
-            alert('Please parse input');
+            $.toast({ heading: 'Info', text: 'Please parse input', icon: 'warning', loader: false, stack: false });
         }
     });
 
@@ -705,7 +705,7 @@ $(function () {
     // Table Operations - Delete Operations
     $('.deleteCell').on('click', function () {
         if (window.selectedCells.length === 0) {
-            alert('Please select at least one cell to delete.');
+            $.toast({ heading: 'Info', text: 'Please select at least one cell to delete.', icon: 'warning', loader: false, stack: false });
             return;
         }
         if (typeof deleteCell === 'function') deleteCell();
@@ -713,7 +713,7 @@ $(function () {
 
     $('.deleteRow').on('click', function () {
         if (window.selectedCells.length === 0) {
-            alert('Please select at least one cell to delete its row.');
+            $.toast({ heading: 'Info', text: 'Please select at least one cell to delete its row.', icon: 'warning', loader: false, stack: false });
             return;
         }
         if (typeof deleteRows === 'function') deleteRows();
@@ -721,7 +721,7 @@ $(function () {
 
     $('.deleteColumn').on('click', function () {
         if (window.selectedCells.length === 0) {
-            alert('Please select at least one cell to delete its column.');
+            $.toast({ heading: 'Info', text: 'Please select at least one cell to delete its column.', icon: 'warning', loader: false, stack: false });
             return;
         }
         if (typeof deleteColumns === 'function') deleteColumns();
@@ -768,7 +768,7 @@ $(function () {
 
     $('.textSplit').on('click', function () {
         if (window.selectedCells.length === 0) {
-            alert('Please select exactly one cell to split.');
+            $.toast({ heading: 'Info', text: 'Please select exactly one cell to split.', icon: 'warning', loader: false, stack: false });
             return;
         }
         $('#textSplitModal').modal('show');

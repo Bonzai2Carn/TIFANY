@@ -38,7 +38,7 @@ function generateTabs(tableHtml) {
 
     setupTableInteraction();
     console.log(`Generated ${buttonIndex} tabs`);
-    $.toast(`Generated ${buttonIndex} tabs`);
+    $.toast({ heading: 'Done', text: `Generated ${buttonIndex} tabs`, icon: 'success', loader: false, stack: false });
 }
 
 function generateCode() {
@@ -269,15 +269,15 @@ function copyInput() {
             : $('#tableOutput').val();
         if (!formatBoard || formatBoard.trim() === '') {
             // More descriptive error message
-            $.toast('The text area is empty. Please add content before copying.');
+            $.toast({ heading: 'Info', text: 'The text area is empty. Please add content before copying.', icon: 'warning', loader: false, stack: false });
             return;
         }
         if (navigator.clipboard) {
             navigator.clipboard.writeText(formatBoard)
                 .then(() => {
-                    $.toast('HTML copied to clipboard!');
+                    $.toast({ heading: 'Copied', text: 'HTML copied to clipboard!', icon: 'success', loader: false, stack: false });
                 })
         } else {
-            $.toast('Failed to coppy')
+            $.toast({ heading: 'Error', text: 'Failed to copy', icon: 'error', loader: false, stack: false })
         }
     }

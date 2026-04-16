@@ -146,6 +146,7 @@ function performUndo() {
             text: 'Action undone',
             icon: 'info',
             loader: false,
+            stack: false,
             position: 'top-right',
             hideAfter: 2000
         });
@@ -157,6 +158,7 @@ function performUndo() {
             text: 'Nothing to undo',
             icon: 'info',
             loader: false,
+            stack: false,
             position: 'top-right',
             hideAfter: 2000
         });
@@ -186,6 +188,7 @@ function performRedo() {
             text: 'Action redone',
             icon: 'info',
             loader: false,
+            stack: false,
             position: 'top-right',
             hideAfter: 2000
         });
@@ -197,6 +200,7 @@ function performRedo() {
             text: 'Nothing to redo',
             icon: 'info',
             loader: false,
+            stack: false,
             position: 'top-right',
             hideAfter: 2000
         });

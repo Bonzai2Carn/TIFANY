@@ -15,6 +15,8 @@ class NodeCanvasRenderer {
         this.bgCtx        = null;
         this.staticCtx    = null;
         this.htmlLayer    = null;
+        this.minimapCanvas = null;
+        this.minimapCtx    = null;
 
         this.isRunning    = false;
         this._bgDirty     = true;
@@ -39,6 +41,7 @@ class NodeCanvasRenderer {
         this.bgBuffer     = document.getElementById('neBgBuffer');
         this.staticBuffer = document.getElementById('neStaticBuffer');
         this.htmlLayer    = document.getElementById('nodeHtmlLayer');
+        this.minimapCanvas = document.getElementById('neMinimapCanvas');
 
         if (!this.mainCanvas || !this.bgBuffer || !this.staticBuffer || !this.htmlLayer) {
             console.warn('NodeRenderer: required canvas elements not found');
@@ -48,6 +51,7 @@ class NodeCanvasRenderer {
         this.mainCtx   = this.mainCanvas.getContext('2d');
         this.bgCtx     = this.bgBuffer.getContext('2d');
         this.staticCtx = this.staticBuffer.getContext('2d');
+        if (this.minimapCanvas) this.minimapCtx = this.minimapCanvas.getContext('2d');
 
         this._readColors();
         this._bgDirty     = true;
@@ -172,6 +176,9 @@ class NodeCanvasRenderer {
         // Sync HTML overlay transform
         this.htmlLayer.style.transform       = `translate(${vp.x}px, ${vp.y}px) scale(${vp.zoom})`;
         this.htmlLayer.style.transformOrigin = '0 0';
+
+        // Minimap (always redraws — it's cheap)
+        this._drawMinimap(vp, w, h);
     }
 
     // ── Layer 1: Background ────────────────────────────────────────────────────
@@ -214,7 +221,12 @@ class NodeCanvasRenderer {
         ctx.translate(vp.x, vp.y);
         ctx.scale(vp.zoom, vp.zoom);
 
+        const selectedWireId = window.nodeInteractionManager
+            ? window.nodeInteractionManager.selectedWireId
+            : null;
+
         Object.values(window.NodeGraph.wires || {}).forEach(wire => {
+            if (wire.id === selectedWireId) return; // draw selected wire last (on top)
             const p1 = window.nodeGraphManager.getPortWorldPosition(wire.sourceNodeId, wire.sourcePortId);
             const p2 = window.nodeGraphManager.getPortWorldPosition(wire.targetNodeId, wire.targetPortId);
             if (p1 && p2) {
@@ -224,7 +236,128 @@ class NodeCanvasRenderer {
             }
         });
 
+        // Draw selected wire on top in red so it's clearly highlighted
+        if (selectedWireId) {
+            const sw = window.NodeGraph.wires[selectedWireId];
+            if (sw) {
+                const p1 = window.nodeGraphManager.getPortWorldPosition(sw.sourceNodeId, sw.sourcePortId);
+                const p2 = window.nodeGraphManager.getPortWorldPosition(sw.targetNodeId, sw.targetPortId);
+                if (p1 && p2) {
+                    this._drawBezier(ctx, p1, p2, '#ef4444', 3 / vp.zoom, false);
+                }
+            }
+        }
+
         ctx.restore();
+    }
+
+    // ── Minimap ────────────────────────────────────────────────────────────────
+
+    _drawMinimap(vp, canvasW, canvasH) {
+        if (!this.minimapCtx || !this.minimapCanvas) return;
+
+        const mc  = this.minimapCanvas;
+        const ctx = this.minimapCtx;
+        const mw  = mc.width  || 160;
+        const mh  = mc.height || 100;
+
+        ctx.clearRect(0, 0, mw, mh);
+
+        // Background
+        ctx.fillStyle = this._colors.bg;
+        ctx.fillRect(0, 0, mw, mh);
+
+        const nodes = Object.values(window.NodeGraph.nodes || {});
+        if (nodes.length === 0) return;
+
+        // Compute world bounding box of all nodes
+        let minX =  Infinity, minY =  Infinity;
+        let maxX = -Infinity, maxY = -Infinity;
+        nodes.forEach(n => {
+            const nw = n.width || 280;
+            const nh = n.collapsed ? 42 : 220;
+            minX = Math.min(minX, n.x);
+            minY = Math.min(minY, n.y);
+            maxX = Math.max(maxX, n.x + nw);
+            maxY = Math.max(maxY, n.y + nh);
+        });
+
+        // Also include current viewport frustum in bounds so it's always visible
+        const vpLeft   = (-vp.x) / vp.zoom;
+        const vpTop    = (-vp.y) / vp.zoom;
+        const vpRight  = vpLeft + canvasW / vp.zoom;
+        const vpBottom = vpTop  + canvasH / vp.zoom;
+        minX = Math.min(minX, vpLeft);   minY = Math.min(minY, vpTop);
+        maxX = Math.max(maxX, vpRight);  maxY = Math.max(maxY, vpBottom);
+
+        // Add 5% padding
+        const pad  = 0.05;
+        const ww   = maxX - minX || 1;
+        const wh   = maxY - minY || 1;
+        minX -= ww * pad;  minY -= wh * pad;
+        maxX += ww * pad;  maxY += wh * pad;
+
+        // world→minimap scale (maintain aspect, letter-box)
+        const scaleX = mw / (maxX - minX);
+        const scaleY = mh / (maxY - minY);
+        const scale  = Math.min(scaleX, scaleY);
+        const offX   = (mw - (maxX - minX) * scale) / 2;
+        const offY   = (mh - (maxY - minY) * scale) / 2;
+
+        const toMM = (wx, wy) => ({
+            x: offX + (wx - minX) * scale,
+            y: offY + (wy - minY) * scale
+        });
+
+        // Draw wires
+        ctx.strokeStyle = this._colors.wire;
+        ctx.lineWidth   = 0.5;
+        ctx.globalAlpha = 0.5;
+        Object.values(window.NodeGraph.wires || {}).forEach(wire => {
+            const sn = window.NodeGraph.nodes[wire.sourceNodeId];
+            const tn = window.NodeGraph.nodes[wire.targetNodeId];
+            if (!sn || !tn) return;
+            const p1 = toMM(sn.x + (sn.width || 280), sn.y + 21);
+            const p2 = toMM(tn.x,                      tn.y + 21);
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+        });
+        ctx.globalAlpha = 1;
+
+        // Draw nodes
+        const isOp = n => window.NodeTypes && window.NodeTypes.isOperator(n.nodeType);
+        nodes.forEach(n => {
+            const nw = n.width || 280;
+            const nh = n.collapsed ? 42 : 220;
+            const p  = toMM(n.x, n.y);
+            const pw = nw * scale;
+            const ph = nh * scale;
+
+            // Fill
+            ctx.fillStyle = n.selected
+                ? 'rgba(26,115,232,0.55)'
+                : isOp(n)
+                    ? 'rgba(14,165,233,0.45)'
+                    : (this._colors.wire + '55');
+            ctx.fillRect(p.x, p.y, Math.max(pw, 3), Math.max(ph, 3));
+
+            // Border
+            ctx.strokeStyle = n.selected ? '#1a73e8' : this._colors.wire;
+            ctx.lineWidth   = n.selected ? 1 : 0.5;
+            ctx.strokeRect(p.x, p.y, Math.max(pw, 3), Math.max(ph, 3));
+        });
+
+        // Draw viewport frustum
+        const vfp1 = toMM(vpLeft, vpTop);
+        const vfW  = (vpRight - vpLeft) * scale;
+        const vfH  = (vpBottom - vpTop) * scale;
+        ctx.strokeStyle = 'rgba(26,115,232,0.7)';
+        ctx.lineWidth   = 1;
+        ctx.fillStyle   = 'rgba(26,115,232,0.06)';
+        ctx.fillRect(vfp1.x, vfp1.y, vfW, vfH);
+        ctx.strokeRect(vfp1.x, vfp1.y, vfW, vfH);
     }
 
     // ── Layer 3: Active (temp wire, selection box) ─────────────────────────────

@@ -197,6 +197,16 @@ function _restoreSnapshot(snapshot) {
 // Nodes → Tables  (on disable: write node state back to sheets)
 // ──────────────────────────────────────────────────────────────────────────────
 
+// Shared helper: read one cell value from a header at row r
+// Columnar headers (operator output): h.values[r]
+// CellStore headers (source/table nodes): csm.get(h.cellIds[r])
+function _nodeVal(h, r, csm) {
+    if (h.values) return String(h.values[r] ?? '');
+    const id = (h.cellIds || [])[r];
+    const cell = id ? csm.get(id) : null;
+    return cell ? cell.value : '';
+}
+
 function _syncNodesToSheets() {
     const csm = window.cellStoreManager;
 
@@ -209,18 +219,16 @@ function _syncNodesToSheets() {
         node.headers.forEach(h => { html += `<th>${_esc(h.label)}</th>`; });
         html += '</tr></thead><tbody>';
 
-        const maxRows = node.headers.reduce((m, h) => Math.max(m, h.cellIds.length), 0);
+        // maxRows: check h.values (columnar) or h.cellIds (CellStore) length
+        const maxRows = node.headers.reduce((m, h) => Math.max(m, (h.values || h.cellIds || []).length), 0);
         for (let r = 0; r < maxRows; r++) {
             html += '<tr>';
-            node.headers.forEach(h => {
-                const cell = h.cellIds[r] ? csm.get(h.cellIds[r]) : null;
-                html += `<td>${_esc(cell ? cell.value : '')}</td>`;
-            });
+            node.headers.forEach(h => { html += `<td>${_esc(_nodeVal(h, r, csm))}</td>`; });
             html += '</tr>';
         }
         html += '</tbody></table>';
 
-        sheet.rawHtml      = html;
+        sheet.rawHtml       = html;
         sheet.containerHtml = null; // force re-parse from rawHtml on next activate
     });
 }
@@ -522,17 +530,19 @@ function buildTableFromSelectedNode() {
 
     const node    = selected[0];
     const csm     = window.cellStoreManager;
-    const maxRows = node.headers.reduce((m, h) => Math.max(m, h.cellIds.length), 0);
+
+    // maxRows: check h.values (columnar) or h.cellIds (CellStore) length
+    const maxRows = node.headers.reduce((m, h) => Math.max(m, (h.values || h.cellIds || []).length), 0);
+
+    // Only output 'out' or 'inout' columns — skip structural 'in' ports (e.g. join-in-left)
+    const outputHeaders = node.headers.filter(h => h.direction !== 'in');
 
     let html = '<table class="tablecoil crosshair-table"><thead><tr>';
-    node.headers.forEach(h => { html += `<th>${_esc(h.label)}</th>`; });
+    outputHeaders.forEach(h => { html += `<th>${_esc(h.label)}</th>`; });
     html += '</tr></thead><tbody>';
     for (let r = 0; r < maxRows; r++) {
         html += '<tr>';
-        node.headers.forEach(h => {
-            const cell = h.cellIds[r] ? csm.get(h.cellIds[r]) : null;
-            html += `<td>${_esc(cell ? cell.value : '')}</td>`;
-        });
+        outputHeaders.forEach(h => { html += `<td>${_esc(_nodeVal(h, r, csm))}</td>`; });
         html += '</tr>';
     }
     html += '</tbody></table>';

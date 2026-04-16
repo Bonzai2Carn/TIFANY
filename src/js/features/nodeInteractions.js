@@ -7,13 +7,15 @@ class NodeInteractionManager {
         this.container    = null;
         this.isPanning    = false;
         this.panStart     = { x: 0, y: 0, vpX: 0, vpY: 0 };
-        this.draggedNode  = null;
+        this.draggedNode  = null;    // primary dragged node id (kept for compat)
         this.dragOffset   = { x: 0, y: 0 };
+        this.dragGroup    = [];      // [{ nodeId, offsetX, offsetY }] — for multi-drag
         // { sourceNodeId, sourcePortId, startPos:{x,y}, currentPos:{x,y} }
         this.wireInProgress = null;
         // { startX, startY, endX, endY }  — screen-space
         this.selectionBox = null;
         this.spaceHeld    = false;
+        this.selectedWireId = null;   // wire clicked for deletion
 
         this._boundMouseDown   = this._onMouseDown.bind(this);
         this._boundMouseMove   = this._onMouseMove.bind(this);
@@ -51,8 +53,10 @@ class NodeInteractionManager {
         this.container      = null;
         this.isPanning      = false;
         this.draggedNode    = null;
+        this.dragGroup      = [];
         this.wireInProgress = null;
         this.selectionBox   = null;
+        this.selectedWireId = null;
     }
 
     // ── Coordinate helper ──────────────────────────────────────────────────────
@@ -145,9 +149,24 @@ class NodeInteractionManager {
         if (headerEl && !this.spaceHeld) {
             const nodeEl = headerEl.closest('.ne-node');
             if (nodeEl) {
-                this._startNodeDrag(nodeEl, e);
-                window.nodeGraphManager.selectNode(nodeEl.dataset.nodeId, e.ctrlKey || e.metaKey);
+                const nodeId = nodeEl.dataset.nodeId;
+                // If Ctrl/Meta held, add to selection; otherwise select this node
+                // (but don't deselect the group if this node is already part of it)
+                const node = window.NodeGraph.nodes[nodeId];
+                if (!node) return;
+
+                if (e.ctrlKey || e.metaKey) {
+                    // Additive / subtractive selection
+                    window.nodeGraphManager.selectNode(nodeId, true);
+                } else if (!node.selected) {
+                    // Node wasn't previously selected — replace selection with just this one
+                    window.nodeGraphManager.deselectAll();
+                    node.selected = true;
+                }
+                // If node was already selected, keep the whole group selected and drag all
+
                 this._updateSelectionVisuals();
+                this._startNodeDrag(nodeEl, e);
                 window.nodeCanvasRenderer.markStaticDirty();
             }
             return;
@@ -160,16 +179,32 @@ class NodeInteractionManager {
             return;
         }
 
-        // ── Empty canvas → deselect + rubber-band
+        // ── Empty canvas → deselect + rubber-band (Shift+drag = pan)
         const isCanvas = target === this.container
             || target.id === 'nodeCanvasLayer'
             || target.id === 'nodeHtmlLayer'
             || target.closest('#nodeEditorViewport') === this.container;
 
         if (isCanvas && e.button === 0) {
-            window.nodeGraphManager.deselectAll();
-            this._updateSelectionVisuals();
-            this._startSelectionBox(e);
+            if (e.shiftKey) {
+                // Shift+drag on empty canvas = pan (alternative to Space)
+                e.preventDefault();
+                this._startPan(e);
+            } else {
+                const cp       = this.screenToCanvas(e.clientX, e.clientY);
+                const hitWire  = this._hitTestWires(cp.x, cp.y);
+                if (hitWire) {
+                    // Select the wire; deselect nodes and any previously selected wire
+                    window.nodeGraphManager.deselectAll();
+                    this._updateSelectionVisuals();
+                    this._setSelectedWire(hitWire);
+                } else {
+                    this._clearWireSelection();
+                    window.nodeGraphManager.deselectAll();
+                    this._updateSelectionVisuals();
+                    this._startSelectionBox(e);
+                }
+            }
         }
     }
 
@@ -185,17 +220,18 @@ class NodeInteractionManager {
             return;
         }
 
-        if (this.draggedNode) {
-            const cp  = this.screenToCanvas(e.clientX, e.clientY);
-            const newX = cp.x - this.dragOffset.x;
-            const newY = cp.y - this.dragOffset.y;
-            window.nodeGraphManager.moveNode(this.draggedNode, newX, newY);
-            const el = document.querySelector(`[data-node-id="${this.draggedNode}"]`);
-            if (el) {
-                el.style.left = newX + 'px';
-                el.style.top  = newY + 'px';
-            }
-            // Wires must follow — mark static dirty every move frame
+        if (this.dragGroup.length > 0) {
+            const cp = this.screenToCanvas(e.clientX, e.clientY);
+            this.dragGroup.forEach(({ nodeId, offsetX, offsetY }) => {
+                const newX = cp.x - offsetX;
+                const newY = cp.y - offsetY;
+                window.nodeGraphManager.moveNode(nodeId, newX, newY);
+                const el = document.querySelector(`[data-node-id="${nodeId}"]`);
+                if (el) {
+                    el.style.left = newX + 'px';
+                    el.style.top  = newY + 'px';
+                }
+            });
             window.nodeCanvasRenderer.markStaticDirty();
             return;
         }
@@ -221,8 +257,9 @@ class NodeInteractionManager {
             return;
         }
 
-        if (this.draggedNode) {
+        if (this.dragGroup.length > 0) {
             this.draggedNode = null;
+            this.dragGroup   = [];
             window.nodeCanvasRenderer.markStaticDirty();
             if (typeof window.saveNodeEditorState === 'function') window.saveNodeEditorState();
             return;
@@ -258,10 +295,15 @@ class NodeInteractionManager {
             return;
         }
 
-        // Delete / Backspace → remove selected nodes
+        // Delete / Backspace → remove selected nodes, or selected wire if no nodes selected
         if ((e.key === 'Delete' || e.key === 'Backspace') &&
             !e.target.matches('input,textarea,[contenteditable="true"]')) {
-            this._deleteSelectedNodes();
+            const hasSelectedNodes = window.nodeGraphManager.getSelectedNodes().length > 0;
+            if (hasSelectedNodes) {
+                this._deleteSelectedNodes();
+            } else if (this.selectedWireId) {
+                this._deleteSelectedWire();
+            }
             return;
         }
 
@@ -292,11 +334,25 @@ class NodeInteractionManager {
     // ── Node Drag ───────────────────────────────────────────────────────────────
 
     _startNodeDrag(nodeEl, e) {
-        const node = window.NodeGraph.nodes[nodeEl.dataset.nodeId];
-        if (!node) return;
         const cp = this.screenToCanvas(e.clientX, e.clientY);
+        // Build drag group from all currently selected nodes
+        const selectedNodes = Object.values(window.NodeGraph.nodes).filter(n => n.selected);
+        if (selectedNodes.length === 0) {
+            // Fallback: just drag the clicked node
+            const node = window.NodeGraph.nodes[nodeEl.dataset.nodeId];
+            if (node) selectedNodes.push(node);
+        }
+        this.dragGroup = selectedNodes.map(n => ({
+            nodeId:  n.id,
+            offsetX: cp.x - n.x,
+            offsetY: cp.y - n.y
+        }));
+        // Keep legacy draggedNode pointing at the primary (for anything still using it)
         this.draggedNode = nodeEl.dataset.nodeId;
-        this.dragOffset  = { x: cp.x - node.x, y: cp.y - node.y };
+        this.dragOffset  = {
+            x: cp.x - (window.NodeGraph.nodes[this.draggedNode]?.x || 0),
+            y: cp.y - (window.NodeGraph.nodes[this.draggedNode]?.y || 0)
+        };
     }
 
     // ── Wire Connection ─────────────────────────────────────────────────────────
@@ -304,6 +360,7 @@ class NodeInteractionManager {
     _startWire(portEl, e) {
         const nodeEl = portEl.closest('.ne-node');
         if (!nodeEl) return;
+        this._clearWireSelection();
         const cp = this.screenToCanvas(e.clientX, e.clientY);
         this.wireInProgress = {
             sourceNodeId: nodeEl.dataset.nodeId,
@@ -456,6 +513,62 @@ class NodeInteractionManager {
         Object.values(window.NodeGraph.nodes).forEach(n => { n.selected = true; });
         this._updateSelectionVisuals();
         window.nodeCanvasRenderer.markStaticDirty();
+    }
+
+    // ── Wire hit-test & selection ───────────────────────────────────────────────
+
+    /**
+     * Sample each bezier wire at 20 points and return the first wireId whose
+     * curve passes within 8 screen-pixels of (canvasX, canvasY), or null.
+     */
+    _hitTestWires(canvasX, canvasY) {
+        const SAMPLES    = 20;
+        const vp         = window.NodeGraph.viewport;
+        const hitRadius  = 8 / vp.zoom;  // convert screen-px threshold to canvas-px
+
+        for (const [wireId, wire] of Object.entries(window.NodeGraph.wires || {})) {
+            const p1 = window.nodeGraphManager.getPortWorldPosition(wire.sourceNodeId, wire.sourcePortId);
+            const p2 = window.nodeGraphManager.getPortWorldPosition(wire.targetNodeId, wire.targetPortId);
+            if (!p1 || !p2) continue;
+
+            // Must match _drawBezier control-point formula exactly
+            const dx = Math.abs(p2.x - p1.x) * 0.55 + 40;
+            const cp1x = p1.x + dx,  cp1y = p1.y;
+            const cp2x = p2.x - dx,  cp2y = p2.y;
+
+            for (let i = 0; i <= SAMPLES; i++) {
+                const t  = i / SAMPLES;
+                const mt = 1 - t;
+                const bx = mt*mt*mt*p1.x + 3*mt*mt*t*cp1x + 3*mt*t*t*cp2x + t*t*t*p2.x;
+                const by = mt*mt*mt*p1.y + 3*mt*mt*t*cp1y + 3*mt*t*t*cp2y + t*t*t*p2.y;
+                if (Math.hypot(canvasX - bx, canvasY - by) <= hitRadius) return wireId;
+            }
+        }
+        return null;
+    }
+
+    _setSelectedWire(wireId) {
+        this.selectedWireId = wireId;
+        window.nodeCanvasRenderer.markStaticDirty();
+    }
+
+    _clearWireSelection() {
+        if (!this.selectedWireId) return;
+        this.selectedWireId = null;
+        window.nodeCanvasRenderer.markStaticDirty();
+    }
+
+    _deleteSelectedWire() {
+        if (!this.selectedWireId) return;
+        window.nodeGraphManager.removeWire(this.selectedWireId);
+        this.selectedWireId = null;
+        window.nodeCanvasRenderer.markStaticDirty();
+        if (typeof window.saveNodeEditorState === 'function') window.saveNodeEditorState();
+        $.toast({
+            heading: 'Node Editor',
+            text:    'Wire deleted',
+            icon:    'info', loader: false, stack: false
+        });
     }
 
     // ── Port right-click context menu (Option E) ────────────────────────────────

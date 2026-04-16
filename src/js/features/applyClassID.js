@@ -4,9 +4,6 @@ function applyClassId() {
         return;
     }
 
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
-
     const elementType = $('#elementType').val();
     const rawClass = $('#classInput').val();
     const spActive = $('#basic-addon1').hasClass('sp-active');
@@ -100,6 +97,7 @@ function applyClassId() {
     $('#styleInput').val('');
     $('#tableAttribute').val('');
     $('#attributeValue').val('1');
+    window.saveCurrentState();
 }
 
 // Make globally accessible

@@ -4,9 +4,6 @@
 function transposeTable() {
     if (!currentTable) return;
 
-    // SAVE STATE BEFORE OPERATION
-    window.saveCurrentState();
-
     $.toast({
         heading: 'Information',
         text: 'Table must have equal rows and columns to transpose',
@@ -88,6 +85,7 @@ function transposeTable() {
 
     // initializeAllFeatures();
     setupTableInteraction();
+    window.saveCurrentState();
 }
 
 function toggleCrosshair() {
@@ -270,6 +268,7 @@ function applyTextSplit() {
     // Reinitialize features for the new table
     // initializeAllFeatures();
     setupTableInteraction();
+    window.saveCurrentState();
 };
 
 window.transposeTable = transposeTable;
