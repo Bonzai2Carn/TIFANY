@@ -351,7 +351,8 @@
                         max="20" step="1" value="1">
                 </div>
                 <button id="applyClassId" class="btn btn-sm btn-outline-secondary w-100">Apply to Selected</button>
-                <button id="duplicateElement" class="duplicateElement btn btn-sm btn-outline-primary w-100 mb-2">Duplicate</button>
+                <button id="duplicateElement"
+                    class="duplicateElement btn btn-sm btn-outline-primary w-100 mb-2">Duplicate</button>
             </div>
 
             <!-- FUNCTION (operations) -->
@@ -481,6 +482,10 @@
                         <button id="neRunGraph" class="btn btn-sm btn-primary"
                             title="Run graph — execute all operator nodes">
                             <i class="fas fa-play"></i> Run
+                        </button>
+                        <button id="neResetRun" class="btn btn-sm btn-outline-warning"
+                            title="Reset all node exec states back to idle (use if Run gets stuck)">
+                            <i class="fas fa-undo"></i> Reset
                         </button>
                         <button id="neBuildTable" class="btn btn-sm btn-success" title="Build table from selected node">
                             <i class="fas fa-table"></i> Build Table
@@ -622,7 +627,7 @@
             <!-- Section 2: Instruction (default collapsed) -->
             <div class="right-section" data-mobile-order="2">
                 <div class="right-section-header" data-target="right-instruction">
-                    Instruction <span class="right-section-chevron">▲</span>
+                    Quick References <span class="right-section-chevron">▲</span>
                 </div>
                 <div class="right-section-body collapsed" id="right-instruction">
                     <h6><b>Shortcuts</b></h6>
@@ -632,7 +637,7 @@
                         <kbd>Delete</kbd> Delete Cell &nbsp;
                         <kbd>Shift+Delete</kbd> Delete Cell<br>
                         <kbd>Ctrl+A</kbd> Select All Cells<br>
-                        <kbd>Ctrl+C</kbd> Copy Selected<br>
+                        <kbd>Ctrl+Shift+C</kbd> Copy Selected<br>
                         <kbd>Ctrl+V</kbd> Paste After &nbsp;
                         <kbd>Ctrl+Shift+V</kbd> Paste Before<br>
                         <kbd>Alt+Shift+W</kbd> Merge Cell<br>

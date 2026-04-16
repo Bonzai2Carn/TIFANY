@@ -103,8 +103,8 @@ window.NodeTypes = {
             defaultPorts: 'in',
             // These two ports are always present on a join node (permanent structure)
             defaultHeaders: [
-                { label: 'Left Table',  portId: 'join-in-left',  direction: 'in' },
-                { label: 'Right Table', portId: 'join-in-right', direction: 'in' }
+                { label: 'Left Table',  portId: 'join-in-left',  direction: 'in', cellIds: [] },
+                { label: 'Right Table', portId: 'join-in-right', direction: 'in', cellIds: [] }
             ]
         }
     },

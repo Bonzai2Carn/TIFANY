@@ -6,7 +6,8 @@
 #nodeEditorCanvas {
     position: absolute;
     inset: 0;
-    display: none;   /* toggled to flex by JS */
+    display: none;
+    /* toggled to flex by JS */
     flex-direction: column;
     background: var(--t-bg-workspace);
     z-index: 50;
@@ -26,19 +27,23 @@
     font-weight: 600;
     color: var(--t-text-muted);
     user-select: none;
+    overflow: visible;
+    /* allow palette flyout to extend beyond the header bar */
 }
 
-.node-editor-header > span:first-child {
+.node-editor-header>span:first-child {
     flex: 1;
     display: flex;
     align-items: center;
     gap: 6px;
+
 }
 
 .node-editor-header-actions {
     display: flex;
     align-items: center;
     gap: 6px;
+    overflow: auto;
 }
 
 /* ── Viewport (where canvas + HTML layer live) ─────────────────────────────── */
@@ -50,7 +55,9 @@
 }
 
 /* Space-bar grab cursor applied via JS */
-#nodeEditorViewport.grabbing { cursor: grabbing !important; }
+#nodeEditorViewport.grabbing {
+    cursor: grabbing !important;
+}
 
 /* ── Canvas layers ─────────────────────────────────────────────────────────── */
 #nodeCanvasLayer {
@@ -59,7 +66,8 @@
     width: 100%;
     height: 100%;
     display: block;
-    pointer-events: none; /* mouse events go to the viewport container */
+    pointer-events: none;
+    /* mouse events go to the viewport container */
 }
 
 /* Offscreen buffers — always hidden */
@@ -75,7 +83,8 @@
     left: 0;
     /* transform set via JS: translate + scale in sync with canvas viewport */
     transform-origin: 0 0;
-    pointer-events: none; /* children re-enable pointer-events individually */
+    pointer-events: none;
+    /* children re-enable pointer-events individually */
 }
 
 /* ── Node Card ─────────────────────────────────────────────────────────────── */
@@ -88,7 +97,8 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
     font-size: 12px;
     color: var(--t-text);
-    pointer-events: all;   /* re-enable inside the overlay layer */
+    pointer-events: all;
+    /* re-enable inside the overlay layer */
     transition: box-shadow 120ms ease, border-color 120ms ease;
     user-select: none;
     min-width: 180px;
@@ -303,7 +313,8 @@
 }
 
 .ne-port-out {
-    border-color: #10b981;  /* teal for output */
+    border-color: #10b981;
+    /* teal for output */
 }
 
 .ne-port-out:hover {
@@ -335,9 +346,11 @@
     .node-editor-minimap {
         display: none;
     }
+
     .node-editor-header-actions .btn {
         display: none;
     }
+
     .node-editor-header-actions .btn:last-child {
         display: inline-flex;
     }
@@ -352,25 +365,47 @@
 
 /* ── Operator node — header stripe by type ─────────────────────────────────── */
 :root {
-    --ne-type-table:   #1a73e8;
-    --ne-type-filter:  #f59e0b;
+    --ne-type-table: #1a73e8;
+    --ne-type-filter: #f59e0b;
     --ne-type-vlookup: #8b5cf6;
     --ne-type-formula: #10b981;
-    --ne-type-api:     #ef4444;
-    --ne-type-join:    #0ea5e9;
+    --ne-type-api: #ef4444;
+    --ne-type-join: #0ea5e9;
 }
 
 .ne-node.ne-operator .ne-node-header {
     border-left: 4px solid currentColor;
 }
-.ne-node.ne-type-filter  .ne-node-header { color: var(--ne-type-filter);  border-left-color: var(--ne-type-filter);  }
-.ne-node.ne-type-vlookup .ne-node-header { color: var(--ne-type-vlookup); border-left-color: var(--ne-type-vlookup); }
-.ne-node.ne-type-formula .ne-node-header { color: var(--ne-type-formula); border-left-color: var(--ne-type-formula); }
-.ne-node.ne-type-api     .ne-node-header { color: var(--ne-type-api);     border-left-color: var(--ne-type-api);     }
-.ne-node.ne-type-join    .ne-node-header { color: var(--ne-type-join);    border-left-color: var(--ne-type-join);    }
+
+.ne-node.ne-type-filter .ne-node-header {
+    color: var(--ne-type-filter);
+    border-left-color: var(--ne-type-filter);
+}
+
+.ne-node.ne-type-vlookup .ne-node-header {
+    color: var(--ne-type-vlookup);
+    border-left-color: var(--ne-type-vlookup);
+}
+
+.ne-node.ne-type-formula .ne-node-header {
+    color: var(--ne-type-formula);
+    border-left-color: var(--ne-type-formula);
+}
+
+.ne-node.ne-type-api .ne-node-header {
+    color: var(--ne-type-api);
+    border-left-color: var(--ne-type-api);
+}
+
+.ne-node.ne-type-join .ne-node-header {
+    color: var(--ne-type-join);
+    border-left-color: var(--ne-type-join);
+}
 
 /* Label stays readable */
-.ne-node.ne-operator .ne-node-label { color: var(--t-text); }
+.ne-node.ne-operator .ne-node-label {
+    color: var(--t-text);
+}
 
 /* ── Type badge ────────────────────────────────────────────────────────────── */
 .ne-type-badge {
@@ -392,19 +427,45 @@
     flex-shrink: 0;
     line-height: 1;
 }
-.ne-exec-running { color: #f59e0b; animation: ne-pulse 1s infinite; }
-.ne-exec-done    { color: #10b981; }
-.ne-exec-error   { color: #ef4444; cursor: help; }
+
+.ne-exec-running {
+    color: #f59e0b;
+    animation: ne-pulse 1s infinite;
+}
+
+.ne-exec-done {
+    color: #10b981;
+}
+
+.ne-exec-error {
+    color: #ef4444;
+    cursor: help;
+}
 
 @keyframes ne-pulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.4; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
 }
 
 /* Tint card border when running/done/error */
-.ne-node.ne-exec-running { border-color: #f59e0b; }
-.ne-node.ne-exec-done    { border-color: #10b981; }
-.ne-node.ne-exec-error   { border-color: #ef4444; }
+.ne-node.ne-exec-running {
+    border-color: #f59e0b;
+}
+
+.ne-node.ne-exec-done {
+    border-color: #10b981;
+}
+
+.ne-node.ne-exec-error {
+    border-color: #ef4444;
+}
 
 /* ── Config button ──────────────────────────────────────────────────────────── */
 .ne-node-config-btn {
@@ -419,10 +480,12 @@
     flex-shrink: 0;
     transition: color 100ms, background 100ms;
 }
+
 .ne-node-config-btn:hover {
     color: var(--t-primary);
     background: rgba(26, 115, 232, 0.1);
 }
+
 .ne-node-config-btn.ne-config-btn-disabled {
     opacity: 0.35;
     cursor: not-allowed;
@@ -465,6 +528,7 @@
     color: var(--t-text);
     transition: background 80ms;
 }
+
 .ne-port-menu-item:hover {
     background: var(--t-hover-bg);
 }
@@ -497,17 +561,20 @@
     gap: 6px;
     flex-wrap: wrap;
 }
+
 .ne-join-side {
     font-size: 11px;
     padding: 3px 8px;
     border-radius: 10px;
     font-weight: 500;
 }
+
 .ne-join-connected {
     background: rgba(16, 185, 129, 0.12);
     color: #10b981;
     border: 1px solid rgba(16, 185, 129, 0.3);
 }
+
 .ne-join-missing {
     background: rgba(239, 68, 68, 0.08);
     color: #ef4444;
@@ -550,7 +617,10 @@
     text-align: left;
     transition: background 100ms;
 }
-.ne-palette-item:hover { background: var(--t-hover-bg); }
+
+.ne-palette-item:hover {
+    background: var(--t-hover-bg);
+}
 
 .ne-palette-icon {
     width: 26px;
@@ -564,9 +634,22 @@
     flex-shrink: 0;
 }
 
-.ne-palette-info { display: flex; flex-direction: column; gap: 1px; }
-.ne-palette-info strong { font-size: 12px; color: var(--t-text); }
-.ne-palette-info em     { font-size: 10px; color: var(--t-text-muted); font-style: normal; }
+.ne-palette-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.ne-palette-info strong {
+    font-size: 12px;
+    color: var(--t-text);
+}
+
+.ne-palette-info em {
+    font-size: 10px;
+    color: var(--t-text-muted);
+    font-style: normal;
+}
 
 /* ── Config panel ───────────────────────────────────────────────────────────── */
 .ne-config-panel {
@@ -585,7 +668,10 @@
     transition: transform 200ms ease;
     pointer-events: all;
 }
-.ne-config-panel.ne-config-open { transform: translateX(0); }
+
+.ne-config-panel.ne-config-open {
+    transform: translateX(0);
+}
 
 .ne-config-header {
     display: flex;
@@ -599,6 +685,7 @@
     color: var(--t-text);
     flex-shrink: 0;
 }
+
 .ne-config-type-icon {
     width: 22px;
     height: 22px;
@@ -610,6 +697,7 @@
     color: #fff;
     flex-shrink: 0;
 }
+
 .ne-config-close {
     margin-left: auto;
     background: none;
@@ -621,7 +709,11 @@
     border-radius: 4px;
     transition: color 100ms, background 100ms;
 }
-.ne-config-close:hover { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+
+.ne-config-close:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
 
 .ne-config-body {
     flex: 1;
@@ -637,6 +729,7 @@
     flex-direction: column;
     gap: 4px;
 }
+
 .ne-config-field label {
     font-size: 11px;
     font-weight: 600;
@@ -644,6 +737,7 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
+
 .ne-config-field input,
 .ne-config-field select,
 .ne-config-field textarea {
@@ -659,9 +753,12 @@
     transition: border-color 100ms;
     box-sizing: border-box;
 }
+
 .ne-config-field input:focus,
 .ne-config-field select:focus,
-.ne-config-field textarea:focus { border-color: var(--t-primary); }
+.ne-config-field textarea:focus {
+    border-color: var(--t-primary);
+}
 
 .ne-config-hint {
     font-size: 10px;
@@ -671,7 +768,13 @@
     gap: 4px;
     align-items: center;
 }
-.ne-config-hint-inline { font-size: 10px; color: var(--t-text-light); font-weight: 400; }
+
+.ne-config-hint-inline {
+    font-size: 10px;
+    color: var(--t-text-light);
+    font-weight: 400;
+}
+
 .ne-config-hint kbd {
     background: var(--t-toolbar-bg);
     border: 1px solid var(--t-border);

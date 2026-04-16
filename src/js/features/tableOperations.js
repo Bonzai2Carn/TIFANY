@@ -64,10 +64,12 @@ function copySelected() {
         alert('Please select a cell.');
         return;
     }
-    window.tafneClipboard = window.selectedCells.map(cell => $(cell).clone());
+    // Store the outer HTML string of each selected cell so the clipboard
+    // survives table re-parses, undos, and multiple paste operations.
+    window.tafneClipboard = window.selectedCells.map(cell => cell.outerHTML);
     $.toast({
-        heading: 'Success',
-        text: window.selectedCells.length + ' item(s) copied',
+        heading: 'Copied',
+        text: window.selectedCells.length + ' cell(s) copied',
         icon: 'info',
         loader: false,
         stack: false
@@ -77,11 +79,12 @@ function copySelected() {
 function pasteBefore() {
     if (window.selectedCells.length === 0 || window.tafneClipboard.length === 0) return;
     window.saveCurrentState();
-    
-    // Reverse iterating clipboard maintains original sequence when inserting backwards onto a fixed point
+
+    // Reverse-iterate the clipboard when inserting before so the first copied
+    // cell ends up directly before the target (each insert shifts subsequent ones right).
     window.selectedCells.forEach(target => {
         for (let i = window.tafneClipboard.length - 1; i >= 0; i--) {
-            $(target).before(window.tafneClipboard[i].clone());
+            $(target).before(window.tafneClipboard[i]);
         }
     });
 
@@ -98,10 +101,15 @@ function pasteBefore() {
 function pasteAfter() {
     if (window.selectedCells.length === 0 || window.tafneClipboard.length === 0) return;
     window.saveCurrentState();
-    
+
+    // Forward-iterate: insert each clipboard item after the previous insertion point
+    // so items appear in the same order as they were copied.
     window.selectedCells.forEach(target => {
-        for (let i = window.tafneClipboard.length - 1; i >= 0; i--) {
-            $(target).after(window.tafneClipboard[i].clone());
+        let insertAfter = $(target);
+        for (let i = 0; i < window.tafneClipboard.length; i++) {
+            const $newCell = $(window.tafneClipboard[i]);
+            insertAfter.after($newCell);
+            insertAfter = $newCell; // advance anchor so next cell goes after this one
         }
     });
 

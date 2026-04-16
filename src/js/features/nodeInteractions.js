@@ -546,10 +546,21 @@ class NodeInteractionManager {
         const headers = window.NodeTypes.defaultHeaders(type) || [];
         const newId   = window.nodeGraphManager.addNode(label, x, y, headers, type, config);
 
-        // Determine the target port — the structural input port for this type
-        const newNode      = window.NodeGraph.nodes[newId];
-        const targetHeader = newNode.headers.find(h => h.direction === 'in');
-        const targetPortId = targetHeader ? targetHeader.portId : null;
+        const newNode = window.NodeGraph.nodes[newId];
+        let targetPortId = null;
+
+        if (type === 'join') {
+            // Join has two fixed input ports: join-in-left and join-in-right.
+            // Wire to left first; if left is already taken wire to right.
+            const leftConnected = Object.values(window.NodeGraph.wires).some(
+                w => w.targetNodeId === newId && w.targetPortId === 'join-in-left'
+            );
+            targetPortId = leftConnected ? 'join-in-right' : 'join-in-left';
+        } else {
+            // All other operator types: use the first structural 'in' port
+            const targetHeader = newNode.headers.find(h => h.direction === 'in');
+            targetPortId = targetHeader ? targetHeader.portId : null;
+        }
 
         if (targetPortId) {
             window.nodeGraphManager.addWire(sourceNodeId, sourcePortId, newId, targetPortId);
@@ -557,19 +568,19 @@ class NodeInteractionManager {
 
         if (typeof window.renderNodeDom === 'function') {
             window.renderNodeDom(newId);
-            // Re-render source so its wire-state is current
             window.renderNodeDom(sourceNodeId);
         }
 
         window.nodeCanvasRenderer.markStaticDirty();
         if (typeof window.saveNodeEditorState === 'function') window.saveNodeEditorState();
 
-        $.toast({
-            heading: 'Node Editor',
-            text: `Added ${def.label} — configure ⚙ to continue`,
-            icon: 'success', loader: false, stack: false, hideAfter: 2500
-        });
+        const hint = type === 'join'
+            ? `Added Join — wired to ${targetPortId === 'join-in-left' ? 'Left' : 'Right'} input. Drag a wire from another table to the remaining input port, then open ⚙ to configure.`
+            : `Added ${def.label} — configure ⚙ to continue`;
+
+        $.toast({ heading: 'Node Editor', text: hint, icon: 'success', loader: false, stack: false, hideAfter: 3500 });
     }
 }
 
 window.nodeInteractionManager = new NodeInteractionManager();
+

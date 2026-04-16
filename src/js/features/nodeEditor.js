@@ -280,7 +280,7 @@ function renderNodeDom(nodeId) {
     // ── Data rows (up to MAX_VISIBLE_ROWS, only for table nodes or done operator nodes)
     let dataRowsHtml = '';
     if (!collapsed && node.headers.length > 0) {
-        const rowCount    = node.headers.reduce((m, h) => Math.max(m, h.cellIds.length), 0);
+        const rowCount    = node.headers.reduce((m, h) => Math.max(m, (h.cellIds || []).length), 0);
         const displayRows = Math.min(rowCount, MAX_VISIBLE_ROWS);
 
         for (let r = 0; r < displayRows; r++) {
@@ -592,6 +592,7 @@ function initNodeEditor() {
     $('#neBuildTable').on('click',     buildTableFromSelectedNode);
     $('#neAddFromSheet').on('click',   addCurrentSheetAsNode);
     $('#neRunGraph').on('click',       () => window.nodeExecutor.run());
+    $('#neResetRun').on('click',       () => window.nodeExecutor.resetRunState());
 
     // Palette + config panel
     if (typeof window.nodePaletteInit === 'function') window.nodePaletteInit();

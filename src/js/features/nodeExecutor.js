@@ -426,14 +426,25 @@ window.nodeExecutor = (function () {
         let headersObj = {};
         if (cfg.headers && typeof cfg.headers === 'object') headersObj = cfg.headers;
 
-        const response = await fetch(cfg.url, {
-            method:  cfg.method || 'GET',
-            headers: headersObj
-        });
+        let response;
+        try {
+            response = await fetch(cfg.url, {
+                method:  cfg.method || 'GET',
+                headers: headersObj
+            });
+        } catch (networkErr) {
+            // Network error, CORS block, or DNS failure
+            throw new Error(`API: Network error — ${networkErr.message}. Check the URL and that the server allows cross-origin requests (CORS).`);
+        }
 
-        if (!response.ok) throw new Error(`API: HTTP ${response.status}`);
+        if (!response.ok) throw new Error(`API: HTTP ${response.status} ${response.statusText}`);
 
-        let data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch (_) {
+            throw new Error('API: Response is not valid JSON');
+        }
 
         // Traverse jsonPath (e.g. 'data.items')
         if (cfg.jsonPath) {
@@ -486,48 +497,61 @@ window.nodeExecutor = (function () {
         });
         window.nodeCanvasRenderer.markStaticDirty();
 
-        // Topo sort
-        const { ordered, cycleNodes } = _topoSort(nodes, wires);
-
-        // Mark cycle nodes as errored immediately
-        cycleNodes.forEach(id => {
-            const n = nodes[id];
-            if (!n) return;
-            n.execState = 'error';
-            n.execError = 'Cycle detected';
-            if (typeof renderNodeDom === 'function') renderNodeDom(n.id);
-        });
-
-        // Execute in topological order
         let doneCount  = 0;
-        let errorCount = cycleNodes.length;
+        let errorCount = 0;
 
-        for (const nodeId of ordered) {
-            const node = nodes[nodeId];
-            if (!node) continue;
-            if (!window.NodeTypes.isOperator(node.nodeType)) continue; // skip table nodes
+        try {
+            // Topo sort
+            const { ordered, cycleNodes } = _topoSort(nodes, wires);
 
-            try {
-                const inputMap = _buildInputMap(nodeId);
+            // Mark cycle nodes as errored immediately
+            cycleNodes.forEach(id => {
+                const n = nodes[id];
+                if (!n) return;
+                n.execState = 'error';
+                n.execError = 'Cycle detected';
+                if (typeof renderNodeDom === 'function') renderNodeDom(n.id);
+            });
+            errorCount += cycleNodes.length;
 
-                switch (node.nodeType) {
-                    case 'filter':  _handleFilter(node, inputMap);       break;
-                    case 'vlookup': _handleVlookup(node, inputMap);      break;
-                    case 'formula': _handleFormula(node, inputMap);      break;
-                    case 'api':     await _handleApi(node);              break;
-                    case 'join':    _handleJoin(node);                   break;
-                    default: break;
+            // Execute in topological order
+            for (const nodeId of ordered) {
+                const node = nodes[nodeId];
+                if (!node) continue;
+                if (!window.NodeTypes.isOperator(node.nodeType)) continue;
+
+                try {
+                    const inputMap = _buildInputMap(nodeId);
+
+                    switch (node.nodeType) {
+                        case 'filter':  _handleFilter(node, inputMap);       break;
+                        case 'vlookup': _handleVlookup(node, inputMap);      break;
+                        case 'formula': _handleFormula(node, inputMap);      break;
+                        case 'api':     await _handleApi(node);              break;
+                        case 'join':    _handleJoin(node);                   break;
+                        default: break;
+                    }
+
+                    node.execState = 'done';
+                    doneCount++;
+                } catch (err) {
+                    node.execState = 'error';
+                    node.execError = err.message || 'Unknown error';
+                    errorCount++;
                 }
 
-                node.execState = 'done';
-                doneCount++;
-            } catch (err) {
-                node.execState = 'error';
-                node.execError = err.message || 'Unknown error';
-                errorCount++;
+                if (typeof renderNodeDom === 'function') renderNodeDom(nodeId);
             }
-
-            if (typeof renderNodeDom === 'function') renderNodeDom(nodeId);
+        } catch (fatalErr) {
+            // Top-level failure (e.g. topo sort crash) — reset any still-running nodes
+            Object.values(nodes).forEach(n => {
+                if (n.execState === 'running') {
+                    n.execState = 'error';
+                    n.execError = 'Run aborted: ' + (fatalErr.message || 'Unknown error');
+                    if (typeof renderNodeDom === 'function') renderNodeDom(n.id);
+                    errorCount++;
+                }
+            });
         }
 
         window.nodeCanvasRenderer.markStaticDirty();
@@ -545,5 +569,16 @@ window.nodeExecutor = (function () {
         });
     }
 
-    return { run };
+    // Reset all exec states back to idle (use after a failed/stuck run)
+    function resetRunState() {
+        Object.values(window.NodeGraph.nodes).forEach(n => {
+            n.execState = 'idle';
+            n.execError = null;
+            if (typeof renderNodeDom === 'function') renderNodeDom(n.id);
+        });
+        window.nodeCanvasRenderer.markStaticDirty();
+        $.toast({ heading: 'Node Editor', text: 'Run state reset', icon: 'info', loader: false, stack: false, hideAfter: 1500 });
+    }
+
+    return { run, resetRunState };
 })();

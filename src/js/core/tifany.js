@@ -16,8 +16,12 @@ $(function () {
     window.popperInstance = null;
     window.hideTimeout = null;
     window.lastParsedHtml = null;
-    window.drawModeEnabled    = false;
-    window.nodeEditorEnabled  = false;
+    window.drawModeEnabled = false;
+    window.nodeEditorEnabled = false;
+    // True while a table cell has been most recently clicked/interacted with.
+    // Used to gate copy/paste shortcuts without relying on document.activeElement
+    // (which stays on Monaco's textarea after clicking a cell).
+    window.tableHasFocus = false;
     // =================== CLEANUP FUNCTION ===================
     function cleanupEventHandlers() {
         $(document).off('.cell .cellEditor .hideMenu .accordion .sp_selector');
@@ -73,6 +77,11 @@ $(function () {
                 window.selectionAnchorCell = null;
                 window.selectionHeadCell = null;
             }
+
+            // Mark table as the active interaction context.
+            // stopPropagation() on this handler prevents the document-level
+            // mousedown (which clears the flag) from firing on the same click.
+            window.tableHasFocus = true;
 
             const $table = $(window.currentTable);
 
@@ -218,7 +227,7 @@ $(function () {
         $container.on('contextmenu.cell', 'td, th', function (e) {
             e.preventDefault();
             const $menu = $('#cellContextMenu');
-            
+
             // Show first so outerWidth/Height are accurate
             $menu.show();
 
@@ -249,9 +258,9 @@ $(function () {
                 if (y < pad) y = pad;
             }
 
-            $menu.css({ 
-                top: y + 'px', 
-                left: x + 'px', 
+            $menu.css({
+                top: y + 'px',
+                left: x + 'px',
                 display: 'grid',
                 position: 'fixed' // Ensure it's relative to viewport
             });
@@ -265,9 +274,21 @@ $(function () {
             $('#cellContextMenu').hide();
         });
 
-        // ===================================================================================
-        // 4. KEYBOARD SHORTCUTS
-        // ===================================================================================
+        // Returns true only when the active context is a table cell.
+        // Uses window.tableHasFocus (set on cell mousedown / cleared on outside
+        // mousedown) as the primary signal.  document.activeElement is unreliable
+        // here because clicking a td/th inside a contenteditable div does not move
+        // focus away from Monaco's last-focussed textarea.
+        function isTableContext() {
+            if (!window.currentTable || !window.tableHasFocus) return false;
+            if ($('.inline-cell-editor').length) return false;
+            // Secondary rejection: if something that can receive text input is
+            // currently active, don't steal its Ctrl shortcuts.
+            const active = document.activeElement;
+            if (active && $(active).is('input, textarea, select')) return false;
+            return true;
+        }
+
         $(document).off('keydown').on('keydown', function (e) {
             if (e.repeat) return;
 
@@ -348,12 +369,12 @@ $(function () {
                 e.preventDefault();
                 if (typeof addCellBefore === 'function') addCellBefore();
             } else if (e.key === 'Delete' && e.shiftKey && !e.altKey) {
-                // Shift+Delete → Delete Cell Before (same as Delete, kept symmetric)
+                // Shift+Delete → Delete Cell (symmetric alias)
                 e.preventDefault();
                 if (typeof deleteCell === 'function') deleteCell();
             } else if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
-                // Ctrl+A → Select all cells in the current table
-                if (!window.currentTable) return;
+                // Ctrl+A → Select all cells — only when table is the active context
+                if (!isTableContext()) return;
                 e.preventDefault();
                 const $table = $(window.currentTable);
                 const mapper = new VisualGridMapper($table);
@@ -364,18 +385,21 @@ $(function () {
                     window.selectedCells.push(cell);
                 });
                 window.selectionAnchorCell = window.selectedCells[0] || null;
-                window.selectionHeadCell   = window.selectedCells[window.selectedCells.length - 1] || null;
-            } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'c') {
-                // Ctrl+C → Copy selected cells
+                window.selectionHeadCell = window.selectedCells[window.selectedCells.length - 1] || null;
+            } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'c') {
+                // Ctrl+Shift+C → Copy selected cells (unique combo, no Monaco conflict)
                 if (window.selectedCells.length === 0) return;
                 e.preventDefault();
                 if (typeof copySelected === 'function') copySelected();
-            } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'v') {
-                // Ctrl+Shift+V → Paste Before
+            } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'v') {
+                // Ctrl+Shift+V → Paste Before (guarded: only fires when table has focus)
+                if (!isTableContext()) return;
                 e.preventDefault();
                 if (typeof pasteBefore === 'function') pasteBefore();
-            } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'v') {
-                // Ctrl+V → Paste After
+            } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'v') {
+                // Ctrl+V → Paste After (guarded: only fires when tableHasFocus is true,
+                // so Monaco / browser paste is unaffected when Monaco is active)
+                if (!isTableContext()) return;
                 e.preventDefault();
                 if (typeof pasteAfter === 'function') pasteAfter();
             } else if (e.altKey && e.shiftKey && e.key === 'W') {
@@ -395,6 +419,14 @@ $(function () {
             else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
                 e.preventDefault();
                 performRedo();
+            }
+        });
+
+        // Clear table focus when the user clicks anywhere outside the table container.
+        // The td/th mousedown calls stopPropagation(), so this won't fire on cell clicks.
+        $(document).off('mousedown.tableFocus').on('mousedown.tableFocus', function (e) {
+            if (!$(e.target).closest('#tableContainer').length) {
+                window.tableHasFocus = false;
             }
         });
 
