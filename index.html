@@ -244,6 +244,13 @@
                 title="Node Editor — build data pipelines with joins, filters and transforms">
                 <i class="fas fa-project-diagram"></i>
             </button>
+
+            <!-- CWS: back-annotate to Schema Editor (hidden when standalone) -->
+            <button id="backAnnotateBtn" class="theme-toggle-btn"
+                title="Back-annotate component labels to Schema Editor"
+                style="display:none;">
+                <i class="fas fa-reply"></i>
+            </button>
         </div>
 
         <!-- ====== LEFT PANEL; Tools ====== -->
@@ -1118,6 +1125,72 @@
                 genBtn.addEventListener('click', recordUsage);
             }
         })();
+    </script>
+
+    <!-- ==================== CWS IPC: SCHEMA EDITOR BRIDGE ==================== -->
+    <script>
+    (function () {
+        // Reveal back-annotate button only when embedded in OsShell
+        if (CwsBridge.isEmbedded) {
+            var btn = document.getElementById('backAnnotateBtn');
+            if (btn) btn.style.display = '';
+        }
+
+        // Flow 1 receive: Schema Editor → TAFNE (load-netlist)
+        CwsBridge.onData(async function (envelope) {
+            if (envelope?.hints?.action !== 'load-netlist') return;
+            var raw;
+            try {
+                raw = envelope.pointer
+                    ? await CwsBridge.getStore(envelope.pointer)
+                    : envelope.inline;
+            } catch (e) {
+                $.toast({ heading: 'TAFNE', text: 'Failed to fetch netlist: ' + e.message, icon: 'error', loader: false, stack: false });
+                return;
+            }
+            var netlist;
+            try { netlist = JSON.parse(raw); } catch (e) {
+                $.toast({ heading: 'TAFNE', text: 'Bad JSON from Schema Editor', icon: 'error', loader: false, stack: false });
+                return;
+            }
+            if (typeof loadNetlistAsSheets === 'function') loadNetlistAsSheets(netlist);
+        });
+
+        // Flow 2 send: TAFNE → Schema Editor (back-annotate)
+        document.getElementById('backAnnotateBtn').addEventListener('click', async function () {
+            if (!CwsBridge.isEmbedded) {
+                $.toast({ heading: 'TAFNE', text: 'Not embedded in OS Shell', icon: 'warning', loader: false, stack: false });
+                return;
+            }
+            var compSheet = window.sheets && window.sheets.find(function (s) { return s.name === 'Components'; });
+            if (!compSheet) {
+                $.toast({ heading: 'Back-annotate', text: 'No "Components" sheet found', icon: 'warning', loader: false, stack: false });
+                return;
+            }
+            var prevId = window.activeSheetId;
+            if (prevId !== compSheet.id) switchSheet(compSheet.id);
+            var $tables = $('#tableContainer table');
+            if (!$tables.length) {
+                $.toast({ heading: 'Back-annotate', text: 'Components sheet has no table', icon: 'warning', loader: false, stack: false });
+                if (prevId && prevId !== compSheet.id) switchSheet(prevId);
+                return;
+            }
+            var jsonStr = exportAsJson($tables);
+            if (prevId && prevId !== compSheet.id) switchSheet(prevId);
+            try {
+                var pointerId = await CwsBridge.requestStore(jsonStr, 'json-data');
+                CwsBridge.offerData(CwsContracts.createEnvelope({
+                    pointer: pointerId,
+                    contentType: 'json-data',
+                    metadata: { source: 'table-formatter' },
+                    hints: { suggestedTarget: 'svg_wiring', action: 'back-annotate' },
+                }));
+                $.toast({ heading: 'Back-annotate', text: 'Sent to Schema Editor', icon: 'success', loader: false, stack: false });
+            } catch (e) {
+                $.toast({ heading: 'Back-annotate', text: 'Send failed: ' + e.message, icon: 'error', loader: false, stack: false });
+            }
+        });
+    })();
     </script>
 
 </body>

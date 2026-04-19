@@ -264,13 +264,14 @@ function parseJsonInput(json) {
         return '';
     }
 
-    // Support: array of objects, or { table: [...] }, or { table_1: [...], ... }
+    // Support: array of objects, { table: [...] }, { table_1: [...], ... },
+    // or wrapped objects like cws-netlist-v1 where the first key is metadata not data.
     if (!Array.isArray(data)) {
-        const firstKey = Object.keys(data)[0];
-        data = firstKey ? data[firstKey] : [];
+        const arrayKey = Object.keys(data).find(k => Array.isArray(data[k]) && data[k].length > 0);
+        data = arrayKey ? data[arrayKey] : [];
     }
     if (!Array.isArray(data) || data.length === 0) {
-        alert('JSON must be an array of objects.');
+        alert('JSON must be an array of objects. Could not find a non-empty array in the input.');
         return '';
     }
 

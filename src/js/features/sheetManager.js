@@ -41,6 +41,31 @@ function addBlankSheet() {
     addSheet('Sheet ' + (window._sheetCounter + 1), blankTable);
 }
 
+function loadNetlistAsSheets(netlist) {
+    if (!netlist || !Array.isArray(netlist.components)) {
+        $.toast({ heading: 'TAFNE', text: 'Invalid netlist format', icon: 'error', loader: false, stack: false });
+        return;
+    }
+    const compRows = netlist.components.map(c => ({
+        id: c.id || '', refdes: c.refdes || '', value: c.value || '',
+        symbolType: c.symbolType || '', domain: c.domain || '',
+        x: c.x != null ? String(c.x) : '', y: c.y != null ? String(c.y) : '',
+    }));
+    const connRows = (netlist.connections || []).map(e => ({
+        id: e.id || '', from: e.from || '', to: e.to || '',
+        color: e.color || '', length: e.length != null ? String(e.length) : '',
+        signalType: e.signalType || '',
+    }));
+    if (compRows.length) addSheet('Components', parseJsonInput(JSON.stringify(compRows)));
+    if (connRows.length) addSheet('Connections', parseJsonInput(JSON.stringify(connRows)));
+    $.toast({
+        heading: 'Schema Loaded',
+        text: `${compRows.length} components, ${connRows.length} connections`,
+        icon: 'success', loader: false, stack: false,
+    });
+}
+window.loadNetlistAsSheets = loadNetlistAsSheets;
+
 /**
  * Switch to a different sheet by id.
  */
