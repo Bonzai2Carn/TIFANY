@@ -1364,9 +1364,20 @@ $(function () {
         };
         var _inputType = _extTypeMap[gif.ext] || 'csv';
         $('#inputType').val(_inputType);
+        // .val() does NOT fire 'change', and the Monaco language switch is
+        // bound to that event — so without this the editor keeps whatever
+        // language it was created with. Cosmetic for parsing (parseInput reads
+        // #inputType directly), but an .html file otherwise opens with
+        // plaintext highlighting, which reads as "it didn't recognise this".
+        $('#inputType').trigger('change');
         if (window.tifanyMonacoInput) {
             window.tifanyMonacoInput.setValue(gif.content);
         } else {
+            // Monaco is created later, inside an async require([...]) callback.
+            // Write the fallback textarea; the Monaco init block seeds itself
+            // from it, so the content survives the boundary instead of being
+            // stranded in a hidden element while an empty editor becomes the
+            // source of truth. See the seeding comment in index.html.
             $('#tableInput').val(gif.content);
         }
         if (typeof parseInput === 'function') parseInput();
