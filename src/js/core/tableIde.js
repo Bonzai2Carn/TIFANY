@@ -1,4 +1,4 @@
-// js/core/tifany.js
+// js/core/tableIde.js
 
 $(function () {
     // =================== GLOBAL VARIABLES ===================
@@ -1181,7 +1181,7 @@ $(function () {
 
     // =================== PANEL TOGGLES ===================
     // The collapse itself is CSS (width -> 0 with a transition; see the
-    // desktop block in tifanyUI.css). All this has to do is stamp the width
+    // desktop block in tableIdeUI.css). All this has to do is stamp the width
     // the panel had before it starts closing, because the panel's own
     // children are held at that width while it narrows -- otherwise they
     // reflow on every frame and the panel looks like it is falling apart
@@ -1212,16 +1212,16 @@ $(function () {
     }
 
     $('#toggleLeftPanel').on('click', function () {
-        _togglePanel($('.tifany-left-panel'), $(this), 'Show Tools Panel', 'Hide Tools Panel');
+        _togglePanel($('.table-ide-left-panel'), $(this), 'Show Tools Panel', 'Hide Tools Panel');
     });
 
     $('#toggleRightPanel').on('click', function () {
-        _togglePanel($('.tifany-right-panel'), $(this), 'Show Code Panel', 'Hide Code Panel');
+        _togglePanel($('.table-ide-right-panel'), $(this), 'Show Code Panel', 'Hide Code Panel');
     });
 
     // =================== LEFT PANEL SECTION ACCORDION ===================
     // Section headers rendered as <button> collapse/expand the body that follows them.
-    $('.tifany-left-panel').on('click', 'button.left-section-header', function () {
+    $('.table-ide-left-panel').on('click', 'button.left-section-header', function () {
         $(this).toggleClass('collapsed')
             .next('.left-section-body').toggleClass('collapsed');
     });
@@ -1229,7 +1229,7 @@ $(function () {
     // =================== RIGHT PANEL RESIZE ===================
     (function () {
         var $handle = $('.right-panel-resize-handle');
-        var $panel = $('.tifany-right-panel');
+        var $panel = $('.table-ide-right-panel');
         if (!$handle.length || !$panel.length) return;
 
         var startX, startWidth;
@@ -1329,8 +1329,8 @@ $(function () {
         $('#inputModal').modal('show');
         // Trigger Monaco layout refresh after modal becomes visible
         setTimeout(function () {
-            if (window.tifanyMonacoInput) {
-                window.tifanyMonacoInput.layout();
+            if (window.tableIdeMonacoInput) {
+                window.tableIdeMonacoInput.layout();
             }
         }, 200);
     });
@@ -1370,8 +1370,8 @@ $(function () {
         // #inputType directly), but an .html file otherwise opens with
         // plaintext highlighting, which reads as "it didn't recognise this".
         $('#inputType').trigger('change');
-        if (window.tifanyMonacoInput) {
-            window.tifanyMonacoInput.setValue(gif.content);
+        if (window.tableIdeMonacoInput) {
+            window.tableIdeMonacoInput.setValue(gif.content);
         } else {
             // Monaco is created later, inside an async require([...]) callback.
             // Write the fallback textarea; the Monaco init block seeds itself
@@ -1388,7 +1388,7 @@ $(function () {
     }
 
     // ── Save back to the VS Code document ────────────────────────────────────
-    // TafneEditorProvider has always handled a `ginexys:save` message, but
+    // TableIdeEditorProvider has always handled a `ginexys:save` message, but
     // nothing in the tool ever sent one — so edits made here never reached the
     // file. Serialise the current tables in the OPEN FILE's format (not the
     // export dropdown's, which is a separate user choice) and hand it back.

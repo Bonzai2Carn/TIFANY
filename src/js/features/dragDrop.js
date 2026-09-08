@@ -37,7 +37,7 @@
 
         // Inject dedicated drag handle row at the top
         // Start with an empty spacer to align with the row-handle column
-        let dragRowHtml = '<tr class="tifany-drag-row ignore-export" style="background:var(--t-bg-workspace); border-bottom:2px solid var(--t-primary);">';
+        let dragRowHtml = '<tr class="table-ide-drag-row ignore-export" style="background:var(--t-bg-workspace); border-bottom:2px solid var(--t-primary);">';
         // dragRowHtml += '<td class="drag-handle drag-row-spacer" style="width:20px; padding:0;"></td>';
         // for (let i = 0; i < maxCols; i++) {
         //     dragRowHtml += `<td class="drag-handle col-handle" data-col-index="${i}" style="text-align:center; font-weight:bold; color:var(--t-primary); cursor:ew-resize; padding:4px;">::</td>`;
@@ -113,7 +113,7 @@
 
         // Remove handles and the custom drag row
         $table.find('.drag-handle').remove();
-        $table.find('.tifany-drag-row').remove();
+        $table.find('.table-ide-drag-row').remove();
 
         // Clean up any active drag indicators
         endDrag();
@@ -167,7 +167,7 @@
 
         // Create drop indicators between rows
         $(currentTable).find('tr').each(function () {
-            if (this !== draggedElement && !$(this).hasClass('tifany-drag-row')) {
+            if (this !== draggedElement && !$(this).hasClass('table-ide-drag-row')) {
                 $(this).before('<tr class="drop-indicator-row"><td colspan="999"></td></tr>');
             }
         });
@@ -203,7 +203,7 @@
         $(cellsInCol).not('.drag-handle').addClass('column-dragging');
 
         // Build a lookup of column boundaries from the drag-row handles
-        const $dragRow = $(currentTable).find('.tifany-drag-row');
+        const $dragRow = $(currentTable).find('.table-ide-drag-row');
         const colEdges = []; // array of { left, right, colIdx }
         $dragRow.find('.col-handle').each(function () {
             const rect = this.getBoundingClientRect();
@@ -318,7 +318,7 @@
 
             // Skip the drag-handle row; we'll reorder its handles separately
             const rowEl = $table.find('tr').eq(r);
-            if (rowEl.hasClass('tifany-drag-row')) continue;
+            if (rowEl.hasClass('table-ide-drag-row')) continue;
 
             const fromCellData = rowData[mapperFrom];
 
@@ -358,7 +358,7 @@
         }
 
         // Reorder the col-handle in the drag row to match
-        const $dragRow = $table.find('.tifany-drag-row');
+        const $dragRow = $table.find('.table-ide-drag-row');
         const $handles = $dragRow.find('.col-handle');
         const $fromHandle = $handles.eq(fromIndex);
 

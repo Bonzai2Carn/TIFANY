@@ -1,5 +1,5 @@
 /*!
- * TIFANY.css - Table Input Formatter and ANalYzer Styles
+ * TableIde.css - Table IDE Styles
  * Version: 2.0.0
  * Author: Bonzai Carn
  * License: MIT
@@ -284,7 +284,7 @@ tr.accordion-header:hover>th {
    11. ANIMATIONS
    =============================================================================== */
 
-@keyframes tifany-fade-in {
+@keyframes table-ide-fade-in {
     from {
         opacity: 0;
     }
@@ -294,7 +294,7 @@ tr.accordion-header:hover>th {
     }
 }
 
-@keyframes tifany-slide-down {
+@keyframes table-ide-slide-down {
     from {
         max-height: 0;
         opacity: 0;
@@ -307,7 +307,7 @@ tr.accordion-header:hover>th {
 }
 
 .panel {
-    animation: tifany-fade-in 0.3s ease-in-out;
+    animation: table-ide-fade-in 0.3s ease-in-out;
 }
 
 /* Hover animation for accordion */
@@ -488,5 +488,5 @@ tr.accordion-header:hover>th {
 }
 
 /*!
- * End of TIFANY.css
+ * End of TableIde.css
  */

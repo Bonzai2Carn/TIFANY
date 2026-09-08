@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TafneEngine — Standalone Engine Reference | GINEXYS</title>
-<meta name="description" content="API reference for TafneEngine: the standalone computation engines extracted from TAFNE. FormulaParser, LabFunctions, and VisualGridMapper — usable independently of the table editor UI.">
+<title>TableIdeEngine — Standalone Engine Reference | GINEXYS</title>
+<meta name="description" content="API reference for TableIdeEngine: the standalone computation engines extracted from Table IDE. FormulaParser, LabFunctions, and VisualGridMapper — usable independently of the table editor UI.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://ginexys.com/tools/table-formatter/docs/engine/">
 <meta property="og:type" content="article">
-<meta property="og:title" content="TafneEngine — Standalone Engine Reference | GINEXYS">
-<meta property="og:description" content="API reference for TafneEngine: the standalone computation engines extracted from TAFNE. FormulaParser, LabFunctions, and VisualGridMapper — usable independently of the table editor UI.">
+<meta property="og:title" content="TableIdeEngine — Standalone Engine Reference | GINEXYS">
+<meta property="og:description" content="API reference for TableIdeEngine: the standalone computation engines extracted from Table IDE. FormulaParser, LabFunctions, and VisualGridMapper — usable independently of the table editor UI.">
 <meta property="og:url" content="https://ginexys.com/tools/table-formatter/docs/engine/">
 <meta property="og:site_name" content="GINEXYS">
 <script type="application/ld+json">
@@ -18,8 +18,8 @@
   "@graph": [
     {
       "@type": "TechArticle",
-      "headline": "TafneEngine — Standalone Engine Reference",
-      "description": "API reference for TafneEngine: FormulaParser, LabFunctions, and VisualGridMapper.",
+      "headline": "TableIdeEngine — Standalone Engine Reference",
+      "description": "API reference for TableIdeEngine: FormulaParser, LabFunctions, and VisualGridMapper.",
       "url": "https://ginexys.com/tools/table-formatter/docs/engine/",
       "isPartOf": {
         "@type": "WebApplication",
@@ -106,11 +106,11 @@ body{background:var(--bg);color:var(--tx);font-family:'DM Mono','Courier New',mo
 <div class="gx-docs-wrap">
   <article class="gx-docs-content">
 
-<h1>TafneEngine — Standalone Engine Reference</h1>
+<h1>TableIdeEngine — Standalone Engine Reference</h1>
 
-<p><code>TafneEngine</code> is the computation layer extracted from TAFNE and exposed as a standalone namespace. The three engines below run independently of the table editor UI — no HTML shell required, no sheet state, no jQuery for two of the three.</p>
+<p><code>TableIdeEngine</code> is the computation layer extracted from Table IDE and exposed as a standalone namespace. The three engines below run independently of the table editor UI — no HTML shell required, no sheet state, no jQuery for two of the three.</p>
 
-<pre><code>window.TafneEngine = {
+<pre><code>window.TableIdeEngine = {
   FormulaParser,    // expression evaluator      — zero DOM, worker-safe
   LabFunctions,     // 26 validate/transform fns — zero DOM, worker-safe
   VisualGridMapper, // grid coordinate engine    — DOM, main-thread
@@ -123,7 +123,7 @@ body{background:var(--bg);color:var(--tx);font-family:'DM Mono','Courier New',mo
 &lt;script src="src/js/features/nodeFormulaParser.js"&gt;&lt;/script&gt;
 &lt;script src="src/js/features/labFunctions.js"&gt;&lt;/script&gt;
 &lt;script src="src/js/core/engine.js"&gt;&lt;/script&gt;
-&lt;!-- TafneEngine is now available on window --&gt;</code></pre>
+&lt;!-- TableIdeEngine is now available on window --&gt;</code></pre>
 
 <hr>
 
@@ -182,7 +182,7 @@ body{background:var(--bg);color:var(--tx);font-family:'DM Mono','Courier New',mo
 <blockquote class="note">Numeric comparison is applied automatically when both operands look like numbers. Otherwise string comparison is used. Division by zero returns <code>'#ERR'</code>.</blockquote>
 
 <h3>Examples</h3>
-<pre><code>const fp = TafneEngine.FormulaParser;
+<pre><code>const fp = TableIdeEngine.FormulaParser;
 const row = { '$Price': '49.99', '$Qty': '3', '$Tag': 'widget' };
 
 fp.evaluate('$Price * $Qty', row);
@@ -216,7 +216,7 @@ self.onmessage = function (e) {
   const results = rows.map(function (row) {
     const ctx = {};
     headers.forEach(function (h, i) { ctx['$' + h] = row[i]; });
-    return TafneEngine.FormulaParser.evaluate(formula, ctx);
+    return TableIdeEngine.FormulaParser.evaluate(formula, ctx);
   });
   self.postMessage(results);
 };</code></pre>
@@ -228,7 +228,7 @@ self.onmessage = function (e) {
 <p>26 pure functions for data validation, transformation, and analysis. Every function receives <code>(rows, params)</code> and returns a result. No DOM, no globals, no side effects.</p>
 
 <h3>When to use it</h3>
-<p>Data quality pipelines — CSV import wizards, ETL UIs, batch audit tools. The functions match exactly what users see in TAFNE's Lab Mode, so running them server-side or in a worker gives consistent results with the in-browser experience.</p>
+<p>Data quality pipelines — CSV import wizards, ETL UIs, batch audit tools. The functions match exactly what users see in Table IDE's Lab Mode, so running them server-side or in a worker gives consistent results with the in-browser experience.</p>
 
 <h3>Input shape</h3>
 <p>Every function expects <code>rows</code> as a flat array of plain objects, one object per row, keys as column names:</p>
@@ -289,7 +289,7 @@ self.onmessage = function (e) {
 </table></div>
 
 <h3>Example — chained pipeline</h3>
-<pre><code>const lf = TafneEngine.LabFunctions;
+<pre><code>const lf = TableIdeEngine.LabFunctions;
 
 // 1. Clean
 let rows = lf.trimWhitespace(rawRows, { column: 'Name' });
@@ -322,7 +322,7 @@ const freq = lf.countValues(rows, { column: 'Status' });
 <blockquote><strong>Dependency:</strong> VisualGridMapper uses jQuery internally. jQuery must be loaded before instantiating it.</blockquote>
 
 <h3>Constructor</h3>
-<pre><code>const mapper = new TafneEngine.VisualGridMapper(tableEl);
+<pre><code>const mapper = new TableIdeEngine.VisualGridMapper(tableEl);
 // tableEl: HTMLTableElement or jQuery wrapper — both accepted</code></pre>
 
 <p><code>buildGrid()</code> is called automatically in the constructor. Call it again if the table DOM is mutated (rows added/removed/merged).</p>
@@ -355,7 +355,7 @@ const freq = lf.countValues(rows, { column: 'Status' });
 //   │  A2   │           │
 //   └───────┴───────────┘
 
-const mapper = new TafneEngine.VisualGridMapper(document.querySelector('table'));
+const mapper = new TableIdeEngine.VisualGridMapper(document.querySelector('table'));
 
 mapper.maxRows;  // → 2
 mapper.maxCols;  // → 2

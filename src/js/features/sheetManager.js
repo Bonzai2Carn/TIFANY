@@ -25,7 +25,7 @@ function addSheet(name, rawHtml, meta) {
         rawHtml: rawHtml,
         containerHtml: null,  // populated when switching away from this sheet
         // Index-aligned with the <table> elements inside rawHtml (generateTabs
-        // stamps them data-tifany-id="t-0", "t-1", … in the same order), so
+        // stamps them data-table-ide-id="t-0", "t-1", … in the same order), so
         // origins[i] is the exact region table i was extracted from. This is
         // what makes "send it back to where it came from" addressable instead
         // of a guess. Null for a sheet authored here with no upstream.
@@ -49,7 +49,7 @@ function addBlankSheet() {
 
 function loadNetlistAsSheets(netlist) {
     if (!netlist || !Array.isArray(netlist.components)) {
-        $.toast({ heading: 'TAFNE', text: 'Invalid netlist format', icon: 'error', loader: false, stack: false });
+        $.toast({ heading: 'Table IDE', text: 'Invalid netlist format', icon: 'error', loader: false, stack: false });
         return;
     }
     const compRows = netlist.components.map(c => ({
@@ -75,7 +75,7 @@ window.loadNetlistAsSheets = loadNetlistAsSheets;
 // Structured gx-tables/2 rows are a cell GRID ({text, colSpan, rowSpan,
 // header}), not flat objects — parseJsonInput can't build this (one <td> per
 // object key, no span attribute it ever writes). This is the other half of
-// the fix: gx-tables-v1 sending a colspan and TAFNE having no path to render
+// the fix: gx-tables-v1 sending a colspan and Table IDE having no path to render
 // one back would have been the same loss with extra steps.
 // Delegates to the shared renderer (`tableRender.js`), which the headless
 // TableDriver loads too. Two implementations of "render a cell grid" would
@@ -141,7 +141,7 @@ function loadTablesAsSheets(payload) {
     }
     var tables = normalized ? normalized.tables : ((payload && payload.tables) || []);
 
-    // Group by SOURCE PAGE before creating sheets. TAFNE's model is a sheet per
+    // Group by SOURCE PAGE before creating sheets. Table IDE's model is a sheet per
     // page that may hold several tables (generateTabs already renders each
     // <table> as its own accordion card), so four tables selected off page 9
     // belong on one "Page 9" sheet — not scattered across four unrelated sheets
@@ -196,7 +196,7 @@ function loadDiagramAsSheets(diagram) {
     var v2 = diagram?.schema === 'ginexys-diagram-v2';
     var v1 = diagram?.schema === 'ginexys-diagram-v1';
     if (!v2 && !v1) {
-        $.toast({ heading: 'TAFNE', text: 'Invalid diagram format', icon: 'error', loader: false, stack: false });
+        $.toast({ heading: 'Table IDE', text: 'Invalid diagram format', icon: 'error', loader: false, stack: false });
         return;
     }
     var t = diagram.topology || {};

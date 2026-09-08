@@ -1,6 +1,6 @@
 # TafneEngine — Standalone Engine Reference
 
-`TafneEngine` is the computation layer extracted from TAFNE and exposed as a standalone namespace. The three engines below run independently of the table editor UI — no HTML shell required, no sheet state, no jQuery for two of the three.
+`TafneEngine` is the computation layer extracted from Table IDE and exposed as a standalone namespace. The three engines below run independently of the table editor UI — no HTML shell required, no sheet state, no jQuery for two of the three.
 
 ```js
 window.TafneEngine = {
@@ -123,7 +123,7 @@ self.onmessage = function (e) {
 
 26 pure functions for data validation, transformation, and analysis. Every function receives `(rows, params)` and returns a result. No DOM, no globals, no side effects.
 
-**When to use it:** Data quality pipelines — CSV import wizards, ETL UIs, batch audit tools. The functions match exactly what users see in TAFNE's Lab Mode, so running them server-side or in a worker gives consistent results with the in-browser experience.
+**When to use it:** Data quality pipelines — CSV import wizards, ETL UIs, batch audit tools. The functions match exactly what users see in Table IDE's Lab Mode, so running them server-side or in a worker gives consistent results with the in-browser experience.
 
 **Input shape** — flat array of plain objects, one per row, keys as column names:
 

@@ -44,22 +44,22 @@ function enableDrawMode() {
         prefill = lines.join('\n');
     }
 
-    if (window.tifanyMonacoDraw) {
-        window.tifanyMonacoDraw.setValue(prefill);
-        setTimeout(function () { window.tifanyMonacoDraw.layout(); }, 50);
+    if (window.tableIdeMonacoDraw) {
+        window.tableIdeMonacoDraw.setValue(prefill);
+        setTimeout(function () { window.tableIdeMonacoDraw.layout(); }, 50);
 
         // Attach Paint Mode listener
         if (!window._paintModeListenerAttached) {
-            window.tifanyMonacoDraw.onDidChangeCursorSelection((e) => {
+            window.tableIdeMonacoDraw.onDidChangeCursorSelection((e) => {
                 if (window._drawGridState.paintMode && e.reason === monaco.editor.CursorChangeReason.Explicit) {
                     const text = _getDrawSelection();
                     if (text) {
                         // User drag-selected a range — use it directly
                         drawInsertItems([text]);
-                        window.tifanyMonacoDraw.setPosition(e.selection.getEndPosition());
+                        window.tableIdeMonacoDraw.setPosition(e.selection.getEndPosition());
                     } else {
                         // No drag selection — fall back to the word under the cursor (click-to-paint)
-                        const editor = window.tifanyMonacoDraw;
+                        const editor = window.tableIdeMonacoDraw;
                         const model = editor.getModel();
                         const selection = editor.getSelection();
                         const word = model.getWordAtPosition(selection.getStartPosition());
@@ -93,7 +93,7 @@ function disableDrawMode() {
     $('#selectToolToggle').addClass('active');
 
     $('#drawCanvas').hide();
-    if (window.tifanyMonacoDraw) window.tifanyMonacoDraw.setValue('');
+    if (window.tableIdeMonacoDraw) window.tableIdeMonacoDraw.setValue('');
     else $('#drawInput').val('');
 
     $('.table-wrapper').show();
@@ -308,11 +308,11 @@ function _updateToolbarUI() {
 
 // Gets array of text based on cursors/selections
 function _getSelectionsArray() {
-    if (window.tifanyMonacoDraw) {
-        const selections = window.tifanyMonacoDraw.getSelections();
+    if (window.tableIdeMonacoDraw) {
+        const selections = window.tableIdeMonacoDraw.getSelections();
         if (selections && selections.length > 0) {
             let texts = [];
-            const model = window.tifanyMonacoDraw.getModel();
+            const model = window.tableIdeMonacoDraw.getModel();
 
             // If it's a single massive selection spanning multiple lines, we split by newline
             if (selections.length === 1 && selections[0].startLineNumber !== selections[0].endLineNumber) {
@@ -345,10 +345,10 @@ function _getSelectionsArray() {
 
 // Single insertion for paint mode
 function _getDrawSelection() {
-    if (window.tifanyMonacoDraw) {
-        const selection = window.tifanyMonacoDraw.getSelection();
+    if (window.tableIdeMonacoDraw) {
+        const selection = window.tableIdeMonacoDraw.getSelection();
         if (selection && !selection.isEmpty()) {
-            return window.tifanyMonacoDraw.getModel().getValueInRange(selection).trim();
+            return window.tableIdeMonacoDraw.getModel().getValueInRange(selection).trim();
         }
     }
     return '';
@@ -414,7 +414,7 @@ function drawHandleInsert() {
         return;
     }
     drawInsertItems(items);
-    if (window.tifanyMonacoDraw) window.tifanyMonacoDraw.focus();
+    if (window.tableIdeMonacoDraw) window.tableIdeMonacoDraw.focus();
 }
 
 function drawTogglePaintMode() {
@@ -524,7 +524,7 @@ function initDrawCanvas() {
             const newH   = Math.max(60, Math.min(startH + delta, parent * 0.70));
             monaco.style.flex   = 'none';
             monaco.style.height = newH + 'px';
-            if (window.tifanyMonacoDraw) window.tifanyMonacoDraw.layout();
+            if (window.tableIdeMonacoDraw) window.tableIdeMonacoDraw.layout();
         }
 
         function endDrag() {
@@ -533,7 +533,7 @@ function initDrawCanvas() {
             handle.classList.remove('dragging');
             document.body.style.cursor     = '';
             document.body.style.userSelect = '';
-            if (window.tifanyMonacoDraw) window.tifanyMonacoDraw.layout();
+            if (window.tableIdeMonacoDraw) window.tableIdeMonacoDraw.layout();
         }
 
         // Pointer events cover mouse + touch + stylus (touchstart/touchend

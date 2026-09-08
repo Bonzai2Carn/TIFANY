@@ -149,7 +149,7 @@ function initCrosshair() {
  *
  * So Apply Style now applies CLASSES and clears the inline styles the old one
  * left behind. The look lives in tableEditor.css (.tablecoil inside
- * .tafne-ruler-wrap) and follows the theme like everything else.
+ * .table-ide-ruler-wrap) and follows the theme like everything else.
  */
 function applyStyle() {
     if (!currentTable) return;
@@ -182,8 +182,8 @@ function applyStyle() {
     // A styled table is a card: title bar (.accordion) + body (.panel) with a
     // tab strip along the top edge. A table parsed straight into the container
     // has none of that, so build it; one already in a card keeps its own.
-    const $host  = $table.closest('.tafne-ruler-wrap').length
-        ? $table.closest('.tafne-ruler-wrap')
+    const $host  = $table.closest('.table-ide-ruler-wrap').length
+        ? $table.closest('.table-ide-ruler-wrap')
         : $table;
     let   $panel = $table.closest('.panel');
 
@@ -363,19 +363,19 @@ function transposeSelection() {
     const needCols = c0 + nR;
 
     if (typeof window.saveCurrentState === 'function') window.saveCurrentState();
-    if (table._tafneStructObs) table._tafneStructObs.disconnect();
+    if (table._tableIdeStructObs) table._tableIdeStructObs.disconnect();
 
     // Grow the table if the transposed block extends past the current edge
-    const $rows = $(table).find('tr').not('.tifany-drag-row').not('.drop-indicator-row');
+    const $rows = $(table).find('tr').not('.table-ide-drag-row').not('.drop-indicator-row');
     const curCols = mapper.maxCols;
     for (let r = $rows.length; r < needRows; r++) {
         let tr = '<tr>';
         for (let c = 0; c < Math.max(curCols, needCols); c++) tr += '<td></td>';
         tr += '</tr>';
-        $(table).find('tr').not('.tifany-drag-row').not('.drop-indicator-row').last().after(tr);
+        $(table).find('tr').not('.table-ide-drag-row').not('.drop-indicator-row').last().after(tr);
     }
     if (needCols > curCols) {
-        $(table).find('tr').not('.tifany-drag-row').not('.drop-indicator-row').each(function () {
+        $(table).find('tr').not('.table-ide-drag-row').not('.drop-indicator-row').each(function () {
             while (this.cells.length < needCols) $(this).append('<td></td>');
         });
     }

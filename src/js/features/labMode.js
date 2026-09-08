@@ -51,15 +51,15 @@ function enableLab() {
     // Show lab canvas, hide table view — collapse side panels for full width
     $('.table-wrapper').hide();
     $('#sheetTabBar').hide();
-    $('.tifany-left-panel, .tifany-right-panel').hide();
+    $('.table-ide-left-panel, .table-ide-right-panel').hide();
     $('#labCanvas').css('display', 'flex');
     document.body.classList.add('lab-mode-active');
 
     // Monaco: set to read-only recipe mode
-    if (window.tifanyMonacoDraw) {
-        window.tifanyMonacoDraw.updateOptions({ readOnly: true });
-        window.tifanyMonacoDraw.setValue('// Lab Pipeline — no steps yet\n');
-        setTimeout(function () { window.tifanyMonacoDraw.layout(); }, 50);
+    if (window.tableIdeMonacoDraw) {
+        window.tableIdeMonacoDraw.updateOptions({ readOnly: true });
+        window.tableIdeMonacoDraw.setValue('// Lab Pipeline — no steps yet\n');
+        setTimeout(function () { window.tableIdeMonacoDraw.layout(); }, 50);
     }
 
     // Render empty state then open picker immediately so user can start building
@@ -91,13 +91,13 @@ function disableLab() {
     $('#labCanvas').hide();
     $('.table-wrapper').show();
     $('#sheetTabBar').show();
-    $('.tifany-left-panel, .tifany-right-panel').show();
+    $('.table-ide-left-panel, .table-ide-right-panel').show();
     document.body.classList.remove('lab-mode-active');
 
     // Restore Monaco to writable (in case drawMode is ever re-enabled)
-    if (window.tifanyMonacoDraw) {
-        window.tifanyMonacoDraw.updateOptions({ readOnly: false });
-        window.tifanyMonacoDraw.setValue('');
+    if (window.tableIdeMonacoDraw) {
+        window.tableIdeMonacoDraw.updateOptions({ readOnly: false });
+        window.tableIdeMonacoDraw.setValue('');
     }
 
     $('#labFnPicker').hide();
@@ -910,12 +910,12 @@ function _labTogglePicker() {
 // ─── RECIPE DISPLAY ───────────────────────────────────────────────────────────
 
 function _labRenderRecipe() {
-    if (!window.tifanyMonacoDraw) return;
+    if (!window.tableIdeMonacoDraw) return;
     if (!window._labState.recipeOpen) return;
 
     var pipeline = window._labState.pipeline;
     if (!pipeline.length) {
-        window.tifanyMonacoDraw.setValue('// Lab Pipeline — no steps yet\n');
+        window.tableIdeMonacoDraw.setValue('// Lab Pipeline — no steps yet\n');
         return;
     }
 
@@ -931,7 +931,7 @@ function _labRenderRecipe() {
         lines.push(step.fn + '(' + paramStr + ')');
     });
 
-    window.tifanyMonacoDraw.setValue(lines.join('\n'));
+    window.tableIdeMonacoDraw.setValue(lines.join('\n'));
 }
 
 function _labToggleRecipe() {
@@ -944,7 +944,7 @@ function _labToggleRecipe() {
         $btn.text('Recipe ▴');
         _labRenderRecipe();
         setTimeout(function () {
-            if (window.tifanyMonacoDraw) window.tifanyMonacoDraw.layout();
+            if (window.tableIdeMonacoDraw) window.tableIdeMonacoDraw.layout();
         }, 50);
     } else {
         $section.hide();
@@ -1060,7 +1060,7 @@ function initLabCanvas() {
             var newH   = Math.max(80, Math.min(startH + delta, parent * 0.80));
             topPane.style.flex   = 'none';
             topPane.style.height = newH + 'px';
-            if (window.tifanyMonacoDraw) window.tifanyMonacoDraw.layout();
+            if (window.tableIdeMonacoDraw) window.tableIdeMonacoDraw.layout();
         }
 
         function endDrag() {
@@ -1069,7 +1069,7 @@ function initLabCanvas() {
             handle.classList.remove('dragging');
             document.body.style.cursor     = '';
             document.body.style.userSelect = '';
-            if (window.tifanyMonacoDraw) window.tifanyMonacoDraw.layout();
+            if (window.tableIdeMonacoDraw) window.tableIdeMonacoDraw.layout();
         }
 
         handle.addEventListener('pointerdown', function (e) {

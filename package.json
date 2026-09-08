@@ -1,7 +1,7 @@
 {
-  "name": "tifany",
+  "name": "table-ide",
   "version": "1.0.0",
-  "description": "TIFANY is a table formatter and editor for anything html, ascii, pdf, images will be added soon",
+  "description": "TABLE_IDE is a table formatter and editor for anything html, ascii, pdf, images will be added soon",
   "keywords": [
     "\"table\"",
     "\"editor\"",
@@ -10,18 +10,18 @@
     "\"transpose\"",
     "\"crosshair\""
   ],
-  "homepage": "https://github.com/canworkstudios/TAFNE#readme",
+  "homepage": "https://github.com/canworkstudios/Table IDE#readme",
   "bugs": {
-    "url": "https://github.com/canworkstudios/TAFNE/issues"
+    "url": "https://github.com/canworkstudios/Table IDE/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/canworkstudios/TAFNE.git"
+    "url": "git+https://github.com/canworkstudios/Table IDE.git"
   },
   "license": "MIT",
   "author": "Bonzai Carn",
   "type": "module",
-  "main": "./tifany.html",
+  "main": "./index.html",
   "scripts": {
     "start": "npx serve .",
     "test": "jest"

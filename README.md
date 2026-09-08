@@ -1,4 +1,4 @@
-# TAFNE — Table Formatter and Node Editor
+# Table IDE — Table Formatter and Node Editor
 
 **Browser-native table editor for engineers, developers, and data analysts.**  
 Parse, reshape, and export structured table data, PDF tables, scraped HTML, legacy exports, and more without installing anything.  
@@ -22,14 +22,14 @@ Part of the [Ginexys](https://ginexys.com) engineering pipeline.
 
 ---
 
-![TAFNE Table Formatter demo](./tafne-demo.gif)
-Try it now -> [TAFNE](https://ginexys.com/tools/table-formatter/index.html)
+![Table IDE Table Formatter demo](./table-ide-demo.gif)
+Try it now -> [Table IDE](https://ginexys.com/tools/table-formatter/index.html)
 ## What it does
 
 You got a table from a PDF scrape, a legacy export, 
 or a broken copy-paste. It's mangled.
 
-TAFNE parses it into a live visual editor. Reshape it 
+Table IDE parses it into a live visual editor. Reshape it 
 visually — drag columns, merge cells, split text, transpose. 
 Then generate clean code into a Monaco editor instance where 
 you can refine it directly before copying. HTML, Markdown, 
@@ -41,7 +41,7 @@ JSON, CSV, or SQL INSERT statements.
 
 **[→ Open the tool](https://ginexys.com/tools/table-formatter/index.html)** · **[→ Getting Started](https://ginexys.com/table-formatter/docs/getting-started.html)**
 
-Detailed guides are available to help you get the most out of TAFNE:
+Detailed guides are available to help you get the most out of Table IDE:
 
 *   **[Getting Started](docs/getting-started.md)**: A user-centric guide to importing data, basic editing, and the interface.
 *   **[Operation Modes](docs/modes.md)**: Explore the visual grid, Draw Mode, and the Node Editor pipeline.
@@ -132,12 +132,12 @@ Full walkthrough: **[Getting Started →](https://ginexys.com/table-formatter/do
 
 ## Part of the Ginexys pipeline
 
-TAFNE is the **Transform** step of the Ginexys engineering document pipeline:
+Table IDE is the **Transform** step of the Ginexys engineering document pipeline:
 
 ```
 Extract (PDF/image → structured data)  ←  AI layer · in development
     ↓
-Transform (reshape, edit, clean)        ←  TAFNE · live now
+Transform (reshape, edit, clean)        ←  Table IDE · live now
     ↓
 Engineer (schematic / topology editor)  ←  in development
 ```
@@ -161,8 +161,8 @@ Deliberately framework-free. The core engine ships as a single file, self-hostab
 ## Self-hosting
 
 ```bash
-git clone https://github.com/carnworkstudios/TAFNE
-cd TAFNE
+git clone https://github.com/carnworkstudios/table-ide
+cd Table IDE
 # Open index.html in any browser. No server required.
 ```
 
@@ -171,7 +171,7 @@ cd TAFNE
 ## Open source
 
 MIT licensed. Core engine is free forever.  
-The AI extraction layer (PDF → structured data → TAFNE) is the commercial product.  
+The AI extraction layer (PDF → structured data → Table IDE) is the commercial product.  
 [Sponsor on GitHub](https://github.com/carnworkstudios) to support development.
 
 ---
@@ -179,8 +179,8 @@ The AI extraction layer (PDF → structured data → TAFNE) is the commercial pr
 ## Contributing
 
 Good first issues are labeled **`good first issue`** in the issues tab.  
-Suggestions, bug reports, and feature requests welcome via [GitHub Issues](https://github.com/canworkstudios/TAFNE/issues).  
-Design discussions in [GitHub Discussions](https://github.com/canworkstudios/TAFNE/discussions).
+Suggestions, bug reports, and feature requests welcome via [GitHub Issues](https://github.com/canworkstudios/Table IDE/issues).  
+Design discussions in [GitHub Discussions](https://github.com/canworkstudios/Table IDE/discussions).
 
 ---
 

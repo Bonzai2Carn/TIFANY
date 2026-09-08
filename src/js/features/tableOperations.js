@@ -3,7 +3,7 @@
 // ====================================== ADD & DELETE FUNCTIONALITY ================================================
 
 // Global clipboard for copy/paste
-window.tafneClipboard = null;
+window.tableIdeClipboard = null;
 
 // Capture a selection as a visual matrix, not as a DOM-order list.  A cell is
 // stored once at its origin together with its relative position and span, so a
@@ -84,7 +84,7 @@ function _growTableForMatrix(anchor, matrix) {
 }
 
 function _pasteMatrixAt(target) {
-    const matrix = window.tafneClipboard;
+    const matrix = window.tableIdeClipboard;
     if (!matrix || matrix.version !== 2) return false;
     let mapper = new window.VisualGridMapper(window.currentTable);
     let anchor = mapper.getVisualPosition(target);
@@ -188,14 +188,14 @@ function copySelected() {
         $.toast({ heading: 'Info', text: 'Please select a cell.', icon: 'warning', loader: false, stack: false });
         return;
     }
-    window.tafneClipboard = _serializeSelectedMatrix();
-    if (!window.tafneClipboard) return;
+    window.tableIdeClipboard = _serializeSelectedMatrix();
+    if (!window.tableIdeClipboard) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(_matrixAsTsv(window.tafneClipboard)).catch(function () {});
+        navigator.clipboard.writeText(_matrixAsTsv(window.tableIdeClipboard)).catch(function () {});
     }
     $.toast({
         heading: 'Copied',
-        text: window.tafneClipboard.rows + ' × ' + window.tafneClipboard.cols + ' matrix copied',
+        text: window.tableIdeClipboard.rows + ' × ' + window.tableIdeClipboard.cols + ' matrix copied',
         icon: 'info',
         loader: false,
         stack: false
@@ -203,9 +203,9 @@ function copySelected() {
 }
 
 function pasteBefore() {
-    if (window.selectedCells.length === 0 || !window.tafneClipboard) return;
+    if (window.selectedCells.length === 0 || !window.tableIdeClipboard) return;
 
-    if (window.tafneClipboard.version === 2) {
+    if (window.tableIdeClipboard.version === 2) {
         if (_pasteMatrixAt(window.selectedCells[0])) $.toast({ heading: 'Pasted', text: 'Matrix pasted at the active cell', icon: 'success', loader: false, stack: false });
         return;
     }
@@ -213,8 +213,8 @@ function pasteBefore() {
     // Reverse-iterate the clipboard when inserting before so the first copied
     // cell ends up directly before the target (each insert shifts subsequent ones right).
     window.selectedCells.forEach(target => {
-        for (let i = window.tafneClipboard.length - 1; i >= 0; i--) {
-            $(target).before(window.tafneClipboard[i]);
+        for (let i = window.tableIdeClipboard.length - 1; i >= 0; i--) {
+            $(target).before(window.tableIdeClipboard[i]);
         }
     });
 
@@ -230,9 +230,9 @@ function pasteBefore() {
 }
 
 function pasteAfter() {
-    if (window.selectedCells.length === 0 || !window.tafneClipboard) return;
+    if (window.selectedCells.length === 0 || !window.tableIdeClipboard) return;
 
-    if (window.tafneClipboard.version === 2) {
+    if (window.tableIdeClipboard.version === 2) {
         if (_pasteMatrixAt(window.selectedCells[0])) $.toast({ heading: 'Pasted', text: 'Matrix pasted at the active cell', icon: 'success', loader: false, stack: false });
         return;
     }
@@ -241,8 +241,8 @@ function pasteAfter() {
     // so items appear in the same order as they were copied.
     window.selectedCells.forEach(target => {
         let insertAfter = $(target);
-        for (let i = 0; i < window.tafneClipboard.length; i++) {
-            const $newCell = $(window.tafneClipboard[i]);
+        for (let i = 0; i < window.tableIdeClipboard.length; i++) {
+            const $newCell = $(window.tableIdeClipboard[i]);
             insertAfter.after($newCell);
             insertAfter = $newCell; // advance anchor so next cell goes after this one
         }
@@ -359,7 +359,7 @@ function deleteRows() {
     });
 
     // Disconnect ruler observer before mutating so it doesn't race with renderTableRulers
-    if (table && table._tafneStructObs) table._tafneStructObs.disconnect();
+    if (table && table._tableIdeStructObs) table._tableIdeStructObs.disconnect();
 
     // Remove each row
     rows.forEach(row => {
@@ -409,7 +409,7 @@ function deleteColumns() {
     const colsArray = Array.from(columns).sort((a, b) => b - a);
 
     // Disconnect ruler observer before mutating so it doesn't race with renderTableRulers
-    if (table._tafneStructObs) table._tafneStructObs.disconnect();
+    if (table._tableIdeStructObs) table._tableIdeStructObs.disconnect();
 
     // Use getCellsInColumn to get the real DOM elements — safe with colspan/rowspan
     colsArray.forEach(colIndex => {
@@ -763,10 +763,10 @@ function openMultiCellEdit() {
 
 function applyMultiCellEdit() {
     const state = window._multiCellEditState;
-    if (!state || !window.tifanyMonacoMultiCell) return;
+    if (!state || !window.tableIdeMonacoMultiCell) return;
 
     const { posMap, minRow, maxRow, minCol, maxCol } = state;
-    const raw   = window.tifanyMonacoMultiCell.getValue();
+    const raw   = window.tableIdeMonacoMultiCell.getValue();
     const lines = raw.split('\n');
 
     window.saveCurrentState();

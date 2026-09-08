@@ -19,7 +19,7 @@ function generateTabs(tableHtml) {
     let blocksHtml = '';
 
     $tables.each(function (i) {
-        $(this).attr('data-tifany-id', `t-${i}`);
+        $(this).attr('data-table-ide-id', `t-${i}`);
 
         let spHtml = '<div class="sp-selector">\n';
         for (let j = 1; j <= buttonIndex; j++) {
@@ -90,8 +90,8 @@ function generateCode() {
             output = exportAsAscii($tables);
         }
 
-        if (window.tifanyMonaco) {
-            window.tifanyMonaco.setValue(output);
+        if (window.tableIdeMonaco) {
+            window.tableIdeMonaco.setValue(output);
         } else {
             $('#tableOutput').val(output);
         }
@@ -110,7 +110,7 @@ function exportAsHtml() {
     const $clone = $('#tableContainer').clone();
 
     // Strip ruler wrappers — replace each with just its table
-    $clone.find('.tafne-ruler-wrap').each(function () {
+    $clone.find('.table-ide-ruler-wrap').each(function () {
         $(this).replaceWith($(this).find('table').first());
     });
 
@@ -280,8 +280,8 @@ function exportAsAscii($tables) {
 }
 
 function copyInput() {
-        const formatBoard = window.tifanyMonaco
-            ? window.tifanyMonaco.getValue()
+        const formatBoard = window.tableIdeMonaco
+            ? window.tableIdeMonaco.getValue()
             : $('#tableOutput').val();
         if (!formatBoard || formatBoard.trim() === '') {
             // More descriptive error message

@@ -1,4 +1,4 @@
-// js/core/tifany.js
+// js/core/tableIde.js
 
 $(function () {
     // =================== GLOBAL VARIABLES ===================

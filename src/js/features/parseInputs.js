@@ -21,8 +21,8 @@ function _padDelimitedRows(rows) {
 
 function parseInput() {
     const inputType = $('#inputType').val();
-    const inputData = (window.tifanyMonacoInput
-        ? window.tifanyMonacoInput.getValue()
+    const inputData = (window.tableIdeMonacoInput
+        ? window.tableIdeMonacoInput.getValue()
         : $('#tableInput').val()
     ).trim();
 

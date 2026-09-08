@@ -32,7 +32,7 @@ function enableNodeEditor() {
     // Swap views — collapse side panels so node editor gets full width
     $('.table-wrapper').hide();
     $('#sheetTabBar').hide();
-    $('.tifany-left-panel, .tifany-right-panel').hide();
+    $('.table-ide-left-panel, .table-ide-right-panel').hide();
     $('#nodeEditorCanvas').css('display', 'flex');
     document.body.classList.add('node-editor-active');
 
@@ -98,7 +98,7 @@ function disableNodeEditor() {
     $('#nodeEditorCanvas').hide();
     $('.table-wrapper').show();
     $('#sheetTabBar').show();
-    $('.tifany-left-panel, .tifany-right-panel').show();
+    $('.table-ide-left-panel, .table-ide-right-panel').show();
     document.body.classList.remove('node-editor-active');
 
     $.toast({ heading: 'Node Editor', text: 'Returned to table view', icon: 'info', loader: false, stack: false });
@@ -137,8 +137,8 @@ function _loadSheetsAsNodes() {
         const $temp  = $('<div>').html(cleanHtml);
         const $tables = $temp.find('table');
         $tables.each(function (tableIndex) {
-            const tableId = this.getAttribute('data-tafne-table-id') || ('table-' + crypto.randomUUID().slice(0, 8));
-            this.setAttribute('data-tafne-table-id', tableId);
+            const tableId = this.getAttribute('data-table-ide-table-id') || ('table-' + crypto.randomUUID().slice(0, 8));
+            this.setAttribute('data-table-ide-table-id', tableId);
             const headers = _headersFromTable($(this));
             const x = 50 + (idx % COLS) * 340;
             const y = 50 + Math.floor(idx / COLS) * 320;
@@ -221,7 +221,7 @@ function _syncNodesToSheets() {
         const source = sheet.id === window.activeSheetId ? $('#tableContainer').html() : (sheet.rawHtml || sheet.containerHtml || '');
         const $host = $('<div>').html(source);
         nodes.sort((a, b) => (a.sourceTableIndex || 0) - (b.sourceTableIndex || 0)).forEach(node => {
-            let html = `<table class="tablecoil crosshair-table" data-tafne-table-id="${_esc(node.sourceTableId || '')}"><thead><tr>`;
+            let html = `<table class="tablecoil crosshair-table" data-table-ide-table-id="${_esc(node.sourceTableId || '')}"><thead><tr>`;
         node.headers.forEach(h => { html += `<th>${_esc(h.label)}</th>`; });
         html += '</tr></thead><tbody>';
 
@@ -234,7 +234,7 @@ function _syncNodesToSheets() {
         }
         html += '</tbody></table>';
 
-            let $target = node.sourceTableId ? $host.find(`table[data-tafne-table-id="${node.sourceTableId}"]`).first() : $();
+            let $target = node.sourceTableId ? $host.find(`table[data-table-ide-table-id="${node.sourceTableId}"]`).first() : $();
             if (!$target.length) $target = $host.find('table').eq(node.sourceTableIndex || 0);
             if ($target.length) $target.replaceWith(html); else $host.append(html);
         });
@@ -517,8 +517,8 @@ function addCurrentSheetAsNode() {
 
     let added = 0;
     $tables.each(function (tableIndex) {
-        const tableId = this.getAttribute('data-tafne-table-id') || ('table-' + crypto.randomUUID().slice(0, 8));
-        this.setAttribute('data-tafne-table-id', tableId);
+        const tableId = this.getAttribute('data-table-ide-table-id') || ('table-' + crypto.randomUUID().slice(0, 8));
+        this.setAttribute('data-table-ide-table-id', tableId);
         if (Object.values(window.NodeGraph.nodes).some(n => n.sourceSheetId === window.activeSheetId && (n.sourceTableId === tableId || (!n.sourceTableId && n.sourceTableIndex === tableIndex)))) return;
         const count = Object.keys(window.NodeGraph.nodes).length;
         const nodeId = window.nodeGraphManager.addNode(`${sheet.name} · Table ${tableIndex + 1}`, 50 + (count % 3) * 340, 50 + Math.floor(count / 3) * 320, _headersFromTable($(this)));
@@ -613,7 +613,7 @@ window.addEventListener('cws-theme-change', function () {
 });
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Init (wires up toolbar buttons — called from tifany.js)
+// Init (wires up toolbar buttons — called from tableIde.js)
 // ──────────────────────────────────────────────────────────────────────────────
 
 function initNodeEditor() {

@@ -689,7 +689,7 @@ tr.accordion-header.actives .acc-chevron {
 
 /* ── Table Ruler ─────────────────────────────────────────────────────────── */
 
-.tafne-ruler-wrap {
+.table-ide-ruler-wrap {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -699,7 +699,7 @@ tr.accordion-header.actives .acc-chevron {
 }
 
 /* Top row: corner + column-ruler viewport */
-.tafne-ruler-header {
+.table-ide-ruler-header {
     display: flex;
     flex-direction: row;
     position: sticky;
@@ -709,7 +709,7 @@ tr.accordion-header.actives .acc-chevron {
 }
 
 /* Corner cap (top-left intersection) — click toggles insert / duplicate mode */
-.tafne-corner {
+.table-ide-corner {
     width: 28px;
     height: 22px;
     flex-shrink: 0;
@@ -727,20 +727,20 @@ tr.accordion-header.actives .acc-chevron {
     user-select: none;
 }
 /* Crosshair-ish glyph: the corner selects the whole table and drags it. */
-.tafne-corner::after {
+.table-ide-corner::after {
     content: '\25F1';
     font-size: 11px;
 }
 
 /* Viewport that clips the col ruler — scrollLeft sync'd by JS */
-.tafne-col-ruler-vp {
+.table-ide-col-ruler-vp {
     overflow: hidden;
     flex: 1;
     border-bottom: 1px solid var(--t-border);
 }
 
 /* Column numbers strip (actual width = sum of col widths) */
-.tafne-col-ruler {
+.table-ide-col-ruler {
     display: flex;
     flex-direction: row;
     background: var(--t-bg-surface);
@@ -749,9 +749,9 @@ tr.accordion-header.actives .acc-chevron {
 
 /* Middle row: row numbers + table viewport.
    The row-ruler viewport's height is set in JS from the table viewport's, the
-   way .tafne-col-ruler-vp's `flex: 1` gets its width from the same row — see
+   way .table-ide-col-ruler-vp's `flex: 1` gets its width from the same row — see
    _syncRulerSegments for why `stretch` cannot do that job here. */
-.tafne-ruler-body {
+.table-ide-ruler-body {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -759,10 +759,10 @@ tr.accordion-header.actives .acc-chevron {
 }
 
 /* Viewport that clips the row ruler — scrollTop sync'd by JS.
-   The mirror of .tafne-col-ruler-vp. Without it the strip could not scroll,
+   The mirror of .table-ide-col-ruler-vp. Without it the strip could not scroll,
    so the moment the sheet scrolled vertically every row number pointed at a
    row several rows above the one it named. */
-.tafne-row-ruler-vp {
+.table-ide-row-ruler-vp {
     overflow: hidden;
     flex-shrink: 0;
     width: 28px;
@@ -771,7 +771,7 @@ tr.accordion-header.actives .acc-chevron {
 }
 
 /* Row numbers strip (actual height = sum of row heights) */
-.tafne-row-ruler {
+.table-ide-row-ruler {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -779,15 +779,15 @@ tr.accordion-header.actives .acc-chevron {
     overflow: visible;
 }
 
-.tafne-row-ruler .ruler-seg {
+.table-ide-row-ruler .ruler-seg {
     overflow: visible; /* pill hangs outside segment bounds */
 }
 
 /* A frozen header row keeps its box pinned to the top of the viewport, so the
    segment that names it has to be pinned too — otherwise the one row that
    never moves is the one whose number scrolls away. Mirrors the `top: 0` on
-   .tafne-ruler-wrap .tablecoil thead th. */
-.tafne-row-ruler .ruler-seg.ruler-seg-frozen {
+   .table-ide-ruler-wrap .tablecoil thead th. */
+.table-ide-row-ruler .ruler-seg.ruler-seg-frozen {
     position: sticky;
     top: 0;
     z-index: 2;
@@ -795,13 +795,13 @@ tr.accordion-header.actives .acc-chevron {
 }
 
 /* Table's own horizontal scroll container */
-.tafne-table-vp {
+.table-ide-table-vp {
     overflow-x: auto;
     flex: 1;
 }
 
 /* Shared segment styles — sizes set by JS via _syncRulerSegments */
-.tafne-col-ruler .ruler-seg {
+.table-ide-col-ruler .ruler-seg {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -820,7 +820,7 @@ tr.accordion-header.actives .acc-chevron {
     transition: background 0.1s, color 0.1s;
 }
 
-.tafne-row-ruler .ruler-seg {
+.table-ide-row-ruler .ruler-seg {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -890,14 +890,14 @@ body.tf-resizing-row, body.tf-resizing-row * { cursor: row-resize !important; }
 
 /* A sized grid says so: the corner marks that widths are pinned, and
    double-clicking it releases them. */
-.tafne-ruler-wrap:has(> .tafne-ruler-body table[data-tf-sized]) .tafne-corner {
+.table-ide-ruler-wrap:has(> .table-ide-ruler-body table[data-tf-sized]) .table-ide-corner {
     color: var(--t-primary);
     border-bottom-color: var(--t-primary);
 }
 
 /* Hover */
-.tafne-col-ruler .ruler-seg:hover,
-.tafne-row-ruler .ruler-seg:hover {
+.table-ide-col-ruler .ruler-seg:hover,
+.table-ide-row-ruler .ruler-seg:hover {
     background: var(--t-active-bg);
     color: var(--t-primary);
 }
@@ -917,8 +917,8 @@ body.tf-resizing-row, body.tf-resizing-row * { cursor: row-resize !important; }
 }
 
 /* Drop indicators — show insertion line via pseudo-element */
-.tafne-row-ruler .ruler-seg.ruler-drop-before::before,
-.tafne-row-ruler .ruler-seg.ruler-drop-after::after {
+.table-ide-row-ruler .ruler-seg.ruler-drop-before::before,
+.table-ide-row-ruler .ruler-seg.ruler-drop-after::after {
     content: '';
     position: absolute;
     left: 0;
@@ -927,11 +927,11 @@ body.tf-resizing-row, body.tf-resizing-row * { cursor: row-resize !important; }
     background: var(--t-primary);
     z-index: 2;
 }
-.tafne-row-ruler .ruler-seg.ruler-drop-before::before { top: -2px; }
-.tafne-row-ruler .ruler-seg.ruler-drop-after::after   { bottom: -2px; }
+.table-ide-row-ruler .ruler-seg.ruler-drop-before::before { top: -2px; }
+.table-ide-row-ruler .ruler-seg.ruler-drop-after::after   { bottom: -2px; }
 
-.tafne-col-ruler .ruler-seg.ruler-drop-before::before,
-.tafne-col-ruler .ruler-seg.ruler-drop-after::after {
+.table-ide-col-ruler .ruler-seg.ruler-drop-before::before,
+.table-ide-col-ruler .ruler-seg.ruler-drop-after::after {
     content: '';
     position: absolute;
     top: 0;
@@ -940,8 +940,8 @@ body.tf-resizing-row, body.tf-resizing-row * { cursor: row-resize !important; }
     background: var(--t-primary);
     z-index: 2;
 }
-.tafne-col-ruler .ruler-seg.ruler-drop-before::before { left: -2px; }
-.tafne-col-ruler .ruler-seg.ruler-drop-after::after   { right: -2px; }
+.table-ide-col-ruler .ruler-seg.ruler-drop-before::before { left: -2px; }
+.table-ide-col-ruler .ruler-seg.ruler-drop-after::after   { right: -2px; }
 
 /* ── Header caret + row/column action menu ───────────────────────────────── */
 
@@ -988,21 +988,21 @@ body.tf-resizing-row, body.tf-resizing-row * { cursor: row-resize !important; }
 
 /* Row caret: bottom-centre, inside the segment so it never fights the resize
    grip that owns the boundary itself. */
-.tafne-row-ruler .ruler-seg .ruler-menu-caret {
+.table-ide-row-ruler .ruler-seg .ruler-menu-caret {
     bottom: 3px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 /* Col caret: right-centre, inside the segment — same reason. */
-.tafne-col-ruler .ruler-seg .ruler-menu-caret {
+.table-ide-col-ruler .ruler-seg .ruler-menu-caret {
     right: 3px;
     top: 50%;
     transform: translateY(-50%);
 }
 
 /* The menu itself — body-level and fixed, positioned by JS. */
-.tafne-hdr-menu {
+.table-ide-hdr-menu {
     position: fixed;
     z-index: 10050;
     min-width: 178px;
@@ -1014,7 +1014,7 @@ body.tf-resizing-row, body.tf-resizing-row * { cursor: row-resize !important; }
     font-size: 12px;
 }
 
-.tafne-hdr-menu-item {
+.table-ide-hdr-menu-item {
     display: block;
     width: 100%;
     padding: 5px 10px;
@@ -1028,22 +1028,22 @@ body.tf-resizing-row, body.tf-resizing-row * { cursor: row-resize !important; }
     white-space: nowrap;
 }
 
-.tafne-hdr-menu-item:hover {
+.table-ide-hdr-menu-item:hover {
     background: var(--t-primary, #2f6fed);
     color: #fff;
 }
 
-.tafne-hdr-menu-item.is-danger { color: var(--t-danger, #d33); }
-.tafne-hdr-menu-item.is-danger:hover { background: var(--t-danger, #d33); color: #fff; }
+.table-ide-hdr-menu-item.is-danger { color: var(--t-danger, #d33); }
+.table-ide-hdr-menu-item.is-danger:hover { background: var(--t-danger, #d33); color: #fff; }
 
-.tafne-hdr-menu-sep {
+.table-ide-hdr-menu-sep {
     height: 1px;
     margin: 4px 6px;
     background: var(--t-border, #e2e2e2);
 }
 
 /* Corner reads as a control: it selects the whole table, and drags it. */
-.tafne-corner:hover {
+.table-ide-corner:hover {
     background: var(--t-primary, #2f6fed);
     color: #fff;
 }
@@ -1217,10 +1217,10 @@ body.tf-no-select { user-select: none; -webkit-user-select: none; }
    11px type, crisp 1px borders on every side, tight padding, sticky header.
    That is what makes it read as a sheet rather than as a rounded content card.
 
-   Scoped to .tafne-ruler-wrap on purpose: .tablecoil is also the class the
+   Scoped to .table-ide-ruler-wrap on purpose: .tablecoil is also the class the
    document exporters emit, and an exported table should keep its document
    styling. This is how the table looks while you are EDITING it. */
-.tafne-ruler-wrap .tablecoil {
+.table-ide-ruler-wrap .tablecoil {
     width: auto;
     min-width: 100%;
     border-collapse: collapse;
@@ -1235,12 +1235,12 @@ body.tf-no-select { user-select: none; -webkit-user-select: none; }
 
 /* A sized grid is exactly as wide as its columns say and no wider, so a narrow
    sheet stops stretching to fill the pane. */
-.tafne-ruler-wrap .tablecoil[data-tf-sized] {
+.table-ide-ruler-wrap .tablecoil[data-tf-sized] {
     min-width: 0;
 }
 
-.tafne-ruler-wrap .tablecoil th,
-.tafne-ruler-wrap .tablecoil td {
+.table-ide-ruler-wrap .tablecoil th,
+.table-ide-ruler-wrap .tablecoil td {
     border: 1px solid var(--t-border);
     padding: 3px 8px;
     text-align: left;
@@ -1252,15 +1252,15 @@ body.tf-no-select { user-select: none; -webkit-user-select: none; }
 
 /* A pinned column has a width to honour, so its content must wrap or clip
    instead of forcing the column back open. */
-.tafne-ruler-wrap .tablecoil[data-tf-sized] th,
-.tafne-ruler-wrap .tablecoil[data-tf-sized] td {
+.table-ide-ruler-wrap .tablecoil[data-tf-sized] th,
+.table-ide-ruler-wrap .tablecoil[data-tf-sized] td {
     overflow: hidden;
     text-overflow: ellipsis;
     word-break: break-word;
 }
 
 /* Frozen header row — it stays put while the body scrolls under it. */
-.tafne-ruler-wrap .tablecoil thead th {
+.table-ide-ruler-wrap .tablecoil thead th {
     position: sticky;
     top: 0;
     z-index: 2;
@@ -1274,47 +1274,47 @@ body.tf-no-select { user-select: none; -webkit-user-select: none; }
     cursor: default;
 }
 
-.tafne-ruler-wrap .tablecoil thead th:hover {
+.table-ide-ruler-wrap .tablecoil thead th:hover {
     background: var(--t-hover-bg);
     color: var(--t-text);
 }
 
 /* No row-hover wash on a sheet: hovering a row in Numbers or Sheets does not
    repaint it, and a wash here fights the selection tint for the same pixels. */
-.tafne-ruler-wrap .tablecoil tbody tr:hover td { background: var(--t-bg-surface); }
-.tafne-ruler-wrap .tablecoil td:hover { background: var(--t-bg-surface); font-weight: inherit; }
-.tafne-ruler-wrap .tablecoil tbody tr:hover td.selected-cell,
-.tafne-ruler-wrap .tablecoil td.selected-cell:hover { background: var(--t-active-bg); }
-.tafne-ruler-wrap .tablecoil tbody tr:hover td.selected-cell.tf-active-cell,
-.tafne-ruler-wrap .tablecoil td.selected-cell.tf-active-cell:hover { background: var(--t-bg-surface); }
+.table-ide-ruler-wrap .tablecoil tbody tr:hover td { background: var(--t-bg-surface); }
+.table-ide-ruler-wrap .tablecoil td:hover { background: var(--t-bg-surface); font-weight: inherit; }
+.table-ide-ruler-wrap .tablecoil tbody tr:hover td.selected-cell,
+.table-ide-ruler-wrap .tablecoil td.selected-cell:hover { background: var(--t-active-bg); }
+.table-ide-ruler-wrap .tablecoil tbody tr:hover td.selected-cell.tf-active-cell,
+.table-ide-ruler-wrap .tablecoil td.selected-cell.tf-active-cell:hover { background: var(--t-bg-surface); }
 
 /* The rounded-corner rules above are decorative on a content card and wrong on
    a sheet: they clipped the first and last cell of every edge row. */
-.tafne-ruler-wrap .tablecoil tr:first-child > th:first-child,
-.tafne-ruler-wrap .tablecoil tr:first-child > th:last-child,
-.tafne-ruler-wrap .tablecoil tr:last-child > td:first-child,
-.tafne-ruler-wrap .tablecoil tr:last-child > td:last-child {
+.table-ide-ruler-wrap .tablecoil tr:first-child > th:first-child,
+.table-ide-ruler-wrap .tablecoil tr:first-child > th:last-child,
+.table-ide-ruler-wrap .tablecoil tr:last-child > td:first-child,
+.table-ide-ruler-wrap .tablecoil tr:last-child > td:last-child {
     border-radius: 0;
 }
 
 /* The last row keeps its bottom border here — a sheet is closed on all four
    sides; only the card version let the wrapper clip it. */
-.tafne-ruler-wrap .tablecoil tbody tr:last-child td {
+.table-ide-ruler-wrap .tablecoil tbody tr:last-child td {
     border-bottom: 1px solid var(--t-border);
 }
 
 /* A group header row spans the sheet, so it opts out of the per-cell borders. */
-.tafne-ruler-wrap .tablecoil tr.accordion-header > td {
+.table-ide-ruler-wrap .tablecoil tr.accordion-header > td {
     background: var(--t-bg-surface);
     vertical-align: middle;
 }
 
-.tafne-ruler-wrap .tablecoil tr.accordion-header.actives > td {
+.table-ide-ruler-wrap .tablecoil tr.accordion-header.actives > td {
     background: var(--t-active-bg);
 }
 
 /* The table viewport scrolls both ways now that the grid can exceed it. */
-.tafne-table-vp {
+.table-ide-table-vp {
     overflow: auto;
     /* max-height: 70vh; */
 }

@@ -1,6 +1,6 @@
 # Functions and Operations
 
-TIFANY provides a suite of tools for manipulating table structure and content. These operations can be accessed via the left panel, the right-click context menu, or keyboard shortcuts.
+TABLE_IDE provides a suite of tools for manipulating table structure and content. These operations can be accessed via the left panel, the right-click context menu, or keyboard shortcuts.
 
 ---
 
@@ -25,7 +25,7 @@ These functions allow you to add or remove elements from your table.
 ### Merge Cells
 Combines multiple selected cells into a single larger cell.
 *   **Requirement**: You must select at least two adjacent cells.
-*   **Behavior**: TIFANY merges the cells and calculates the resulting `colspan` or `rowspan` automatically. Content from the merged cells is combined into the primary (top-left) cell.
+*   **Behavior**: TABLE_IDE merges the cells and calculates the resulting `colspan` or `rowspan` automatically. Content from the merged cells is combined into the primary (top-left) cell.
 *   **Keyboard Shortcut**: `Alt + Shift + W`.
 
 ### Transpose Table
@@ -64,7 +64,7 @@ Enable **Drag & Drop** to visually reorder your table.
 
 ## 4. Export Formats
 
-TIFANY can generate code in several formats based on your active sheet:
+TABLE_IDE can generate code in several formats based on your active sheet:
 
 | Format | Description |
 | :--- | :--- |

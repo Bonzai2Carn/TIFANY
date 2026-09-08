@@ -1,8 +1,8 @@
-# Getting Started with TAFNE - Table Formatter and Node Editor
+# Getting Started with Table IDE - Table Formatter and Node Editor
 
-<img src="../tafne-demo.gif" alt="TAFNE demo" style="width:100%">
+<img src="../table-ide-demo.gif" alt="Table IDE demo" style="width:100%">
 
-TAFNE (Table Formatter and Node Editor) is a comprehensive tool designed for parsing, editing, and formatting HTML tables. Whether you are converting raw data into a structured grid or performing complex data transformations, TAFNE provides a visual interface to streamline the process.
+Table IDE (Table Formatter and Node Editor) is a comprehensive tool designed for parsing, editing, and formatting HTML tables. Whether you are converting raw data into a structured grid or performing complex data transformations, Table IDE provides a visual interface to streamline the process.
 
 ## core Workflow
 
@@ -15,7 +15,7 @@ TAFNE (Table Formatter and Node Editor) is a comprehensive tool designed for par
 
 ## 1. Importing Data
 
-TIFANY supports multiple input formats:
+TABLE_IDE supports multiple input formats:
 
 *   **File Upload**: Select the **Load File** icon in the sidebar to import `.csv`, `.tsv`, `.txt`, or `.html` files.
 *   **Text Input**: Select the **Import** icon to open a modal where you can paste HTML, ASCII, CSV, or plain text.

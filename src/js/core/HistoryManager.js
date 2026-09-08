@@ -7,8 +7,8 @@ export class HistoryManager {
         this._slots = { history: [], currentIndex: -1 };
         this._isRestoring = false;
         this._onChange = options.onChange || null;
-        this._id = table.getAttribute('data-tafne-id') || `table-${crypto.randomUUID()}`;
-        if (!table.getAttribute('data-tafne-id')) table.setAttribute('data-tafne-id', this._id);
+        this._id = table.getAttribute('data-table-ide-id') || `table-${crypto.randomUUID()}`;
+        if (!table.getAttribute('data-table-ide-id')) table.setAttribute('data-table-ide-id', this._id);
     }
 
     save() {
@@ -66,7 +66,7 @@ export class HistoryManager {
         const html = slot.history[slot.currentIndex];
         if (this.table.parentNode) {
             this.table.outerHTML = html;
-            this.table = this.table.parentNode.querySelector(`table[data-tafne-id="${this._id}"]`);
+            this.table = this.table.parentNode.querySelector(`table[data-table-ide-id="${this._id}"]`);
         }
         this._isRestoring = false;
         this._notify();

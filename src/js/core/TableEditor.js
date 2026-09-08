@@ -325,31 +325,31 @@ export class TableEditor {
 
     _createRuler() {
         if (this._ruler) return;
-        const existingWrap = this.table.closest('.tafne-ruler-wrap');
+        const existingWrap = this.table.closest('.table-ide-ruler-wrap');
         if (existingWrap && existingWrap !== this._ruler) {
             existingWrap.parentNode?.insertBefore(this.table, existingWrap);
             existingWrap.remove();
         }
         const wrap = document.createElement('div');
-        wrap.className = 'tafne-ruler-wrap';
+        wrap.className = 'table-ide-ruler-wrap';
         this.table.parentNode?.insertBefore(wrap, this.table);
         wrap.appendChild(this.table);
 
         const headerRow = document.createElement('div');
-        headerRow.className = 'tafne-ruler-header';
+        headerRow.className = 'table-ide-ruler-header';
         const corner = document.createElement('div');
-        corner.className = 'tafne-corner';
+        corner.className = 'table-ide-corner';
         headerRow.appendChild(corner);
 
         const colRuler = document.createElement('div');
-        colRuler.className = 'tafne-col-ruler';
+        colRuler.className = 'table-ide-col-ruler';
         headerRow.appendChild(colRuler);
         wrap.appendChild(headerRow);
 
         const bodyRow = document.createElement('div');
-        bodyRow.className = 'tafne-ruler-body';
+        bodyRow.className = 'table-ide-ruler-body';
         const rowRuler = document.createElement('div');
-        rowRuler.className = 'tafne-row-ruler';
+        rowRuler.className = 'table-ide-row-ruler';
         bodyRow.appendChild(rowRuler);
         bodyRow.appendChild(this.table);
         wrap.appendChild(bodyRow);
@@ -425,8 +425,8 @@ export class TableEditor {
         try {
             this.grid = new GridMapper(this.table);
 
-            const colRuler = this._ruler.querySelector('.tafne-col-ruler');
-            const rowRuler = this._ruler.querySelector('.tafne-row-ruler');
+            const colRuler = this._ruler.querySelector('.table-ide-col-ruler');
+            const rowRuler = this._ruler.querySelector('.table-ide-row-ruler');
 
             if (colRuler) {
                 const colSegs = colRuler.querySelectorAll('.ruler-seg');
@@ -490,8 +490,8 @@ export class TableEditor {
     _syncRuler() {
         if (!this._ruler) return;
         this.grid = new GridMapper(this.table);
-        const colRuler = this._ruler.querySelector('.tafne-col-ruler');
-        const rowRuler = this._ruler.querySelector('.tafne-row-ruler');
+        const colRuler = this._ruler.querySelector('.table-ide-col-ruler');
+        const rowRuler = this._ruler.querySelector('.table-ide-row-ruler');
         if (colRuler) this._buildColRuler(colRuler);
         if (rowRuler) this._buildRowRuler(rowRuler);
         requestAnimationFrame(() => this._syncRulerSegments());

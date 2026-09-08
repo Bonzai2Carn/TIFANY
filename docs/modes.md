@@ -1,12 +1,12 @@
 # Operation Modes
 
-TIFANY provides three distinct modes of operation to handle different data manipulation and structural requirements. Use the sidebar icons to switch between these modes.
+TABLE_IDE provides three distinct modes of operation to handle different data manipulation and structural requirements. Use the sidebar icons to switch between these modes.
 
 ---
 
 ## 1. Table Mode (Standard)
 
-The default mode for TIFANY. It provides a visual grid for direct manipulation of table data and structure.
+The default mode for TABLE_IDE. It provides a visual grid for direct manipulation of table data and structure.
 
 *   **Best For**: Direct editing, manual styling, merging cells, and quick structural adjustments.
 *   **Key Features**:

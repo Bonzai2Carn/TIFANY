@@ -24,7 +24,7 @@ function _getSlot(key) {
 function _currentKey() {
     const sheetId = window.activeSheetId ?? 'default';
     const tableId = window.currentTable
-        ? ($(window.currentTable).attr('data-tifany-id') ?? 'default')
+        ? ($(window.currentTable).attr('data-table-ide-id') ?? 'default')
         : 'default';
     return _slotKey(sheetId, tableId);
 }
@@ -95,20 +95,20 @@ function _restoreSlot(key, slot) {
 
     const tableHtml = slot.history[slot.currentIndex];
     const tableId = window.currentTable
-        ? $(window.currentTable).attr('data-tifany-id')
+        ? $(window.currentTable).attr('data-table-ide-id')
         : null;
 
     // Replace just the target table in-place. The ruler wrap is rebuilt by
     // setupTableInteraction — we only need to swap the <table> element.
     const $target = tableId
-        ? $(`#tableContainer table[data-tifany-id="${tableId}"]`)
+        ? $(`#tableContainer table[data-table-ide-id="${tableId}"]`)
         : $(`#tableContainer table`).first();
 
     if ($target.length) {
         $target.replaceWith(tableHtml);
         // Re-resolve currentTable after replacement
         window.currentTable = tableId
-            ? $(`#tableContainer table[data-tifany-id="${tableId}"]`)[0]
+            ? $(`#tableContainer table[data-table-ide-id="${tableId}"]`)[0]
             : $(`#tableContainer table`)[0];
     } else {
         // Fallback: table not found (deleted?), do nothing

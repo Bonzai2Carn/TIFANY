@@ -1,7 +1,7 @@
 // ===================================================================================
 // PIPELINE EMIT — the node graph as a `gx-pipeline/1` envelope
 // ===================================================================================
-// TAFNE's node editor holds the evidence for a schema, and until now none of it
+// Table IDE's node editor holds the evidence for a schema, and until now none of it
 // crossed a tool boundary. Sending the COMPUTED ROWS (a `gx-tables` envelope)
 // carries the result of a vlookup but not the `{keyPort, refNodeId, refKeyPort}`
 // that makes it a foreign key, and not the formula that makes a column derived.
@@ -142,7 +142,7 @@
             if (n.sourceSheetId) {
                 out.origin = {
                     tool: 'tifany',
-                    doc: opts.title || 'TAFNE',
+                    doc: opts.title || 'Table IDE',
                     sheetId: n.sourceSheetId,
                     nodeId: n.id,
                 };
@@ -152,7 +152,7 @@
 
         return {
             schema: SCHEMA,
-            meta: { source: 'tifany', title: opts.title || 'TAFNE pipeline' },
+            meta: { source: 'tifany', title: opts.title || 'Table IDE pipeline' },
             nodes: nodes,
             wires: wires,
             terminals: _terminals(nodes, wires),

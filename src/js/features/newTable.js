@@ -1,23 +1,23 @@
 // ====================================== CREATE NEW TABLE ============================================
 // Lets the user draw a new empty table onto the current sheet. A drag/hover grid picker (like the
 // "insert table" control in a word processor) sets the dimensions; the table is then appended to
-// #tableContainer as its own card with a fresh data-tifany-id, so a sheet can hold many tables.
+// #tableContainer as its own card with a fresh data-table-ide-id, so a sheet can hold many tables.
 (function () {
     const MAX_R = 12, MAX_C = 10;
     let $pop = null;
 
     // Next unused tifany index across all tables currently on the sheet.
-    function nextTifanyIndex() {
+    function nextTableIdeIndex() {
         let max = -1;
-        $('#tableContainer table[data-tifany-id]').each(function () {
-            const m = /^t-(\d+)$/.exec($(this).attr('data-tifany-id') || '');
+        $('#tableContainer table[data-table-ide-id]').each(function () {
+            const m = /^t-(\d+)$/.exec($(this).attr('data-table-ide-id') || '');
             if (m) max = Math.max(max, parseInt(m[1], 10));
         });
         return max + 1;
     }
 
     function buildTableHtml(rows, cols, tifIdx) {
-        let html = `<table class="tablecoil crosshair-table" data-tifany-id="t-${tifIdx}">`;
+        let html = `<table class="tablecoil crosshair-table" data-table-ide-id="t-${tifIdx}">`;
         html += '<thead><tr>';
         for (let c = 0; c < cols; c++) html += `<th>Column ${c + 1}</th>`;
         html += '</tr></thead><tbody>';
@@ -36,7 +36,7 @@
 
         if (typeof window.saveCurrentState === 'function') window.saveCurrentState();
 
-        const tifIdx = nextTifanyIndex();
+        const tifIdx = nextTableIdeIndex();
         const tableCount = $('#tableContainer .accordion').length + 1;
         const tableHtml = buildTableHtml(rows, cols, tifIdx);
 
@@ -50,7 +50,7 @@
 
         $('#tableContainer').append(clean);
 
-        const newTable = $('#tableContainer table[data-tifany-id="t-' + tifIdx + '"]')[0];
+        const newTable = $('#tableContainer table[data-table-ide-id="t-' + tifIdx + '"]')[0];
         window.currentTable = newTable;
 
         // .panel starts display:none (accordion collapsed). A freshly drawn table must be

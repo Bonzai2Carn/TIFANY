@@ -120,7 +120,7 @@
 </nav>
 <div class="gx-docs-wrap">
   <article class="gx-docs-content"><h1 id="functions-and-operations">Functions and Operations</h1>
-<p>TIFANY provides a suite of tools for manipulating table structure and content. These operations can be accessed via the left panel, the right-click context menu, or keyboard shortcuts.</p>
+<p>TABLE_IDE provides a suite of tools for manipulating table structure and content. These operations can be accessed via the left panel, the right-click context menu, or keyboard shortcuts.</p>
 <hr>
 <h2 id="1-structural-operations">1. Structural Operations</h2>
 <p>These functions allow you to add or remove elements from your table.</p>
@@ -137,7 +137,7 @@
 <h3 id="merge-cells">Merge Cells</h3>
 <p>Combines multiple selected cells into a single larger cell.</p>
 <ul><li><strong>Requirement</strong>: You must select at least two adjacent cells.</li>
-<li><strong>Behavior</strong>: TIFANY merges the cells and calculates the resulting <code>colspan</code> or <code>rowspan</code> automatically. Content from the merged cells is combined into the primary (top-left) cell.</li>
+<li><strong>Behavior</strong>: TABLE_IDE merges the cells and calculates the resulting <code>colspan</code> or <code>rowspan</code> automatically. Content from the merged cells is combined into the primary (top-left) cell.</li>
 <li><strong>Keyboard Shortcut</strong>: <code>Alt + Shift + W</code>.</li></ul>
 <h3 id="transpose-table">Transpose Table</h3>
 <p>Swaps the rows and columns of the entire table.</p>
@@ -166,7 +166,7 @@
 <li><strong>Keyboard Shortcuts</strong>: <code>Ctrl + Z</code> (Undo), <code>Ctrl + Y</code> or <code>Ctrl + Shift + Z</code> (Redo).</li></ul>
 <hr>
 <h2 id="4-export-formats">4. Export Formats</h2>
-<p>TIFANY can generate code in several formats based on your active sheet:</p>
+<p>TABLE_IDE can generate code in several formats based on your active sheet:</p>
 <div class="table-wrap"><table><thead><tr><th>Format</th><th>Description</th></tr></thead><tbody><tr><td><strong>HTML</strong></td><td>Clean, formatted HTML <code>&lt;table&gt;</code> code ready for web integration.</td></tr><tr><td><strong>JSON</strong></td><td>Hierarchical representation of the table data, mapped by headers.</td></tr><tr><td><strong>Markdown</strong></td><td>Standard GitHub-flavored markdown table syntax.</td></tr><tr><td><strong>CSV</strong></td><td>Comma-separated values, downloadable as a <code>.csv</code> file.</td></tr><tr><td><strong>SQL</strong></td><td><code>CREATE TABLE</code> and <code>INSERT</code> statements for database migration.</td></tr></tbody></table></div>
 <blockquote class="note important">Always select <strong>Generate</strong> in the right panel after making structural changes to ensure your exported code reflects the latest state of the table.</blockquote></article>
   <aside class="gx-docs-related">

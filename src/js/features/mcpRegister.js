@@ -1,7 +1,7 @@
 /* ============================================================
-   TAFNE — GxMCP verb registration
+   Table IDE — GxMCP verb registration
    ------------------------------------------------------------
-   Declares TAFNE's FULL verb surface so a copilot can do
+   Declares Table IDE's FULL verb surface so a copilot can do
    everything a user can: table-viewer ops (incl. new sheets,
    styling, class/id, collapsible columns), node-editor ops
    (add filter/vlookup/join/api/formula nodes, run, reset), and
@@ -10,7 +10,7 @@
    the tool's real surface).
 
    Collapsible columns are the accordion/sp-selector structure
-   (initAccordions / initSpSelectors in tifanyTabs.js), applied
+   (initAccordions / initSpSelectors in tableIdeTabs.js), applied
    via the style panel's applyClassId + a re-init.
 
    WHAT THIS FILE IS: a MANIFEST. It declares the verbs this tool
@@ -32,7 +32,7 @@
     'use strict';
     if (!window.GxMCP || typeof window.GxMCP.register !== 'function') return;
 
-    // ── Tool state helpers (all read/drive TAFNE's own public state) ─────────────
+    // ── Tool state helpers (all read/drive Table IDE's own public state) ─────────────
     function _table() { return window.currentTable || document.querySelector('#tableContainer table'); }
     function _rowsAsGrid(t) {
         t = t || _table();
@@ -69,7 +69,7 @@
         window.postMessage({ type: 'gx:ai-apply-ops', ops: ops }, window.location.origin);
         return { dispatched: ops.length };
     }
-    function _notBuilt(name) { throw new Error(name + ' is not yet implemented in TAFNE'); }
+    function _notBuilt(name) { throw new Error(name + ' is not yet implemented in Table IDE'); }
 
     // Resolve op.sheet (a name OR an id) to a sheet id and switch to it. Returns
     // true if a switch happened, false if none needed, throws if unresolved.
@@ -210,11 +210,11 @@
         return verbs;
     }
 
-    // ── apply(op) — calls TAFNE's own public functions ───────────────────────────
+    // ── apply(op) — calls Table IDE's own public functions ───────────────────────────
     /**
      * The deterministic report behind the Ginex rail's Verify and Analyze panes.
      *
-     * TAFNE's contribution to the pipeline is VALIDATE — "is this data
+     * Table IDE's contribution to the pipeline is VALIDATE — "is this data
      * trustworthy" — so the findings here are the ones that make a table
      * untrustworthy to compute on: ragged rows, duplicate or empty headers,
      * whole-empty columns, and cells that look numeric in a column that is
@@ -520,7 +520,7 @@
             default:
                 // ── VTA (auto-generated verbs) ────────────────────────────────────
                 if (name.indexOf('vta_') === 0) return _applyVtaOp(name, op);
-                throw new Error('unknown TAFNE verb: ' + name);
+                throw new Error('unknown Table IDE verb: ' + name);
         }
     }
 
@@ -571,6 +571,6 @@
     // ── Register ─────────────────────────────────────────────────────────────────
     var allVerbs = VERBS.concat(_buildVtaVerbs());
     window.GxMCP.register('tifany', { engine: 'table', verbs: allVerbs, apply: apply });
-    console.log('[TAFNE] GxMCP registered', allVerbs.length, 'verbs (' +
+    console.log('[Table IDE] GxMCP registered', allVerbs.length, 'verbs (' +
         (allVerbs.length - VERBS.length) + ' VTA auto-generated)');
 })();

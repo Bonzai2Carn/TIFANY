@@ -69,7 +69,7 @@
         // and neighbouring cards even though the cells themselves are hidden.
         const table = mapper.table || activeTable();
         const clips = [];
-        const tableVp = table && table.closest('.tafne-table-vp');
+        const tableVp = table && table.closest('.table-ide-table-vp');
         const canvasVp = table && table.closest('.tf-canvas-viewport');
         if (tableVp) clips.push(tableVp.getBoundingClientRect());
         if (canvasVp) clips.push(canvasVp.getBoundingClientRect());
@@ -579,7 +579,7 @@
     }
 
     // ── Reposition on scroll / resize ─────────────────────────────────────────
-    // Capture-phase scroll catches scrolling inside any container (e.g. .tafne-table-vp),
+    // Capture-phase scroll catches scrolling inside any container (e.g. .table-ide-table-vp),
     // not just the window.
     window.addEventListener('resize', function () { if (!gestureActive) updateSelectionHandles(); });
     document.addEventListener('scroll', function () { if (!gestureActive) updateSelectionHandles(); }, true);

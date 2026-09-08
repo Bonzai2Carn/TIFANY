@@ -9,7 +9,7 @@
     const SYSTEM_CLASSES = new Set([
         'selected-cell', 'tablecoil', 'crosshair-table', 'dragging', 'row-dragging',
         'column-dragging', 'drag-over', 'column-drop-target', 'col-drop-target',
-        'col-drop-target-left', 'col-drop-target-right', 'drag-handle', 'tifany-drag-row',
+        'col-drop-target-left', 'col-drop-target-right', 'drag-handle', 'table-ide-drag-row',
         'drop-indicator-row', 'highlight-row', 'highlight-col', 'cell-muted', 'active'
     ]);
 

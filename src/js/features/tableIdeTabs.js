@@ -41,7 +41,7 @@ function headerAccordion() {
     });
 
     // Left panel accordions: wire click once via delegation (idempotent)
-    $('body').off('click.leftAccordion').on('click.leftAccordion', '.tifany-left-panel .accordion', function () {
+    $('body').off('click.leftAccordion').on('click.leftAccordion', '.table-ide-left-panel .accordion', function () {
         $(this).toggleClass('active');
         $(this).next('.panel').slideToggle(200);
     });

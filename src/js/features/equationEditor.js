@@ -1,9 +1,9 @@
 // ===================================================================================
-// EQUATION EDITOR — LaTeX authoring + KaTeX rendering for TAFNE
+// EQUATION EDITOR — LaTeX authoring + KaTeX rendering for Table IDE
 // ===================================================================================
 //
 // WHAT THIS IS
-// TAFNE gained equations because the pipeline needed somewhere to put them: the
+// Table IDE gained equations because the pipeline needed somewhere to put them: the
 // PDF extractor reconstructs display math into LaTeX, and until now the only
 // thing the receiving end could do with an equation artifact was show a toast
 // saying it had arrived. This is the surface that makes the handoff mean
@@ -523,7 +523,7 @@ function renameEquation(id, name) {
 function insertEquationIntoCell(id) {
     var eq = getEquation(id || window.activeEquationId);
     if (!eq) return false;
-    // `.selected-cell` is the class TAFNE's own selection model sets (tifany.js);
+    // `.selected-cell` is the class Table IDE's own selection model sets (tableIde.js);
     // the last one in document order is the most recently clicked.
     var picked = document.querySelectorAll('#tableContainer td.selected-cell, #tableContainer th.selected-cell');
     var cell = picked.length ? picked[picked.length - 1] : null;
@@ -639,7 +639,7 @@ function enableEquationEditor() {
 
     $('.table-wrapper').hide();
     $('#sheetTabBar').hide();
-    $('.tifany-left-panel, .tifany-right-panel').hide();
+    $('.table-ide-left-panel, .table-ide-right-panel').hide();
     $('#equationCanvas').css('display', 'flex');
     document.body.classList.add('equation-editor-active');
 
@@ -670,7 +670,7 @@ function disableEquationEditor() {
     $('#equationCanvas').hide();
     $('.table-wrapper').show();
     $('#sheetTabBar').show();
-    $('.tifany-left-panel, .tifany-right-panel').show();
+    $('.table-ide-left-panel, .table-ide-right-panel').show();
     document.body.classList.remove('equation-editor-active');
 
     $.toast({ heading: 'Equation Editor', text: 'Returned to table view', icon: 'info', loader: false, stack: false });
@@ -1109,7 +1109,7 @@ function _watchTableContainer() {
     });
     observer.observe(host, { childList: true, subtree: true, characterData: true });
 
-    // Editing a cell must show the TeX, not a picture of it. TAFNE opens a cell
+    // Editing a cell must show the TeX, not a picture of it. Table IDE opens a cell
     // by reading its text into a textarea, and the text of a rendered
     // expression is KaTeX's glyph soup — so the render has to come off BEFORE
     // that handler runs. Capture phase guarantees the ordering without

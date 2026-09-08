@@ -22,10 +22,10 @@ window.tableRuler = (function () {
         // the frame away. Canvas pan/zoom emits continuously; cancelling on
         // every pointermove would make the overlay freeze until the gesture
         // ended.
-        if (table._tafneGeometryFrame) return;
-        table._tafneGeometryFrame = requestAnimationFrame(() => {
-            delete table._tafneGeometryFrame;
-            const wrap = $(table).closest('.tafne-ruler-wrap')[0];
+        if (table._tableIdeGeometryFrame) return;
+        table._tableIdeGeometryFrame = requestAnimationFrame(() => {
+            delete table._tableIdeGeometryFrame;
+            const wrap = $(table).closest('.table-ide-ruler-wrap')[0];
             if (wrap && table.offsetParent !== null) _syncRulerSegments(wrap, table);
             if (table === window.currentTable && typeof window.updateSelectionHandles === 'function') {
                 window.updateSelectionHandles();
@@ -51,11 +51,11 @@ window.tableRuler = (function () {
     // Col segments: width matches each visual column width (first non-spanning cell wins).
     function _syncRulerSegments(wrap, table) {
         const mapper   = new window.VisualGridMapper(table);
-        const $rowSegs = $(wrap).find('.tafne-row-ruler .ruler-seg');
-        const $colSegs = $(wrap).find('.tafne-col-ruler .ruler-seg');
+        const $rowSegs = $(wrap).find('.table-ide-row-ruler .ruler-seg');
+        const $colSegs = $(wrap).find('.table-ide-col-ruler .ruler-seg');
 
         // Row heights — read from live <tr> rects
-        const rows = Array.from(table.rows).filter(r => !r.classList.contains('tifany-drag-row') && !r.classList.contains('drop-indicator-row'));
+        const rows = Array.from(table.rows).filter(r => !r.classList.contains('table-ide-drag-row') && !r.classList.contains('drop-indicator-row'));
         // Rows with zero height are hidden (collapsed accordion children, sp-hidden) —
         // hide their ruler segment instead of leaving a mis-sized ghost.
         $rowSegs.each(function (i) {
@@ -115,8 +115,8 @@ window.tableRuler = (function () {
         // is as tall as the whole table, so under stretch the flex line would
         // size to THAT and the viewport would never clip. The measurement has
         // to come from the sibling.
-        const tableVp    = wrap.querySelector('.tafne-table-vp');
-        const rowRulerVp = wrap.querySelector('.tafne-row-ruler-vp');
+        const tableVp    = wrap.querySelector('.table-ide-table-vp');
+        const rowRulerVp = wrap.querySelector('.table-ide-row-ruler-vp');
         // A zero height means the card is collapsed or offscreen, not that the
         // strip should be one pixel tall — pinning it there would leave the
         // ruler blank when the panel reopens.
@@ -245,7 +245,7 @@ window.tableRuler = (function () {
 
     function _setRowHeight(table, rowIdx, px) {
         const rows = Array.from(table.rows).filter(r =>
-            !r.classList.contains('tifany-drag-row') && !r.classList.contains('drop-indicator-row'));
+            !r.classList.contains('table-ide-drag-row') && !r.classList.contains('drop-indicator-row'));
         const row = rows[rowIdx];
         if (row) row.style.height = Math.max(MIN_ROW_PX, Math.round(px)) + 'px';
     }
@@ -284,7 +284,7 @@ window.tableRuler = (function () {
         // Bound on the ruler containers, not on the wrap: the segment handlers
         // are delegated from those same containers and stop propagation, so a
         // wrap-level listener is never reached.
-        $wrap.find('.tafne-col-ruler-vp, .tafne-row-ruler').on('mousedown', '.ruler-grip', function (e) {
+        $wrap.find('.table-ide-col-ruler-vp, .table-ide-row-ruler').on('mousedown', '.ruler-grip', function (e) {
             e.preventDefault();
             e.stopPropagation();
             const $seg = $(this).closest('.ruler-seg');
@@ -303,7 +303,7 @@ window.tableRuler = (function () {
         });
 
         // Double-click a column boundary → fit the column to its content.
-        $wrap.find('.tafne-col-ruler-vp').on('dblclick', '.ruler-grip-col', function (e) {
+        $wrap.find('.table-ide-col-ruler-vp').on('dblclick', '.ruler-grip-col', function (e) {
             e.preventDefault();
             e.stopPropagation();
             const idx = parseInt($(this).closest('.ruler-seg').attr('data-col'), 10);
@@ -314,7 +314,7 @@ window.tableRuler = (function () {
         });
 
         // Double-click the corner → release every pin, back to content-fit.
-        $wrap.on('dblclick', '.tafne-corner', function (e) {
+        $wrap.on('dblclick', '.table-ide-corner', function (e) {
             e.preventDefault();
             e.stopPropagation();
             if (_isPinned(table)) releaseSizing(table);
@@ -386,11 +386,11 @@ window.tableRuler = (function () {
     // ── Move row by visual index (insertBefore = target position 0..N) ────────
     function _moveRowByIndex(table, fromIdx, insertBefore) {
         if (insertBefore === fromIdx || insertBefore === fromIdx + 1) return;
-        const $rows = $(table).find('tr').not('.tifany-drag-row').not('.drop-indicator-row');
+        const $rows = $(table).find('tr').not('.table-ide-drag-row').not('.drop-indicator-row');
         const $from = $rows.eq(fromIdx);
         if (!$from.length) return;
         if (typeof window.saveCurrentState === 'function') window.saveCurrentState();
-        if (table._tafneStructObs) table._tafneStructObs.disconnect();
+        if (table._tableIdeStructObs) table._tableIdeStructObs.disconnect();
         if (insertBefore <= 0) {
             $rows.first().before($from);
         } else if (insertBefore >= $rows.length) {
@@ -408,7 +408,7 @@ window.tableRuler = (function () {
         const moved   = new Set();
         const toIdx   = insertBefore > fromIdx ? insertBefore - 1 : insertBefore;
         if (typeof window.saveCurrentState === 'function') window.saveCurrentState();
-        if (table._tafneStructObs) table._tafneStructObs.disconnect();
+        if (table._tableIdeStructObs) table._tableIdeStructObs.disconnect();
 
         for (let r = 0; r < mapper.maxRows; r++) {
             const row = mapper.grid[r];
@@ -449,7 +449,7 @@ window.tableRuler = (function () {
     function _startRulerRowDrag($wrap, table, rowIdx, e) {
         e.preventDefault();
         e.stopPropagation();
-        const $segs = $wrap.find('.tafne-row-ruler .ruler-seg');
+        const $segs = $wrap.find('.table-ide-row-ruler .ruler-seg');
         const n     = $segs.length;
         let insertBefore = rowIdx;
 
@@ -483,7 +483,7 @@ window.tableRuler = (function () {
     function _startRulerColDrag($wrap, table, colIdx, e) {
         e.preventDefault();
         e.stopPropagation();
-        const $segs  = $wrap.find('.tafne-col-ruler .ruler-seg');
+        const $segs  = $wrap.find('.table-ide-col-ruler .ruler-seg');
         const n      = $segs.length;
         let insertBefore = colIdx;
 
@@ -568,7 +568,7 @@ window.tableRuler = (function () {
     ];
 
     function _closeHeaderMenu() {
-        $('#tafneHeaderMenu').remove();
+        $('#tableIdeHeaderMenu').remove();
         $('.ruler-menu-caret.is-open').removeClass('is-open');
         $(document).off('.tafnehdrmenu');
     }
@@ -580,7 +580,7 @@ window.tableRuler = (function () {
         (window.selectedCells || []).forEach(c => rows.add($(c).parent()[0]));
         if (!rows.size) return;
         if (typeof window.saveCurrentState === 'function') window.saveCurrentState();
-        if (table._tafneStructObs) table._tafneStructObs.disconnect();
+        if (table._tableIdeStructObs) table._tableIdeStructObs.disconnect();
         rows.forEach(r => $(r).after($(r).clone(false)));
         renderTableRulers(table);
         if (typeof window.saveCurrentState === 'function') window.saveCurrentState();
@@ -595,7 +595,7 @@ window.tableRuler = (function () {
         });
         if (!cols.size) return;
         if (typeof window.saveCurrentState === 'function') window.saveCurrentState();
-        if (table._tafneStructObs) table._tafneStructObs.disconnect();
+        if (table._tableIdeStructObs) table._tableIdeStructObs.disconnect();
         // Descending, so inserting into one column never shifts a column still queued.
         Array.from(cols).sort((a, b) => b - a).forEach(ci => {
             for (let r = 0; r < m.maxRows; r++) {
@@ -610,7 +610,7 @@ window.tableRuler = (function () {
     function _fitWidth(table, axis, idx) {
         if (axis !== 'col') return;
         _setColWidth(table, idx, _autoFitWidth(table, idx));
-        _syncRulerSegments($(table).closest('.tafne-ruler-wrap')[0], table);
+        _syncRulerSegments($(table).closest('.table-ide-ruler-wrap')[0], table);
     }
 
     // Clipboard items reuse the existing matrix clipboard in tableOperations.js.
@@ -638,10 +638,10 @@ window.tableRuler = (function () {
         else                _handleRulerColClick($wrap, table, idx, { shiftKey: false });
 
         const items = axis === 'row' ? ROW_MENU : COL_MENU;
-        const $menu = $('<div id="tafneHeaderMenu" class="tafne-hdr-menu"></div>');
+        const $menu = $('<div id="tableIdeHeaderMenu" class="table-ide-hdr-menu"></div>');
         items.forEach(it => {
-            if (it.sep) { $menu.append('<div class="tafne-hdr-menu-sep"></div>'); return; }
-            $('<button type="button" class="tafne-hdr-menu-item"></button>')
+            if (it.sep) { $menu.append('<div class="table-ide-hdr-menu-sep"></div>'); return; }
+            $('<button type="button" class="table-ide-hdr-menu-item"></button>')
                 .text(it.label)
                 .toggleClass('is-danger', !!it.danger)
                 .on('click', function (ev) {
@@ -672,7 +672,7 @@ window.tableRuler = (function () {
         // Defer so the mousedown that opened the menu does not immediately close it.
         setTimeout(() => {
             $(document).on('mousedown.tafnehdrmenu', function (ev) {
-                if (!$(ev.target).closest('#tafneHeaderMenu').length) _closeHeaderMenu();
+                if (!$(ev.target).closest('#tableIdeHeaderMenu').length) _closeHeaderMenu();
             });
             $(document).on('keydown.tafnehdrmenu', function (ev) {
                 if (ev.key === 'Escape') _closeHeaderMenu();
@@ -705,26 +705,26 @@ window.tableRuler = (function () {
         if ($table[0].getBoundingClientRect().width === 0) return;
 
         // Guard against re-entrant calls from ResizeObserver
-        if (table._tafneRulerRebuilding) return;
+        if (table._tableIdeRulerRebuilding) return;
 
         // Remove any existing ruler wrap for this table
-        const $existing = $table.closest('.tafne-ruler-wrap');
+        const $existing = $table.closest('.table-ide-ruler-wrap');
         if ($existing.length) {
             $existing.before($table);
             $existing.remove();
         }
 
         // Disconnect previous MutationObserver (row/col add/delete watcher)
-        if (table._tafneStructObs) {
-            table._tafneStructObs.disconnect();
-            delete table._tafneStructObs;
+        if (table._tableIdeStructObs) {
+            table._tableIdeStructObs.disconnect();
+            delete table._tableIdeStructObs;
         }
 
         const mapper = new VisualGridMapper(table);
         if (mapper.maxCols === 0 || mapper.maxRows === 0) return;
 
         const nCols = mapper.maxCols;
-        const rows  = Array.from(table.rows).filter(r => !r.classList.contains('tifany-drag-row') && !r.classList.contains('drop-indicator-row'));
+        const rows  = Array.from(table.rows).filter(r => !r.classList.contains('table-ide-drag-row') && !r.classList.contains('drop-indicator-row'));
         const nRows = rows.length;
 
         // Build segments without fixed sizes — _syncRulerSegments sets them after DOM insertion
@@ -745,25 +745,25 @@ window.tableRuler = (function () {
         //   header  = [corner | col-ruler-viewport (overflow:hidden, sync'd by JS)]
         //   body    = [row-ruler (always visible) | table-viewport (overflow-x:auto)]
         const $wrap = $(`
-            <div class="tafne-ruler-wrap">
-                <div class="tafne-ruler-header">
-                    <div class="tafne-corner" title="Click to select the whole table · drag to move it · double-click to reset column widths"></div>
-                    <div class="tafne-col-ruler-vp">
-                        <div class="tafne-col-ruler">${colSegs}</div>
+            <div class="table-ide-ruler-wrap">
+                <div class="table-ide-ruler-header">
+                    <div class="table-ide-corner" title="Click to select the whole table · drag to move it · double-click to reset column widths"></div>
+                    <div class="table-ide-col-ruler-vp">
+                        <div class="table-ide-col-ruler">${colSegs}</div>
                     </div>
                 </div>
-                <div class="tafne-ruler-body">
-                    <div class="tafne-row-ruler-vp">
-                        <div class="tafne-row-ruler">${rowSegs}</div>
+                <div class="table-ide-ruler-body">
+                    <div class="table-ide-row-ruler-vp">
+                        <div class="table-ide-row-ruler">${rowSegs}</div>
                     </div>
-                    <div class="tafne-table-vp"></div>
+                    <div class="table-ide-table-vp"></div>
                 </div>
             </div>
         `);
 
         // Move table into the table viewport
         $table.before($wrap);
-        $wrap.find('.tafne-table-vp').append($table);
+        $wrap.find('.table-ide-table-vp').append($table);
 
         // Sync segment sizes after the browser has laid out the new DOM
         scheduleGeometrySync(table);
@@ -774,9 +774,9 @@ window.tableRuler = (function () {
         // Both strips live outside the table's own scroll container so they can
         // stay put while it scrolls sideways/down; the price is that the offset
         // has to be copied across by hand, on both axes.
-        const tableVp    = $wrap.find('.tafne-table-vp')[0];
-        const colRulerVp = $wrap.find('.tafne-col-ruler-vp')[0];
-        const rowRulerVp = $wrap.find('.tafne-row-ruler-vp')[0];
+        const tableVp    = $wrap.find('.table-ide-table-vp')[0];
+        const colRulerVp = $wrap.find('.table-ide-col-ruler-vp')[0];
+        const rowRulerVp = $wrap.find('.table-ide-row-ruler-vp')[0];
         tableVp.addEventListener('scroll', function () {
             colRulerVp.scrollLeft = this.scrollLeft;
             rowRulerVp.scrollTop  = this.scrollTop;
@@ -786,7 +786,7 @@ window.tableRuler = (function () {
         // It used to toggle a hidden insert/duplicate mode that silently changed
         // what every + pill did. Selecting the table is what the same corner does
         // in a spreadsheet, and duplicate is now a named item in the caret menu.
-        const $corner = $wrap.find('.tafne-corner');
+        const $corner = $wrap.find('.table-ide-corner');
         $corner.on('mousedown.ruler', function (e) {
             if (e.button !== 0) return;
             e.preventDefault();
@@ -822,7 +822,7 @@ window.tableRuler = (function () {
         });
 
         // ── Row ruler: right-click → select row + open cell context menu ─────
-        $wrap.find('.tafne-row-ruler').on('contextmenu.ruler', '.ruler-seg', function (e) {
+        $wrap.find('.table-ide-row-ruler').on('contextmenu.ruler', '.ruler-seg', function (e) {
             e.preventDefault();
             e.stopPropagation();
             const rowIdx = parseInt($(this).attr('data-row'), 10);
@@ -832,7 +832,7 @@ window.tableRuler = (function () {
         });
 
         // ── Col ruler: right-click → select column + open cell context menu ──
-        $wrap.find('.tafne-col-ruler-vp').on('contextmenu.ruler', '.ruler-seg', function (e) {
+        $wrap.find('.table-ide-col-ruler-vp').on('contextmenu.ruler', '.ruler-seg', function (e) {
             e.preventDefault();
             e.stopPropagation();
             const colIdx = parseInt($(this).attr('data-col'), 10);
@@ -855,7 +855,7 @@ window.tableRuler = (function () {
         // ── Row ruler: mousedown → watch for movement threshold ──────────────────
         // If mouse moves > DRAG_THRESHOLD_PX before mouseup  → reorder drag
         // If mouseup without threshold crossed               → select (shift extends)
-        $wrap.find('.tafne-row-ruler').on('mousedown', '.ruler-seg', function (e) {
+        $wrap.find('.table-ide-row-ruler').on('mousedown', '.ruler-seg', function (e) {
             // A press that started on a resize grip is a resize, not a
             // row/column select-or-reorder. Both handlers are delegated from
             // this same container and this one calls stopPropagation, so
@@ -903,7 +903,7 @@ window.tableRuler = (function () {
         });
 
         // ── Col ruler: same threshold pattern ────────────────────────────────────
-        $wrap.find('.tafne-col-ruler-vp').on('mousedown', '.ruler-seg', function (e) {
+        $wrap.find('.table-ide-col-ruler-vp').on('mousedown', '.ruler-seg', function (e) {
             // A press that started on a resize grip is a resize, not a
             // row/column select-or-reorder. Both handlers are delegated from
             // this same container and this one calls stopPropagation, so
@@ -941,30 +941,30 @@ window.tableRuler = (function () {
         });
 
         // ── ResizeObserver + window resize: rebuild ruler if table changes size ─
-        if (table._tafneRulerObs) {
-            table._tafneRulerObs.disconnect();
+        if (table._tableIdeRulerObs) {
+            table._tableIdeRulerObs.disconnect();
         }
-        if (table._tafneResizeHandler) {
-            window.removeEventListener('resize', table._tafneResizeHandler);
+        if (table._tableIdeResizeHandler) {
+            window.removeEventListener('resize', table._tableIdeResizeHandler);
         }
 
         function _scheduleRulerRebuild() {
-            if (table._tafneRulerRebuilding) return;
-            clearTimeout(table._tafneRulerTimer);
-            table._tafneRulerTimer = setTimeout(() => {
-                const $w = $(table).closest('.tafne-ruler-wrap');
+            if (table._tableIdeRulerRebuilding) return;
+            clearTimeout(table._tableIdeRulerTimer);
+            table._tableIdeRulerTimer = setTimeout(() => {
+                const $w = $(table).closest('.table-ide-ruler-wrap');
                 if (!$w.length) return;
                 const mapper2 = new window.VisualGridMapper(table);
-                const liveRows = Array.from(table.rows).filter(r => !r.classList.contains('tifany-drag-row') && !r.classList.contains('drop-indicator-row')).length;
-                const segRows  = $w.find('.tafne-row-ruler .ruler-seg').length;
-                const segCols  = $w.find('.tafne-col-ruler .ruler-seg').length;
+                const liveRows = Array.from(table.rows).filter(r => !r.classList.contains('table-ide-drag-row') && !r.classList.contains('drop-indicator-row')).length;
+                const segRows  = $w.find('.table-ide-row-ruler .ruler-seg').length;
+                const segCols  = $w.find('.table-ide-col-ruler .ruler-seg').length;
                 if (liveRows === segRows && mapper2.maxCols === segCols) {
                     _syncRulerSegments($w[0], table);
                     scheduleGeometrySync(table);
                 } else {
-                    table._tafneRulerRebuilding = true;
+                    table._tableIdeRulerRebuilding = true;
                     renderTableRulers(table);
-                    table._tafneRulerRebuilding = false;
+                    table._tableIdeRulerRebuilding = false;
                 }
             }, 60);
         }
@@ -972,12 +972,12 @@ window.tableRuler = (function () {
         if (window.ResizeObserver) {
             const ro = new ResizeObserver(_scheduleRulerRebuild);
             ro.observe(table);
-            table._tafneRulerObs = ro;
+            table._tableIdeRulerObs = ro;
         }
 
         // Fallback: window resize covers container reflows the ResizeObserver may miss
-        table._tafneResizeHandler = _scheduleRulerRebuild;
-        window.addEventListener('resize', table._tafneResizeHandler, { passive: true });
+        table._tableIdeResizeHandler = _scheduleRulerRebuild;
+        window.addEventListener('resize', table._tableIdeResizeHandler, { passive: true });
 
         // ── MutationObserver: immediately rebuild on row/cell add or remove ───
         // ResizeObserver only fires after a layout pass; direct DOM mutations
@@ -985,7 +985,7 @@ window.tableRuler = (function () {
         // the table width stays the same — leaving ghost segments in the ruler.
         if (window.MutationObserver) {
             const mo = new MutationObserver(mutations => {
-                if (table._tafneRulerRebuilding) return;
+                if (table._tableIdeRulerRebuilding) return;
                 const structural = mutations.some(m =>
                     m.type === 'childList' &&
                     (m.addedNodes.length > 0 || m.removedNodes.length > 0)
@@ -993,30 +993,30 @@ window.tableRuler = (function () {
                 if (!structural) return;
 
                 // Count mismatch → rebuild ruler immediately (no debounce)
-                const $w = $(table).closest('.tafne-ruler-wrap');
+                const $w = $(table).closest('.table-ide-ruler-wrap');
                 if (!$w.length) return;
                 const liveRows = Array.from(table.rows).filter(r =>
-                    !r.classList.contains('tifany-drag-row') &&
+                    !r.classList.contains('table-ide-drag-row') &&
                     !r.classList.contains('drop-indicator-row')
                 ).length;
                 const mapper3 = new window.VisualGridMapper(table);
-                const segRows = $w.find('.tafne-row-ruler .ruler-seg').length;
-                const segCols = $w.find('.tafne-col-ruler .ruler-seg').length;
+                const segRows = $w.find('.table-ide-row-ruler .ruler-seg').length;
+                const segCols = $w.find('.table-ide-col-ruler .ruler-seg').length;
                 if (liveRows !== segRows || mapper3.maxCols !== segCols) {
                     mo.disconnect();
-                    table._tafneRulerRebuilding = true;
+                    table._tableIdeRulerRebuilding = true;
                     renderTableRulers(table);
-                    table._tafneRulerRebuilding = false;
+                    table._tableIdeRulerRebuilding = false;
                 }
             });
             mo.observe(table, { childList: true, subtree: true });
-            table._tafneStructObs = mo;
+            table._tableIdeStructObs = mo;
         }
     }
 
     // ── Highlight ruler segments matching the current selection ───────────────
     function highlightRuler(table, cells) {
-        const $wrap = $(table).closest('.tafne-ruler-wrap');
+        const $wrap = $(table).closest('.table-ide-ruler-wrap');
         if (!$wrap.length) return;
 
         $wrap.find('.ruler-seg.ruler-active').removeClass('ruler-active');
@@ -1039,21 +1039,21 @@ window.tableRuler = (function () {
 
     // ── Remove ruler and restore table to its original parent ─────────────────
     function destroyRulers(table) {
-        if (table._tafneRulerObs) {
-            table._tafneRulerObs.disconnect();
-            delete table._tafneRulerObs;
+        if (table._tableIdeRulerObs) {
+            table._tableIdeRulerObs.disconnect();
+            delete table._tableIdeRulerObs;
         }
-        if (table._tafneStructObs) {
-            table._tafneStructObs.disconnect();
-            delete table._tafneStructObs;
+        if (table._tableIdeStructObs) {
+            table._tableIdeStructObs.disconnect();
+            delete table._tableIdeStructObs;
         }
-        if (table._tafneResizeHandler) {
-            window.removeEventListener('resize', table._tafneResizeHandler);
-            delete table._tafneResizeHandler;
+        if (table._tableIdeResizeHandler) {
+            window.removeEventListener('resize', table._tableIdeResizeHandler);
+            delete table._tableIdeResizeHandler;
         }
-        clearTimeout(table._tafneRulerTimer);
+        clearTimeout(table._tableIdeRulerTimer);
         const $table = $(table);
-        const $wrap  = $table.closest('.tafne-ruler-wrap');
+        const $wrap  = $table.closest('.table-ide-ruler-wrap');
         if ($wrap.length) {
             $wrap.before($table);
             $wrap.remove();
@@ -1068,4 +1068,4 @@ window.scheduleTableGeometrySync = window.tableRuler.scheduleGeometrySync;
 window.highlightRuler    = window.tableRuler.highlightRuler;
 window.destroyRulers     = window.tableRuler.destroyRulers;
 window.releaseTableSizing = window.tableRuler.releaseSizing;
-window.tafneColLabel      = window.tableRuler.colLabel;
+window.tableIdeColLabel      = window.tableRuler.colLabel;

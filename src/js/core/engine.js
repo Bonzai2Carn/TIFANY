@@ -1,7 +1,7 @@
 // ===================================================================================
-// TAFNE ENGINE — CDN / open-tool entry point
+// Table IDE ENGINE — CDN / open-tool entry point
 //
-//   Exposes window.TafneEngine as a stable public namespace.
+//   Exposes window.TableIdeEngine as a stable public namespace.
 //   Load this script after all component scripts have run.
 //
 //   Usage (browser):
@@ -9,7 +9,7 @@
 //     <script src="src/js/features/nodeFormulaParser.js"></script>
 //     <script src="src/js/features/labFunctions.js"></script>
 //     <script src="src/js/core/engine.js"></script>
-//     TafneEngine.FormulaParser.evaluate('$Price * 1.2', { '$Price': '50' }) // → '60'
+//     TableIdeEngine.FormulaParser.evaluate('$Price * 1.2', { '$Price': '50' }) // → '60'
 //
 //   Components:
 //     FormulaParser     — recursive descent expression evaluator
@@ -30,7 +30,7 @@
 // ===================================================================================
 
 (function (global) {
-    global.TafneEngine = {
+    global.TableIdeEngine = {
         FormulaParser:    global.nodeFormulaParser,
         LabFunctions:     global.LabFunctions,
         VisualGridMapper: global.VisualGridMapper,

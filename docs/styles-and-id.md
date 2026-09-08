@@ -1,12 +1,12 @@
 # Styles and IDs
 
-TIFANY allows you to apply custom classes, IDs, and visual styles to any element within your table (Cell, Row, or Column). Additionally, several built-in utility classes provide advanced interactivity such as collapsible rows and tabbed column switching.
+TABLE_IDE allows you to apply custom classes, IDs, and visual styles to any element within your table (Cell, Row, or Column). Additionally, several built-in utility classes provide advanced interactivity such as collapsible rows and tabbed column switching.
 
 ---
 
 ## 1. Built-in Utility Classes
 
-TIFANY includes pre-configured classes that trigger specific behaviors when applied to table elements.
+TABLE_IDE includes pre-configured classes that trigger specific behaviors when applied to table elements.
 
 ### Collapsible Rows (`accordion-header`)
 The `accordion-header` class transforms a row into a clickable toggle that expands or collapses the rows beneath it.
